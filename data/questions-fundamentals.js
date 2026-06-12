@@ -219,3 +219,228 @@
     explanation: "Going from /16 to /22 borrows 22 - 16 = 6 bits for subnetting, producing 2^6 = 64 subnets. The answer 32 results from borrowing only 5 bits (a /21 plan), and 128 from borrowing 7 bits (a /23 plan). The number of hosts per subnet (1022 for /22) is a separate calculation and does not affect the subnet count."
   }
 );
+
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "nf-016",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A host is configured with the IP address 10.55.66.77 and the subnet mask 255.255.248.0. To which network address does the host belong?",
+    options: [
+      "10.55.56.0",
+      "10.55.64.0",
+      "10.55.66.0",
+      "10.55.72.0"
+    ],
+    answer: [1],
+    explanation: "A 255.255.248.0 mask is a /21, which increments in blocks of 8 in the third octet (0, 8, 16, ... 64, 72). The octet value 66 falls inside the block that starts at 64, so the network address is 10.55.64.0. The value 10.55.66.0 assumes a /24 boundary, 10.55.72.0 is the next /21 subnet, and 10.55.56.0 is the previous one."
+  },
+  {
+    id: "nf-017",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. What is the first usable host address in the subnet configured on GigabitEthernet0/1?",
+    exhibit: "Router# show running-config interface GigabitEthernet0/1\ninterface GigabitEthernet0/1\n ip address 172.18.111.200 255.255.255.192\n no shutdown",
+    options: [
+      "172.18.111.193",
+      "172.18.111.192",
+      "172.18.111.129",
+      "172.18.111.201"
+    ],
+    answer: [0],
+    explanation: "A /26 mask creates blocks of 64: .0, .64, .128, and .192. The address .200 falls in the 172.18.111.192/26 subnet, so the first usable host is 172.18.111.193. The address .192 is the subnet (network) address itself and cannot be assigned, .129 is the first host of the previous /26 block, and .201 is simply the next address after the router interface, not the first in the subnet."
+  },
+  {
+    id: "nf-018",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A point-of-sale VLAN must support 27 devices plus a default gateway. Which prefix length creates the smallest subnet that meets the requirement?",
+    options: [
+      "/28",
+      "/27",
+      "/26",
+      "/25"
+    ],
+    answer: [1],
+    explanation: "The VLAN needs 28 usable addresses (27 devices plus the gateway). A /27 provides 2^5 - 2 = 30 usable hosts, which is the smallest subnet that fits. A /28 provides only 14 usable hosts, which is insufficient. A /26 (62 hosts) and /25 (126 hosts) both work but waste address space, so they are not the smallest valid choice."
+  },
+  {
+    id: "nf-019",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two addresses can be assigned to hosts in the subnet 192.168.12.64/26? (Choose two.)",
+    options: [
+      "192.168.12.64",
+      "192.168.12.95",
+      "192.168.12.126",
+      "192.168.12.127",
+      "192.168.12.128"
+    ],
+    answer: [1, 2],
+    explanation: "The subnet 192.168.12.64/26 spans 192.168.12.64 through 192.168.12.127, with usable hosts from .65 to .126. Both .95 and .126 fall inside that usable range. The address .64 is the network address, .127 is the directed broadcast, and .128 is the network address of the next /26 subnet."
+  },
+  {
+    id: "nf-020",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. R1 and R2 are connected by a direct serial link, but R1 cannot ping R2. What is the cause of the problem?",
+    exhibit: "R1# show ip interface brief | include Serial\nSerial0/0/0      10.1.1.5      YES manual up      up\n\nR2# show ip interface brief | include Serial\nSerial0/0/0      10.1.1.2      YES manual up      up\n\n! Both routers use mask 255.255.255.252 on Serial0/0/0",
+    options: [
+      "The two interfaces are in different /30 subnets",
+      "10.1.1.5 is the broadcast address of the subnet",
+      "10.1.1.2 is the network address of the subnet",
+      "The serial keepalive timers are mismatched"
+    ],
+    answer: [0],
+    explanation: "With a /30 mask, the subnets increment by 4: 10.1.1.0/30 covers .0-.3 and 10.1.1.4/30 covers .4-.7. R1 (.5) is in 10.1.1.4/30 while R2 (.2) is in 10.1.1.0/30, so they cannot communicate even though the link is up/up. The address .5 is a valid host in its block (the broadcast is .7), and .2 is a valid host in its block (the network address is .0). Keepalive mismatches would affect the line protocol state, which shows up."
+  },
+  {
+    id: "nf-021",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An engineer must configure an ACL entry that matches all addresses in the network 10.20.8.0 255.255.252.0. Which wildcard mask must be used?",
+    options: [
+      "0.0.3.255",
+      "0.0.4.255",
+      "0.0.7.255",
+      "0.0.252.255"
+    ],
+    answer: [0],
+    explanation: "The wildcard mask is the bitwise inverse of the subnet mask: 255.255.252.0 inverts to 0.0.3.255, which matches the third-octet range 8 through 11. The mask 0.0.7.255 corresponds to a /21 and would match too many addresses, 0.0.4.255 is not a contiguous wildcard for this block, and 0.0.252.255 incorrectly copies the subnet mask octet instead of inverting it."
+  },
+  {
+    id: "nf-022",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "How many usable host addresses are available in a subnet with the prefix length /21?",
+    options: [
+      "2048",
+      "2046",
+      "1022",
+      "4094"
+    ],
+    answer: [1],
+    explanation: "A /21 leaves 32 - 21 = 11 host bits, giving 2^11 = 2048 total addresses. Subtracting the network and broadcast addresses leaves 2046 usable hosts. The value 2048 forgets to subtract those two reserved addresses, 1022 corresponds to a /22, and 4094 corresponds to a /20."
+  },
+  {
+    id: "nf-023",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An engineer must create one additional subnet for a VLAN that requires 25 hosts while conserving as much address space as possible. Which subnet should be used?",
+    exhibit: "R1# show ip route connected\nC    192.168.10.0/25 is directly connected, GigabitEthernet0/0\nC    192.168.10.128/26 is directly connected, GigabitEthernet0/1",
+    options: [
+      "192.168.10.192/27",
+      "192.168.10.160/27",
+      "192.168.10.192/26",
+      "192.168.10.224/27"
+    ],
+    answer: [0],
+    explanation: "The /25 consumes .0-.127 and the /26 consumes .128-.191, so the next free address is .192. A /27 provides 30 usable hosts, which satisfies 25 hosts with minimal waste, making 192.168.10.192/27 correct. The subnet 192.168.10.160/27 overlaps the existing 192.168.10.128/26, a /26 at .192 wastes space unnecessarily, and starting at .224 skips a usable block, fragmenting the address plan."
+  },
+  {
+    id: "nf-024",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "What is the last usable host address in the subnet 10.200.16.0/22?",
+    options: [
+      "10.200.16.254",
+      "10.200.19.254",
+      "10.200.19.255",
+      "10.200.23.254"
+    ],
+    answer: [1],
+    explanation: "A /22 spans four third-octet values, so 10.200.16.0/22 covers 10.200.16.0 through 10.200.19.255. The broadcast address is 10.200.19.255, making 10.200.19.254 the last usable host. The address 10.200.16.254 incorrectly assumes a /24 boundary, and 10.200.23.254 would be correct for a /21, which spans eight third-octet values."
+  },
+  {
+    id: "nf-025",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A network design requires each branch subnet to support up to 500 hosts while creating as many subnets as possible from 172.22.0.0/16. Which subnet mask should be applied?",
+    options: [
+      "255.255.255.0",
+      "255.255.254.0",
+      "255.255.252.0",
+      "255.255.128.0"
+    ],
+    answer: [1],
+    explanation: "A 255.255.254.0 (/23) mask provides 2^9 - 2 = 510 usable hosts, the smallest subnet that fits 500 hosts and therefore the one that yields the most subnets from the /16. A /24 provides only 254 hosts, which is too few. A /22 supports 1022 hosts but halves the number of available subnets, and /17 (255.255.128.0) wastes an enormous amount of space."
+  },
+  {
+    id: "nf-026",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two statements about the subnet 172.16.32.0 255.255.224.0 are true? (Choose two.)",
+    options: [
+      "The directed broadcast address is 172.16.63.255",
+      "The subnet provides 8190 usable host addresses",
+      "The directed broadcast address is 172.16.39.255",
+      "The subnet provides 4094 usable host addresses"
+    ],
+    answer: [0, 1],
+    explanation: "The mask 255.255.224.0 is a /19, which spans 32 third-octet values, so 172.16.32.0/19 runs from 172.16.32.0 to 172.16.63.255, making 172.16.63.255 the broadcast address. With 13 host bits, the subnet supports 2^13 - 2 = 8190 hosts. The broadcast 172.16.39.255 would apply to a /21, and 4094 hosts corresponds to a /20."
+  },
+  {
+    id: "nf-027",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A junior engineer questions whether the address 172.31.14.255 with mask 255.255.252.0 can be assigned to a server. Which statement is correct?",
+    options: [
+      "It is a valid host address because the subnet broadcast address is 172.31.15.255",
+      "It is the directed broadcast address of the subnet and cannot be assigned",
+      "It is the network address of the subnet and cannot be assigned",
+      "Any IPv4 address ending in 255 is reserved and cannot be assigned to a host"
+    ],
+    answer: [0],
+    explanation: "With a /22 mask, the subnet containing this address is 172.31.12.0/22, which spans 172.31.12.0 through 172.31.15.255. The broadcast address is 172.31.15.255, so 172.31.14.255 is an ordinary usable host address. An address ending in 255 is only a broadcast when the mask is /24 or longer; with shorter masks it can be a normal host, which is why the other options are wrong."
+  },
+  {
+    id: "nf-028",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An administrator subnets 192.168.100.0/24 using the mask 255.255.255.248 for every subnet. How many subnets are created, and how many usable hosts does each support?",
+    options: [
+      "32 subnets with 6 usable hosts each",
+      "32 subnets with 8 usable hosts each",
+      "16 subnets with 14 usable hosts each",
+      "8 subnets with 30 usable hosts each"
+    ],
+    answer: [0],
+    explanation: "Moving from /24 to /29 borrows 5 bits, creating 2^5 = 32 subnets. Each /29 has 3 host bits, so 2^3 - 2 = 6 usable hosts after subtracting the network and broadcast addresses. The answer with 8 hosts forgets to subtract the two reserved addresses, while 16/14 and 8/30 correspond to /28 and /27 plans respectively."
+  },
+  {
+    id: "nf-029",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each subnet mask to its matching prefix length.",
+    items: [
+      "255.255.248.0",
+      "255.255.255.224",
+      "255.255.255.252",
+      "255.255.252.0",
+      "255.255.255.248"
+    ],
+    targets: [
+      "/21",
+      "/22",
+      "/27",
+      "/29",
+      "/30"
+    ],
+    answer: [0, 3, 1, 4, 2],
+    explanation: "Counting contiguous 1 bits gives each prefix: 255.255.248.0 has 21 ones (/21), 255.255.252.0 has 22 (/22), 255.255.255.224 has 27 (/27), 255.255.255.248 has 29 (/29), and 255.255.255.252 has 30 (/30). The third-octet masks 248 and 252 are easy to confuse with their fourth-octet counterparts, which differ by exactly 8 bits of prefix length."
+  },
+  {
+    id: "nf-030",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Hosts 10.1.1.20 and 10.1.1.60 must reside in the same subnet. Which subnet is the smallest one that contains both addresses?",
+    options: [
+      "10.1.1.0/27",
+      "10.1.1.0/26",
+      "10.1.1.0/28",
+      "10.1.1.0/25"
+    ],
+    answer: [1],
+    explanation: "A /26 block starting at .0 covers addresses .0 through .63, which includes both .20 and .60. A /27 splits that range into .0-.31 and .32-.63, placing the two hosts in different subnets, and a /28 separates them even further. A /25 (.0-.127) also contains both hosts but is larger than necessary, so it is not the smallest valid subnet."
+  }
+);

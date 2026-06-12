@@ -216,3 +216,436 @@
     explanation: "The control plane builds the information used to forward traffic: OSPF LSA exchange populates the routing table, and STP BPDU processing determines which ports forward or block. Actually switching frames with the MAC table is the data plane in action, even though the table itself was built by control plane learning. NAT header rewriting is also performed packet-by-packet in the data plane, even though the NAT rules were configured through the management plane."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "auto-016",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. Which statement about the JSON data returned by the controller is true?",
+    exhibit: "{\n  \"device\": {\n    \"hostname\": \"SW1\",\n    \"uptime\": 86400,\n    \"isManaged\": true,\n    \"interfaces\": [\"Gig0/1\", \"Gig0/2\"],\n    \"location\": null\n  }\n}",
+    options: [
+      "The value of isManaged is a Boolean",
+      "The value of uptime is a string because all JSON values are text",
+      "The value of interfaces is an object containing two keys",
+      "The value of location is the four-character string null"
+    ],
+    answer: [0],
+    explanation: "The unquoted literal true is one of the two JSON Boolean values, so isManaged is a Boolean. The value 86400 has no quotation marks, which makes it a number, not a string. The interfaces value is enclosed in square brackets, which denotes an array of two strings rather than an object, because objects use curly braces with key-value pairs. Finally, the unquoted literal null is the JSON null type; it would be a string only if it were written in double quotes."
+  },
+  {
+    id: "auto-017",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. A Python script fails to parse this JSON payload received from an automation tool. What causes the parser to reject the data?",
+    exhibit: "{\n  \"hostname\": \"R1\",\n  \"interfaces\": [\"Gig0/0\", \"Gig0/1\"],\n}",
+    options: [
+      "A trailing comma follows the last key-value pair in the object",
+      "Array elements cannot be strings and must be numbers",
+      "The key hostname must be written without quotation marks",
+      "Square brackets are not a valid structure inside a JSON object"
+    ],
+    answer: [0],
+    explanation: "Strict JSON does not permit a comma after the final member of an object or the final element of an array, so the comma after the closing bracket of the interfaces array causes a parse error. Arrays may contain strings, numbers, Booleans, nulls, objects, or other arrays, so string elements are perfectly valid. JSON keys must always be enclosed in double quotes, so removing the quotes from hostname would create a second error rather than fix one, and arrays in square brackets are legal values inside objects."
+  },
+  {
+    id: "auto-018",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. A script parses this REST API response into a variable named data. Which value does data[\"response\"][\"devices\"][1][\"mgmtIp\"] return?",
+    exhibit: "{\n  \"response\": {\n    \"devices\": [\n      { \"hostname\": \"SW1\", \"mgmtIp\": \"10.1.1.10\" },\n      { \"hostname\": \"SW2\", \"mgmtIp\": \"10.1.1.20\" }\n    ]\n  }\n}",
+    options: [
+      "10.1.1.20",
+      "10.1.1.10",
+      "SW2",
+      "An error, because an array cannot be indexed with a number"
+    ],
+    answer: [0],
+    explanation: "Array indexing starts at zero, so index 1 selects the second object in the devices array, which describes SW2, and its mgmtIp key holds the string 10.1.1.20. Choosing 10.1.1.10 reflects the common mistake of treating index 1 as the first element. SW2 is the value of the hostname key of that same object, not the mgmtIp key. Indexing an array with an integer is exactly how array elements are retrieved, so no error occurs."
+  },
+  {
+    id: "auto-019",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Refer to the exhibit. An engineer pastes this text into a JSON validator and it reports errors. Which two problems must be corrected to make the data valid JSON? (Choose two.)",
+    exhibit: "{\n  'vlan': 10,\n  name: \"USERS\",\n  \"shutdown\": false\n}",
+    options: [
+      "The key vlan is enclosed in single quotes instead of double quotes",
+      "The key name is not enclosed in quotation marks at all",
+      "The value false must be enclosed in quotation marks",
+      "The value 10 must be enclosed in quotation marks"
+    ],
+    answer: [0, 1],
+    explanation: "JSON requires every key to be a string delimited by double quotes, so 'vlan' in single quotes and the completely unquoted key name are both syntax errors. The literal false is a valid JSON Boolean exactly as written; wrapping it in quotes would change it into a string and alter its meaning. Likewise, 10 is a valid JSON number, and numbers are written without quotation marks unless the designer intends them to be strings."
+  },
+  {
+    id: "auto-020",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "An automation script must add a brand-new VLAN object to a controller through its REST API, and the controller assigns the unique identifier of the new object in its response. Which HTTP method should the script use?",
+    options: [
+      "POST",
+      "GET",
+      "PUT",
+      "HEAD"
+    ],
+    answer: [0],
+    explanation: "POST is the standard verb for creating a new resource when the server allocates the identifier and location of the object, which is why the controller answers with the new ID. GET only retrieves data and never changes server state. PUT is normally used to create or fully replace a resource at a URI that the client already specifies, so it does not fit a workflow where the server assigns the identifier. HEAD returns only response headers and cannot create anything."
+  },
+  {
+    id: "auto-021",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. A script sends a POST request to a controller and receives this response. What does the response indicate?",
+    exhibit: "HTTP/1.1 201 Created\nLocation: /api/v1/vlans/87\nContent-Type: application/json\n\n{ \"id\": 87, \"name\": \"GUEST\", \"vlanId\": 30 }",
+    options: [
+      "The request succeeded and a new resource now exists at /api/v1/vlans/87",
+      "The request succeeded but the server returned only cached data",
+      "The request was accepted and queued, but processing has not finished yet",
+      "The request failed because the client must first authenticate"
+    ],
+    answer: [0],
+    explanation: "Status code 201 specifically means that the request succeeded and a new resource was created, and the Location header tells the client the URI of that new object. A plain success that returns existing data would normally be 200 OK, and cached responses involve codes such as 304. A request that is accepted for later asynchronous processing returns 202 Accepted, not 201. Authentication failures produce 401, which is in the 4xx client-error class rather than the 2xx success class."
+  },
+  {
+    id: "auto-022",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. A script authenticates to a controller, receives a valid token, and then makes the request shown, which fails. What does the 403 response mean?",
+    exhibit: "DELETE /api/v1/network-device/3f2a HTTP/1.1\nHost: controller.example.com\nAuthorization: Bearer eyJhbGciOiJIUzI1NiJ9.ok\n\nHTTP/1.1 403 Forbidden\n\n{ \"error\": \"insufficient privileges for this operation\" }",
+    options: [
+      "The credentials were accepted, but the account is not authorized to perform this operation",
+      "The token is missing or expired, so the client must authenticate again",
+      "The resource 3f2a does not exist in the controller inventory",
+      "The controller encountered an internal failure while deleting the device"
+    ],
+    answer: [0],
+    explanation: "A 403 Forbidden response means the server understood who the client is but refuses the action because the authenticated identity lacks permission, which matches the insufficient-privileges message. A missing or expired token would instead trigger 401 Unauthorized, prompting re-authentication. A nonexistent resource returns 404 Not Found, and an internal controller failure returns a 5xx code such as 500. Distinguishing 401 from 403 is exactly the difference between failed authentication and failed authorization."
+  },
+  {
+    id: "auto-023",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "A monitoring script issues GET https://controller.local/api/v1/templates/site-99 and receives status code 404. What is the most likely cause?",
+    options: [
+      "No resource exists at the requested URI path on the server",
+      "The request omitted valid authentication credentials",
+      "The server crashed while processing an otherwise valid request",
+      "The request syntax was malformed and could not be parsed"
+    ],
+    answer: [0],
+    explanation: "Status 404 Not Found means the server is reachable and processed the request but has no resource matching the URI, for example because the template ID site-99 was deleted or mistyped. Missing or invalid credentials produce 401 Unauthorized. A server-side crash or unhandled exception is reported with a 5xx code such as 500 Internal Server Error. A request that the server cannot parse because of bad syntax returns 400 Bad Request rather than 404."
+  },
+  {
+    id: "auto-024",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "A provisioning script replaces the entire configuration of an existing interface resource through a REST API. The network is unreliable, so the script may transmit the identical request several times. Which HTTP method keeps the result the same no matter how many times the request is repeated?",
+    options: [
+      "PUT",
+      "POST",
+      "CONNECT",
+      "TRACE"
+    ],
+    answer: [0],
+    explanation: "PUT is idempotent: it replaces the resource at a known URI with the supplied representation, so sending the same PUT five times leaves the resource in exactly the same final state as sending it once. POST is not idempotent, because each repeated POST can create an additional resource or apply the action again. CONNECT establishes tunnels through proxies and TRACE echoes requests for diagnostics; neither is used to modify resource representations on a controller."
+  },
+  {
+    id: "auto-025",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. Which statement correctly identifies a component of this REST API request URI?",
+    exhibit: "https://dnac.example.com/dna/intent/api/v1/network-device?managementIpAddress=10.10.20.81",
+    options: [
+      "managementIpAddress=10.10.20.81 is a query parameter that filters which results the API returns",
+      "managementIpAddress=10.10.20.81 is an HTTP header that authenticates the request",
+      "/dna/intent/api/v1/network-device is the query string portion of the URI",
+      "dnac.example.com identifies the resource being requested rather than the server"
+    ],
+    answer: [0],
+    explanation: "Everything after the question mark is the query string, and managementIpAddress=10.10.20.81 is a key-value query parameter that narrows the result set to the device with that management address. Headers are sent separately in the HTTP message, not embedded in the URI, so the parameter is not a header. The segment /dna/intent/api/v1/network-device is the resource path, not the query string. The hostname dnac.example.com identifies the server (the authority portion), while the path identifies the resource on that server."
+  },
+  {
+    id: "auto-026",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. Which authentication mechanism is this REST API request using?",
+    exhibit: "GET /dna/intent/api/v1/interface HTTP/1.1\nHost: dnac.example.com\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.x7Hk2...",
+    options: [
+      "A bearer token obtained earlier, presented in the Authorization header",
+      "HTTP basic authentication with a base64-encoded username and password",
+      "A static API key carried in a custom X-API-Key header",
+      "Client certificate authentication negotiated inside the TLS handshake"
+    ],
+    answer: [0],
+    explanation: "The Authorization header begins with the keyword Bearer followed by a token, which the client obtained from an earlier authentication exchange and now presents to prove its identity on each call. Basic authentication would instead use the keyword Basic followed by base64-encoded username:password. An API key scheme would place the key in a vendor-defined header such as X-API-Key rather than the standard Authorization Bearer format. Certificate authentication happens during TLS session setup and would not appear as an Authorization header at all."
+  },
+  {
+    id: "auto-027",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "How does HTTP basic authentication transmit a client's credentials to a REST API server?",
+    options: [
+      "The username and password are joined with a colon, base64 encoded, and sent in the Authorization header of each request",
+      "The password is irreversibly hashed with SHA-256 so the server can never recover it",
+      "The credentials are exchanged once for a token, and only the token appears in later requests",
+      "The username and password are encrypted with the server's public key before transmission"
+    ],
+    answer: [0],
+    explanation: "Basic authentication simply concatenates username:password, encodes the result with base64, and places it in the Authorization header on every request, which is why it must be protected by HTTPS, since base64 is trivially reversible encoding rather than encryption. No hashing or public-key encryption of the credentials is performed by the scheme itself. Exchanging credentials once for a reusable token describes token or bearer authentication, which exists precisely to avoid resending the password on every call."
+  },
+  {
+    id: "auto-028",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Which two statements describe characteristics of REST-based APIs? (Choose two.)",
+    options: [
+      "They use standard HTTP methods such as GET, POST, PUT, and DELETE to operate on resources",
+      "Resources are identified by URIs, and their representations are commonly exchanged as JSON",
+      "The server must maintain a dedicated session for each client between API calls",
+      "They can encode payload data only in XML format"
+    ],
+    answer: [0, 1],
+    explanation: "REST maps create, read, update, and delete operations onto the standard HTTP verbs, and each resource is addressed by a URI with its state typically serialized as JSON, although XML and other formats are also possible. REST is deliberately stateless, meaning every request carries all the information the server needs, so the server keeps no per-client session between calls, which makes the third option wrong. The last option is wrong both because XML is not required and because JSON is in fact the dominant payload format on Cisco controllers."
+  },
+  {
+    id: "auto-029",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Which three elements are typically included in a REST API request sent to a network controller? (Choose three.)",
+    options: [
+      "An HTTP method such as GET or POST",
+      "A URI that identifies the target resource",
+      "Headers, such as an Authorization header carrying a token",
+      "A TFTP transfer of the device startup configuration",
+      "An SNMP community string for read-write access"
+    ],
+    answer: [0, 1, 2],
+    explanation: "A REST call is an HTTP message, so it always specifies a method that defines the action, a URI that identifies the resource, and headers that carry metadata such as credentials and content type; many requests also include a JSON body. TFTP is a separate file transfer protocol used for tasks like image copies and has no role inside an HTTP request. SNMP community strings belong to the SNMP management protocol, which is an alternative to REST APIs rather than a component of them."
+  },
+  {
+    id: "auto-030",
+    domain: "Automation and Programmability",
+    type: "dragdrop",
+    question: "Drag each HTTP method on the left to the CRUD action it performs on the right.",
+    items: ["GET", "DELETE", "POST", "PUT"],
+    targets: [
+      "Create a new resource whose identifier the server assigns",
+      "Retrieve a resource without modifying it",
+      "Replace an existing resource and remain idempotent on retries",
+      "Remove a resource from the server"
+    ],
+    answer: [2, 0, 3, 1],
+    explanation: "POST creates new resources and is not idempotent, which is why the server typically assigns the new identifier and returns 201. GET is the safe, read-only retrieval method that never changes server state. PUT replaces the full representation of a resource at a known URI and is idempotent, so repeating it produces the same final state. DELETE removes the addressed resource, completing the classic create, read, update, and delete mapping onto HTTP verbs."
+  }
+);
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "auto-031",
+    domain: "Automation and Programmability",
+    type: "dragdrop",
+    question: "Drag each HTTP status code on the left to the condition it reports on the right.",
+    items: ["401 Unauthorized", "500 Internal Server Error", "201 Created", "404 Not Found", "403 Forbidden"],
+    targets: [
+      "No resource exists at the requested URI",
+      "A new resource was successfully created by the request",
+      "The request lacks valid authentication credentials",
+      "The server failed internally while processing the request",
+      "The authenticated user lacks permission for the operation"
+    ],
+    answer: [3, 2, 0, 1, 4],
+    explanation: "404 reports that the URI does not map to any resource, while 201 confirms successful creation, usually with a Location header pointing at the new object. 401 means authentication is missing or invalid, so the client must supply credentials, whereas 403 means the server knows who the client is but still denies the action for lack of authorization. 500 belongs to the 5xx server-error class and indicates the fault lies with the server rather than with the request."
+  },
+  {
+    id: "auto-032",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Which capability of Cisco Catalyst Center (formerly DNA Center) most clearly distinguishes intent-based management from traditional element-by-element device management?",
+    options: [
+      "An operator expresses a business-level policy once, and the controller translates it into device configurations across the network",
+      "An operator opens an SSH session to each switch and pastes a configuration template",
+      "Devices are configured individually, and the controller later audits them with SNMP polling",
+      "Configuration changes are written to a TFTP server that devices fetch at every reboot"
+    ],
+    answer: [0],
+    explanation: "Intent-based networking lets the administrator state the desired outcome, such as an access policy or QoS treatment, and the controller computes and pushes the corresponding device-level configuration everywhere it applies. Pasting templates over SSH and configuring devices one at a time with after-the-fact SNMP audits are exactly the traditional per-device workflows that intent-based management replaces. Distributing configurations from a TFTP server at boot is a legacy technique and involves no translation of intent into policy."
+  },
+  {
+    id: "auto-033",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "A developer wants to write an external application that retrieves the device inventory from Cisco Catalyst Center. Which interface should the application use?",
+    options: [
+      "The intent REST API, sending HTTPS requests and parsing JSON responses",
+      "An OpenFlow session to port 6653 of the controller",
+      "An SSH connection to the CLI of each managed switch",
+      "An SNMPv2c GET request directly to the controller MIB"
+    ],
+    answer: [0],
+    explanation: "Catalyst Center exposes its northbound intent API as a REST interface over HTTPS, and applications authenticate, request resources such as /dna/intent/api/v1/network-device, and parse the JSON that is returned. OpenFlow is a southbound protocol for programming forwarding behavior in certain SDN designs, not a way for applications to query Catalyst Center. Connecting by SSH to individual switches bypasses the controller and defeats the purpose of centralized inventory, and the controller is not managed through SNMP MIB queries for this task."
+  },
+  {
+    id: "auto-034",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Which two statements describe how managing a campus with Cisco Catalyst Center differs from managing it with per-device CLI sessions? (Choose two.)",
+    options: [
+      "Configuration and software image compliance can be monitored and enforced centrally for the entire site",
+      "Assurance features correlate telemetry from many devices to surface network-wide health issues",
+      "Routing protocols are no longer needed because the controller forwards all packets itself",
+      "Devices lose their local configuration files and become stateless forwarders"
+    ],
+    answer: [0, 1],
+    explanation: "A controller maintains a central view, so it can verify that every device runs the approved configuration and software image and remediate drift, and its assurance function correlates telemetry across the whole network to identify problems no single device can see. The controller does not sit in the data path, so routers and switches still run routing protocols and forward their own traffic. Managed devices also retain their local configurations; the controller generates and audits those configurations rather than eliminating them."
+  },
+  {
+    id: "auto-035",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "In a controller-based fabric such as Cisco SD-Access, which statement describes the overlay?",
+    options: [
+      "A logical layer of virtual tunnels, such as VXLAN, built on top of the physical network to carry user traffic and policy",
+      "The collection of physical routed links and the IGP that connects the switches",
+      "The management VLAN used to reach device loopback addresses",
+      "The out-of-band network that connects console ports to a terminal server"
+    ],
+    answer: [0],
+    explanation: "The overlay is the virtual topology of tunnels, VXLAN in SD-Access, that rides on top of the physical infrastructure and carries endpoint traffic along with policy information such as group tags. The physical routed links and IGP form the underlay, whose only job is to provide IP reachability between tunnel endpoints. A management VLAN and an out-of-band console network are administrative access methods and are not part of the fabric data-plane abstraction at all."
+  },
+  {
+    id: "auto-036",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Which definition best describes the term fabric as used in software-defined access networking?",
+    options: [
+      "The combination of the physical underlay and the logical overlay, operating together as a single programmable network",
+      "Only the physical cabling and switches that connect the wiring closets",
+      "The redundant supervisor modules inside a single modular chassis",
+      "The set of REST API endpoints published by the controller"
+    ],
+    answer: [0],
+    explanation: "A fabric is the complete system formed when the logical overlay of tunnels runs across the physical underlay, with the controller managing both as one programmable whole. The physical plant alone is just the underlay, so the second option captures only half of the concept. Switch fabric between supervisor modules inside one chassis is an unrelated use of the word fabric at the hardware level, and the REST endpoints are the controller's northbound interface, not the network fabric itself."
+  },
+  {
+    id: "auto-037",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Why is Ansible described as an agentless configuration management tool?",
+    options: [
+      "It connects to devices over existing protocols such as SSH and requires no special software installed on the managed device",
+      "It runs entirely on the managed device, so no management server is needed",
+      "Managed devices periodically pull their configuration from a central master daemon",
+      "It uses a compiled binary agent that is injected into device memory only during execution"
+    ],
+    answer: [0],
+    explanation: "Ansible pushes changes from a control node over protocols the devices already support, such as SSH or device APIs, so nothing extra has to be installed or maintained on routers and switches, which is ideal for network gear that cannot host agents. The control node, not the managed device, runs Ansible itself. A pull model in which nodes contact a central master describes agent-based tools like the classic Puppet architecture, and Ansible injects no resident binary into devices."
+  },
+  {
+    id: "auto-038",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. Which statement about this automation artifact is true?",
+    exhibit: "---\n- name: Configure NTP on branch routers\n  hosts: routers\n  gather_facts: no\n  tasks:\n    - name: Set NTP server\n      cisco.ios.ios_config:\n        lines:\n          - ntp server 10.0.0.1",
+    options: [
+      "It is an Ansible playbook written in YAML that pushes the change to the hosts in the routers group",
+      "It is a Terraform configuration written in HCL that is applied with terraform apply",
+      "It is a JSON document because it begins with three dashes",
+      "It is a Puppet manifest that devices pull from a master server"
+    ],
+    answer: [0],
+    explanation: "The structure of indented key-value pairs and lists, the optional document-start marker of three dashes, and keywords such as hosts and tasks identify this as a YAML Ansible playbook, which the control node pushes to the inventory group named routers. Terraform uses HCL blocks with resource declarations and braces, which look nothing like this. JSON delimits objects with curly braces and never starts with dashes. Puppet manifests use their own Ruby-like declarative syntax and a pull-based agent model."
+  },
+  {
+    id: "auto-039",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "What is the purpose of the state file that Terraform maintains?",
+    options: [
+      "It records the mapping between the declared resources and the real infrastructure so Terraform can compute what must change",
+      "It stores an encrypted archive of device passwords for use during provisioning",
+      "It is a transcript of every CLI command Terraform sent to each device",
+      "It caches downloaded provider plugins to speed up later runs"
+    ],
+    answer: [0],
+    explanation: "Terraform compares the desired state declared in configuration files with the recorded state of what it previously built; the state file holds that record, letting terraform plan show exactly which resources to add, change, or destroy. It is not a credential vault, and secrets in state are actually a handling concern rather than a feature. Terraform is declarative and works through provider APIs, so it keeps no CLI transcript, and provider plugins are cached in a separate directory, not in the state file."
+  },
+  {
+    id: "auto-040",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "A team is comparing Terraform with Ansible for infrastructure provisioning. Which characteristic is specific to Terraform?",
+    options: [
+      "It uses declarative HCL files and a state file to converge infrastructure on the described end state",
+      "It executes ordered task lists from YAML playbooks pushed over SSH",
+      "It requires an agent to be installed on every managed network device",
+      "It can only read information from devices and cannot create resources"
+    ],
+    answer: [0],
+    explanation: "Terraform's model is declarative: the engineer writes the desired end state in HashiCorp Configuration Language, and the tool consults its state file to determine and apply only the necessary changes. Ordered YAML task lists pushed over SSH describe Ansible playbooks, not Terraform. Neither tool installs agents on managed devices, so the agent requirement is false for both. Terraform absolutely creates, modifies, and destroys resources, which is its primary purpose, so the read-only description is wrong."
+  },
+  {
+    id: "auto-041",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Which two characteristics describe Ansible? (Choose two.)",
+    options: [
+      "It uses a push model in which the control node initiates changes toward the managed devices",
+      "Its playbooks are written in YAML",
+      "Managed nodes must run a persistent agent that polls a central master",
+      "Its configuration language is HCL, the same language used by Terraform"
+    ],
+    answer: [0, 1],
+    explanation: "Ansible operates on a push model: an engineer or scheduler runs a playbook on the control node, which connects out to the managed devices and applies the tasks. Those playbooks are YAML documents describing plays and tasks. Ansible is agentless, so no resident agent polls a master; that pull-with-agent design belongs to tools like classic Puppet and Chef. HCL is the language of Terraform, while Ansible relies on YAML with Jinja2 templating rather than HCL."
+  },
+  {
+    id: "auto-042",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Which task in network operations is an example of using generative AI rather than predictive AI?",
+    options: [
+      "Producing a draft ACL configuration from an engineer's natural-language description of the required policy",
+      "Forecasting next week's WAN link utilization from six months of interface counters",
+      "Flagging an access point whose client onboarding times deviate from the learned baseline",
+      "Estimating the probability that a power supply will fail within 30 days"
+    ],
+    answer: [0],
+    explanation: "Generative AI creates new content, so turning a plain-language policy request into draft configuration text is a generative use case. Forecasting future link utilization, detecting deviation from a learned performance baseline, and estimating failure probability are all examples of predictive AI, which analyzes historical telemetry to anticipate or detect conditions rather than to author new artifacts. The distinction between creating content and predicting outcomes is exactly what separates the two AI categories on the current exam."
+  },
+  {
+    id: "auto-043",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "A network assurance platform learns the normal range of wireless client onboarding times at each site and raises an alert when a site drifts outside that range, before users open tickets. Which technology does this describe?",
+    options: [
+      "Predictive AI applied to network operations telemetry",
+      "Generative AI composing incident summaries",
+      "A southbound API programming the data plane",
+      "Static threshold-based SNMP trap monitoring"
+    ],
+    answer: [0],
+    explanation: "Learning a dynamic baseline from historical telemetry and anticipating or detecting anomalies before they affect users is predictive AI, the analytics style used by assurance platforms such as Catalyst Center. Generative AI would produce new content such as written summaries or configurations, which is not what baselining does. A southbound API is a controller-to-device programming channel, unrelated to analytics. Static SNMP thresholds are fixed values set by humans, whereas the scenario describes thresholds learned and adjusted by the system itself."
+  },
+  {
+    id: "auto-044",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Which two statements correctly distinguish generative AI from predictive AI in network operations? (Choose two.)",
+    options: [
+      "Generative AI produces new artifacts such as configuration snippets or troubleshooting summaries",
+      "Predictive AI analyzes historical data to forecast or detect conditions such as capacity exhaustion",
+      "Predictive AI must always run on the network device itself, while generative AI runs in the cloud",
+      "Generative AI output is deterministic and never requires human review before deployment"
+    ],
+    answer: [0, 1],
+    explanation: "The defining trait of generative AI is creating new content, such as draft configurations, scripts, or natural-language summaries, while predictive AI mines historical telemetry to forecast trends and detect anomalies. Where each model runs is an architectural choice, not a defining property, so the on-device versus cloud claim is false. Generative models are probabilistic and can produce plausible but incorrect output, which is precisely why their suggestions must be validated by engineers before being deployed to production devices."
+  },
+  {
+    id: "auto-045",
+    domain: "Automation and Programmability",
+    type: "dragdrop",
+    question: "Drag each JSON value on the left to its data type on the right.",
+    items: ["true", "{\"vlan\": 10}", "\"GigabitEthernet0/1\"", "[10, 20, 30]", "24"],
+    targets: ["String", "Number", "Boolean", "Array", "Object"],
+    answer: [2, 4, 0, 3, 1],
+    explanation: "Double quotation marks make \"GigabitEthernet0/1\" a string, while the bare digits 24 form a number because they are unquoted. The literal true is one of the two Boolean values. Square brackets enclosing comma-separated values define an array, and curly braces enclosing key-value pairs define an object. Recognizing these delimiters matters because quoting a number or Boolean silently turns it into a string, a frequent source of automation bugs."
+  }
+);
