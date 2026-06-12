@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCNA 200-301 Exam Simulator</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-badge">CCNA</span>
+      <span class="brand-title">200-301 Exam Simulator</span>
+    </div>
+    <div id="exam-progress" class="topbar-progress hidden"></div>
+    <div id="timer-display" class="timer hidden">--:--</div>
+  </header>
+
+  <main id="app">
+
+    <!-- ===================== SETUP ===================== -->
+    <section id="screen-setup" class="screen">
+      <div class="card setup-card">
+        <h1>Start a New Exam</h1>
+        <p class="muted">
+          Simulates the real Cisco CCNA 200-301 exam: timed, domain-weighted questions
+          including multiple choice, multi-answer and drag-and-drop.
+        </p>
+
+        <div class="setup-row">
+          <label class="setup-label">Number of questions</label>
+          <div class="preset-group">
+            <button class="preset-btn" data-count="20">20</button>
+            <button class="preset-btn" data-count="50">50</button>
+            <button class="preset-btn active" data-count="100">100 (real exam)</button>
+          </div>
+          <div class="custom-count">
+            <label for="question-count">Custom:</label>
+            <input type="number" id="question-count" min="10" max="120" step="1" value="100">
+            <span class="muted">(10&ndash;120)</span>
+          </div>
+        </div>
+
+        <div class="setup-row">
+          <label class="setup-label">Mode</label>
+          <div class="mode-group">
+            <label class="mode-option">
+              <input type="radio" name="exam-mode" value="exam" checked>
+              <div>
+                <strong>Exam mode</strong>
+                <small>Like the real test: no going back, answers are final once you click Next.</small>
+              </div>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="exam-mode" value="practice">
+              <div>
+                <strong>Practice mode</strong>
+                <small>Move freely between questions, flag for review, change answers before submitting.</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="setup-summary">
+          <div class="summary-item">
+            <span class="summary-value" id="summary-count">100</span>
+            <span class="summary-label">questions</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-value" id="summary-duration">120 min</span>
+            <span class="summary-label">time limit</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-value">825 / 1000</span>
+            <span class="summary-label">passing score</span>
+          </div>
+        </div>
+
+        <div class="setup-actions">
+          <button id="start-exam-btn" class="btn btn-primary btn-lg">Start Exam</button>
+          <button id="view-history-btn" class="btn btn-ghost">Exam History</button>
+        </div>
+
+        <p class="bank-info muted" id="bank-info"></p>
+      </div>
+    </section>
+
+    <!-- ===================== EXAM ===================== -->
+    <section id="screen-exam" class="screen hidden">
+      <div class="exam-layout">
+        <div class="card question-card">
+          <div class="question-meta">
+            <span id="question-number" class="q-number"></span>
+            <span id="question-instruction" class="q-instruction"></span>
+            <button id="flag-btn" class="btn btn-flag hidden" title="Flag for review">&#9873; Flag</button>
+          </div>
+          <div id="question-text" class="question-text"></div>
+          <pre id="question-exhibit" class="exhibit hidden"></pre>
+          <div id="answer-area" class="answer-area"></div>
+          <div class="question-actions">
+            <button id="prev-btn" class="btn btn-ghost hidden">&larr; Previous</button>
+            <span class="spacer"></span>
+            <button id="end-exam-btn" class="btn btn-danger-ghost">End Exam</button>
+            <button id="next-btn" class="btn btn-primary">Next &rarr;</button>
+          </div>
+        </div>
+        <aside id="palette" class="card palette hidden">
+          <h3>Questions</h3>
+          <div id="palette-grid" class="palette-grid"></div>
+          <div class="palette-legend">
+            <span><i class="dot dot-answered"></i> Answered</span>
+            <span><i class="dot dot-flagged"></i> Flagged</span>
+            <span><i class="dot dot-blank"></i> Unanswered</span>
+          </div>
+          <button id="submit-exam-btn" class="btn btn-primary btn-block">Submit Exam</button>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===================== RESULTS ===================== -->
+    <section id="screen-results" class="screen hidden">
+      <div class="card results-card">
+        <div id="result-banner" class="result-banner"></div>
+        <div class="score-row">
+          <div class="score-big">
+            <span id="scaled-score" class="scaled-score"></span>
+            <span class="scaled-of">/ 1000</span>
+          </div>
+          <div class="score-meta">
+            <div id="raw-score"></div>
+            <div id="time-used" class="muted"></div>
+          </div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar">
+            <div id="score-bar-fill" class="score-bar-fill"></div>
+            <div class="score-bar-cutoff" title="Passing score: 825"></div>
+          </div>
+          <div class="score-bar-labels"><span>100</span><span class="cutoff-label">825 to pass</span><span>1000</span></div>
+        </div>
+        <h3>Performance by exam domain</h3>
+        <div id="domain-breakdown" class="domain-breakdown"></div>
+        <div class="results-actions">
+          <button id="review-btn" class="btn btn-primary btn-lg">Review Answers</button>
+          <button id="results-new-exam-btn" class="btn btn-ghost">New Exam</button>
+          <button id="results-history-btn" class="btn btn-ghost">History</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== REVIEW ===================== -->
+    <section id="screen-review" class="screen hidden">
+      <div class="review-header card">
+        <h2>Answer Review</h2>
+        <div class="review-tabs">
+          <button class="tab-btn active" data-filter="incorrect">Incorrect</button>
+          <button class="tab-btn" data-filter="skipped">Skipped</button>
+          <button class="tab-btn" data-filter="all">All</button>
+        </div>
+        <button id="review-back-btn" class="btn btn-ghost">&larr; Back to results</button>
+      </div>
+      <div id="review-list" class="review-list"></div>
+    </section>
+
+    <!-- ===================== HISTORY ===================== -->
+    <section id="screen-history" class="screen hidden">
+      <div class="card history-card">
+        <h2>Exam History</h2>
+        <div id="history-empty" class="muted hidden">No exams taken yet on this device.</div>
+        <div id="history-stats" class="history-stats"></div>
+        <div id="history-trend" class="history-trend"></div>
+        <div class="table-wrap">
+          <table id="history-table" class="history-table">
+            <thead>
+              <tr><th>Date</th><th>Questions</th><th>Mode</th><th>Score</th><th>Result</th><th>Correct</th><th>Time used</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="history-actions">
+          <button id="history-back-btn" class="btn btn-primary">&larr; New Exam</button>
+          <button id="clear-history-btn" class="btn btn-danger-ghost">Clear history</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="data/questions-fundamentals.js"></script>
+  <script src="data/questions-access.js"></script>
+  <script src="data/questions-connectivity.js"></script>
+  <script src="data/questions-services.js"></script>
+  <script src="data/questions-security.js"></script>
+  <script src="data/questions-automation.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/exam.js"></script>
+  <script src="js/review.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
