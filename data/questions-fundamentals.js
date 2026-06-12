@@ -1586,3 +1586,236 @@
     explanation: "The line beginning with \"default via\" identifies the gateway used for all destinations not matched by a more specific route, which is 192.168.20.254. The address 192.168.20.31 is the server's own source address shown on the connected route, 192.168.20.0 is the network address of the local subnet, and 192.168.20.1 appears nowhere in the output even though it is a common gateway convention."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "nf-106",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A client begins a TCP connection by sending a segment with the SYN flag set and an initial sequence number of 1000. Which segment does the server send in response to continue the three-way handshake?",
+    options: [
+      "A segment with the SYN and ACK flags set, an acknowledgment number of 1001, and the server's own initial sequence number",
+      "A segment with only the ACK flag set and an acknowledgment number of 1000",
+      "A segment with the SYN and ACK flags set, a sequence number of 1001, and an acknowledgment number of 1000",
+      "A segment with only the SYN flag set and a sequence number of 1001"
+    ],
+    answer: [0],
+    explanation: "In the second step of the three-way handshake, the server sets both SYN and ACK, acknowledges the client's sequence number plus one (1000 + 1 = 1001), and includes its own independently chosen initial sequence number. An ACK-only segment is the third step sent by the client, not the server's reply. Acknowledging 1000 instead of 1001 is wrong because the SYN consumes one sequence number, and a SYN-only segment with sequence 1001 would start a new handshake rather than answer the existing one."
+  },
+  {
+    id: "nf-107",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An engineer reviews documentation that lists a subnet with the network address 10.10.32.0 and the directed broadcast address 10.10.47.255. Which subnet mask is in use on this subnet?",
+    options: [
+      "255.255.240.0",
+      "255.255.224.0",
+      "255.255.248.0",
+      "255.255.255.240"
+    ],
+    answer: [0],
+    explanation: "The range 10.10.32.0 through 10.10.47.255 spans 16 values in the third octet (32 to 47), which corresponds to a block size of 16 and therefore a /20 mask, written as 255.255.240.0. A 255.255.224.0 mask creates a block of 32, so the broadcast would be 10.10.63.255, while 255.255.248.0 creates a block of 8 with a broadcast of 10.10.39.255. The mask 255.255.255.240 subnets the fourth octet, which would place the broadcast at an address such as 10.10.32.15, not 10.10.47.255."
+  },
+  {
+    id: "nf-108",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Based on the MAC address table, which conclusion can the engineer draw about interface Gi0/1?",
+    exhibit: "SW1# show mac address-table\n          Mac Address Table\n-------------------------------------------\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n  10    0050.7966.aa01    DYNAMIC     Gi0/1\n  10    0050.7966.aa02    DYNAMIC     Gi0/1\n  10    0050.7966.aa03    DYNAMIC     Gi0/1\n  20    0050.7966.bb10    DYNAMIC     Gi0/2\n  10    0050.7966.cc44    STATIC      Gi0/3",
+    options: [
+      "Gi0/1 connects to another forwarding device, such as a downstream switch or access point, that carries traffic for multiple hosts",
+      "Gi0/1 is experiencing MAC address flapping between VLANs",
+      "The switch floods every frame it receives on Gi0/1 because the entries conflict",
+      "Gi0/1 has reached its port security limit and will discard new source addresses"
+    ],
+    answer: [0],
+    explanation: "Three different dynamic MAC addresses learned on the same port indicate that multiple end hosts send frames through that port, which happens when a downstream switch, hub, or access point is attached. MAC flapping would show the same address moving between ports, not different addresses on one port. The switch forwards normally using these valid entries rather than flooding, and nothing in the output indicates port security is configured or that a violation has occurred."
+  },
+  {
+    id: "nf-109",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Users connected through this uplink report intermittent packet loss during busy periods. What is the most likely cause?",
+    exhibit: "SW1# show interfaces GigabitEthernet0/5\nGigabitEthernet0/5 is up, line protocol is up (connected)\n  Full-duplex, 1000Mb/s, media type is 10/100/1000BaseTX\n  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 184530\n  5 minute input rate 4218000 bits/sec, 3120 packets/sec\n  5 minute output rate 968450000 bits/sec, 81250 packets/sec\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\n     0 output errors, 0 collisions, 2 interface resets\n     0 late collision, 0 deferred",
+    options: [
+      "The interface is congested, and traffic bursts exceed the egress capacity, causing output queue drops",
+      "A duplex mismatch is causing collisions on the link",
+      "A faulty cable is corrupting frames and incrementing CRC errors",
+      "The interface is administratively rate-limited to 100 Mbps"
+    ],
+    answer: [0],
+    explanation: "The output rate is close to the 1 Gbps line rate and the total output drops counter is very high, which shows the egress queue overflows when traffic bursts exceed what the interface can transmit. A duplex mismatch would increment collisions or late collisions, but both counters are zero on this full-duplex link. A faulty cable would produce CRC and input errors, which are also zero, and the interface reports 1000Mb/s with no policing configuration shown, so a 100 Mbps limit is not indicated."
+  },
+  {
+    id: "nf-110",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Three access points must provide 2.4 GHz coverage in the same open office area. Which channel assignment prevents the AP cells from interfering with one another?",
+    options: [
+      "Channels 1, 6, and 11",
+      "Channels 1, 5, and 9",
+      "Channels 2, 7, and 12",
+      "Channels 36, 40, and 44"
+    ],
+    answer: [0],
+    explanation: "Each 2.4 GHz channel occupies roughly 22 MHz, so channels must be separated by at least five channel numbers to avoid overlap; 1, 6, and 11 is the standard non-overlapping plan in North America. Channels 1, 5, and 9 are only four apart, so adjacent cells partially overlap and interfere. Channels 2, 7, and 12 also overlap with each other in practice and channel 12 is not permitted in some regulatory domains. Channels 36, 40, and 44 are valid non-overlapping channels, but they exist in the 5 GHz band, not 2.4 GHz."
+  },
+  {
+    id: "nf-111",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Which statement accurately describes a Type 1 hypervisor?",
+    options: [
+      "It runs directly on the server hardware and allocates physical resources to virtual machines without an underlying host operating system",
+      "It is installed as an application on top of a general-purpose host operating system",
+      "It allows applications to share the host operating system kernel instead of running separate guest operating systems",
+      "It requires a container runtime engine to schedule virtual machine workloads"
+    ],
+    answer: [0],
+    explanation: "A Type 1 (bare-metal) hypervisor, such as VMware ESXi, runs directly on the physical hardware and presents virtualized CPU, memory, storage, and NIC resources to guest virtual machines. Running as an application on a host operating system describes a Type 2 hypervisor like VirtualBox. Sharing the host kernel among applications describes containers rather than hypervisor-based virtualization, and container runtime engines manage containers, not virtual machines, so they are not a hypervisor requirement."
+  },
+  {
+    id: "nf-112",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A service provider must carry traffic for several customers on one physical router while keeping each customer's routes completely separate, even though two customers use the same 10.0.0.0/24 address space. Which technology meets this requirement?",
+    options: [
+      "Virtual Routing and Forwarding instances",
+      "Stackwise switch stacking",
+      "HSRP gateway redundancy",
+      "Layer 2 EtherChannel between customer switches"
+    ],
+    answer: [0],
+    explanation: "VRF creates multiple independent routing tables on a single physical router, so each customer's interfaces and routes are isolated and overlapping prefixes such as duplicate 10.0.0.0/24 networks can coexist without conflict. Switch stacking combines multiple physical switches into one logical control plane, which is the opposite of segmenting one device. HSRP provides a redundant default gateway rather than route separation, and EtherChannel only bundles Layer 2 links for bandwidth and redundancy without any routing-table isolation."
+  },
+  {
+    id: "nf-113",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Which field is present in a UDP header?",
+    options: [
+      "Checksum",
+      "Sequence number",
+      "Window size",
+      "Acknowledgment number"
+    ],
+    answer: [0],
+    explanation: "The UDP header contains only four fields: source port, destination port, length, and checksum, keeping the header at a fixed 8 bytes. Sequence numbers, window size, and acknowledgment numbers are all TCP header fields that support reliable, ordered delivery and flow control. Because UDP is connectionless and provides no retransmission or ordering, it has no need for those mechanisms, which is why it adds far less overhead than TCP."
+  },
+  {
+    id: "nf-114",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two statements about containers compared with virtual machines are true? (Choose two.)",
+    options: [
+      "Containers share the kernel of the host operating system",
+      "Containers typically start faster and consume fewer resources than virtual machines",
+      "Each container includes its own complete guest operating system",
+      "Containers can run only when a Type 1 hypervisor is installed on the hardware"
+    ],
+    answer: [0, 1],
+    explanation: "Containers package an application with its libraries and dependencies but share the host operating system kernel, which is why they start in seconds and have a much smaller footprint than virtual machines. A full guest operating system per instance is a characteristic of virtual machines, not containers; this duplication is exactly the overhead containers avoid. Containers also do not require any hypervisor because a container engine such as Docker runs on a standard operating system, whether physical or virtual."
+  },
+  {
+    id: "nf-115",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two statements about the 5 GHz wireless band compared with the 2.4 GHz band are true? (Choose two.)",
+    options: [
+      "It offers a larger number of non-overlapping channels",
+      "It supports bonding channels into 40 MHz or 80 MHz widths for higher throughput",
+      "Its signals penetrate walls and floors more effectively",
+      "Only channels 1, 6, and 11 are non-overlapping in this band"
+    ],
+    answer: [0, 1],
+    explanation: "The 5 GHz band provides roughly two dozen non-overlapping 20 MHz channels across the UNII sub-bands, far more than the three usable in 2.4 GHz, and that channel abundance is what makes 40 MHz and 80 MHz channel bonding practical for higher data rates. Higher frequencies attenuate more when passing through walls and floors, so 5 GHz actually penetrates obstacles worse than 2.4 GHz, not better. The 1, 6, and 11 plan applies specifically to the 2.4 GHz band, so that statement describes the wrong band entirely."
+  },
+  {
+    id: "nf-116",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "An engineer must build a 10 Gbps link between two switches in buildings that are 9 km apart. Which two components are required? (Choose two.)",
+    options: [
+      "10GBASE-LR SFP+ transceivers",
+      "Single-mode fiber cabling",
+      "10GBASE-SR SFP+ transceivers",
+      "OM3 multimode fiber cabling",
+      "Category 6a copper cabling"
+    ],
+    answer: [0, 1],
+    explanation: "10GBASE-LR transceivers operate at 1310 nm over single-mode fiber and support distances up to 10 km, which comfortably covers the 9 km span. 10GBASE-SR is a short-reach optic limited to about 300 m to 400 m over OM3 or OM4 multimode fiber, so both the SR transceiver and OM3 cabling fail at this distance by a wide margin. Category 6a copper supports 10GBASE-T only to 100 m, making it unusable for any building-to-building run of this length."
+  },
+  {
+    id: "nf-117",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two statements about an Ethernet interface operating in full-duplex mode are true? (Choose two.)",
+    options: [
+      "The interface can transmit and receive frames simultaneously without collisions",
+      "CSMA/CD is disabled on the interface",
+      "The two connected devices share a single collision domain",
+      "The interface must verify the medium is idle before it transmits a frame"
+    ],
+    answer: [0, 1],
+    explanation: "Full duplex uses separate transmit and receive paths on a dedicated point-to-point link, so frames flow in both directions at once and collisions cannot occur, which allows the interface to disable CSMA/CD entirely. Because collisions are impossible, each full-duplex link forms its own collision-free segment rather than a shared collision domain between the devices. Listening for an idle medium before transmitting is carrier-sense behavior that belongs to half-duplex operation on shared media, not to full duplex."
+  },
+  {
+    id: "nf-118",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each protocol data unit to the OSI layer at which it is created.",
+    items: [
+      "Segment",
+      "Bits",
+      "Packet",
+      "Frame"
+    ],
+    targets: [
+      "Transport layer",
+      "Network layer",
+      "Data link layer",
+      "Physical layer"
+    ],
+    answer: [0, 2, 3, 1],
+    explanation: "The transport layer encapsulates application data into segments (or datagrams for UDP) and adds port numbers. The network layer wraps each segment in a packet with source and destination IP addresses, while the data link layer adds MAC addressing and a frame check sequence to create a frame. Finally, the physical layer converts the frame into bits signaled on the medium, so mixing these PDUs up reverses the encapsulation order used by every TCP/IP host."
+  },
+  {
+    id: "nf-119",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each TCP mechanism to the function it performs.",
+    items: [
+      "Three-way handshake",
+      "Checksum",
+      "Sequence numbers",
+      "Window size"
+    ],
+    targets: [
+      "Places segments that arrive out of order back into the correct order",
+      "Limits how much unacknowledged data the sender can transmit",
+      "Establishes the connection before any data is exchanged",
+      "Detects corruption in a received segment"
+    ],
+    answer: [2, 3, 0, 1],
+    explanation: "Sequence numbers identify each byte in the stream, letting the receiver reassemble segments in order even when they arrive out of sequence. The advertised window size implements flow control by capping the amount of unacknowledged data in flight, which the receiver can shrink when it is overwhelmed. The SYN, SYN-ACK, ACK handshake synchronizes initial sequence numbers before data transfer begins, and the checksum verifies segment integrity so corrupted data is discarded rather than delivered."
+  },
+  {
+    id: "nf-120",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each wireless term to the statement that describes it.",
+    items: [
+      "80 MHz channel bonding",
+      "Channel 11",
+      "Dynamic Frequency Selection",
+      "Channel 36"
+    ],
+    targets: [
+      "A non-overlapping channel in the 2.4 GHz band",
+      "A channel located in the 5 GHz UNII-1 sub-band",
+      "Combines adjacent channels to increase wireless throughput",
+      "Requires an access point to vacate a channel when radar is detected"
+    ],
+    answer: [1, 3, 0, 2],
+    explanation: "Channel 11 is one of the three non-overlapping 2.4 GHz channels along with 1 and 6, while channel 36 is the first 20 MHz channel in the 5 GHz UNII-1 sub-band. Bonding four adjacent 20 MHz channels into an 80 MHz channel multiplies the available bandwidth per client, which is common in 802.11ac and 802.11ax deployments. Dynamic Frequency Selection is mandated on certain 5 GHz channels shared with radar systems, forcing the AP to monitor for radar pulses and move to another channel when one is detected."
+  }
+);
