@@ -426,5 +426,9 @@ const Exam = (() => {
     return !!state && !state.finished;
   }
 
-  return { start, bindControls, inProgress, SECONDS_PER_QUESTION, DOMAIN_WEIGHTS };
+  return {
+    start, bindControls, inProgress, SECONDS_PER_QUESTION, DOMAIN_WEIGHTS,
+    // exposed for the Node test harness only
+    _internals: { sampleQuestions, prepareQuestion, shuffle },
+  };
 })();

@@ -1597,3 +1597,696 @@
     explanation: "The destination 172.19.4.77 does not fall within 172.19.8.0/24 or 172.19.9.0/24, so its longest match is the locally generated summary 172.19.0.0/16 whose next hop is the Null0 interface, and traffic routed to Null0 is silently discarded. This is intentional behavior that prevents routing loops for unallocated space inside a summary. The router does not forward to 10.4.4.2 because the summary is local, and packets are never handed back to the previous hop."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "conn-106",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. A packet arrives at the router destined for 10.16.40.5. To which next hop does the router send the packet?",
+    exhibit: "R1# show ip route | begin Gateway\nGateway of last resort is 10.0.0.4 to network 0.0.0.0\n\nO    10.16.0.0/12 [110/30] via 10.0.0.1, 00:11:04, GigabitEthernet0/0\nO    10.16.0.0/16 [110/20] via 10.0.0.2, 00:11:04, GigabitEthernet0/1\nD    10.16.32.0/19 [90/156160] via 10.0.0.3, 00:42:51, GigabitEthernet0/2\nS*   0.0.0.0/0 [1/0] via 10.0.0.4",
+    options: [
+      "10.0.0.1",
+      "10.0.0.2",
+      "10.0.0.3",
+      "10.0.0.4"
+    ],
+    answer: [2],
+    explanation: "The destination 10.16.40.5 falls inside 10.16.0.0/12, 10.16.0.0/16, and 10.16.32.0/19 (which spans 10.16.32.0 through 10.16.63.255). The router always selects the longest prefix match regardless of administrative distance or metric, so the /19 EIGRP route through 10.0.0.3 wins. The /12 and /16 routes are shorter matches, and the default route is used only when nothing else matches."
+  },
+  {
+    id: "conn-107",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. The router receives a packet destined for 172.31.77.10. Which next hop does it use?",
+    exhibit: "R2# show ip route | begin Gateway\nGateway of last resort is 203.0.113.1 to network 0.0.0.0\n\nO    172.30.0.0/16 [110/40] via 10.1.1.2, 00:03:12, GigabitEthernet0/0\nO    172.30.96.0/20 [110/30] via 10.1.1.3, 00:03:12, GigabitEthernet0/0\nD    172.31.8.0/24 [90/2170112] via 10.1.1.4, 01:15:40, GigabitEthernet0/1\nS*   0.0.0.0/0 [1/0] via 203.0.113.1",
+    options: [
+      "10.1.1.2",
+      "10.1.1.3",
+      "10.1.1.4",
+      "203.0.113.1"
+    ],
+    answer: [3],
+    explanation: "The destination 172.31.77.10 is not inside 172.30.0.0/16 or 172.30.96.0/20 because those prefixes cover only the 172.30.x.x range, and it is not inside 172.31.8.0/24 because the third octet is 77, not 8. With no specific match, the router falls back to the gateway of last resort and forwards the packet to 203.0.113.1. Mistaking 172.30.0.0/16 for a match with 172.31.x.x addresses is the classic trap in this output."
+  },
+  {
+    id: "conn-108",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Refer to the exhibit. Based on this default route entry on R4, which two statements are accurate? (Choose two.)",
+    exhibit: "R4# show ip route | include 0.0.0.0/0\nO*E2 0.0.0.0/0 [110/1] via 10.0.12.2, 00:05:33, GigabitEthernet0/0",
+    options: [
+      "The route was injected into OSPF by an ASBR, most likely using the default-information originate command",
+      "Because it is an E2 route, the metric of 1 stays the same as the route propagates through the OSPF domain",
+      "The administrative distance of the route is 1",
+      "The route was configured locally on R4 with the ip route 0.0.0.0 0.0.0.0 command",
+      "The metric of 1 increases by the interface cost at every router that installs the route"
+    ],
+    answer: [0, 1],
+    explanation: "The O*E2 code shows an OSPF external type 2 default route, which an ASBR injects into the domain, typically with default-information originate. Type 2 external metrics are not incremented hop by hop, so the metric remains 1 everywhere. The administrative distance is 110 (the first number in brackets), not 1, and a locally configured static default would appear as S*, not O*E2. Only E1 routes accumulate internal cost along the path."
+  },
+  {
+    id: "conn-109",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "A router learns the prefix 10.99.0.0/16 from both internal BGP and RIP at the same time. Which route does the router install in the routing table, and why?",
+    options: [
+      "The internal BGP route, because BGP routes are always preferred over IGP routes",
+      "The RIP route, because its administrative distance of 120 is lower than the internal BGP distance of 200",
+      "The internal BGP route, because its administrative distance of 20 is lower than 120",
+      "Both routes, because they come from different protocols and can load-balance"
+    ],
+    answer: [1],
+    explanation: "Internal BGP routes have an administrative distance of 200, which is higher (less trusted) than RIP at 120, so the RIP route is installed. The 20 value applies only to external BGP, not internal BGP, which makes the third option a near miss. BGP is not automatically preferred over IGPs, and routers never load-balance between different routing sources for the same prefix and mask; administrative distance always selects a single source."
+  },
+  {
+    id: "conn-110",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. A packet arrives destined for 172.16.20.9. Which next hop does the router use to forward it?",
+    exhibit: "R3# show ip route | begin Gateway\nGateway of last resort is 192.168.0.4 to network 0.0.0.0\n\nO    172.16.16.0/20 [110/45] via 192.168.0.1, 00:22:10, GigabitEthernet0/0\nO    172.16.20.0/22 [110/30] via 192.168.0.2, 00:22:10, GigabitEthernet0/0\nS    172.16.20.0/24 [1/0] via 192.168.0.3\nO*E2 0.0.0.0/0 [110/1] via 192.168.0.4, 00:22:10, GigabitEthernet0/0",
+    options: [
+      "192.168.0.1",
+      "192.168.0.2",
+      "192.168.0.3",
+      "192.168.0.4"
+    ],
+    answer: [2],
+    explanation: "The destination 172.16.20.9 matches 172.16.16.0/20, 172.16.20.0/22, and 172.16.20.0/24, and the router selects the route with the longest prefix, the static /24 through 192.168.0.3. Administrative distance and metric are compared only between routes to the identical prefix and mask, so the OSPF routes never compete with the /24 here. The default route is irrelevant because more specific matches exist."
+  },
+  {
+    id: "conn-111",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "A routing table contains the entry 10.128.0.0/9. Which destination address is NOT matched by this route?",
+    options: [
+      "10.130.4.1",
+      "10.200.255.254",
+      "10.96.13.2",
+      "10.255.0.1"
+    ],
+    answer: [2],
+    explanation: "A /9 mask on 10.128.0.0 covers addresses from 10.128.0.0 through 10.255.255.255 because the first bit of the second octet must be 1. The address 10.96.13.2 has a second octet of 96, which is below 128, so it falls in the other half of the 10.0.0.0/8 space and does not match. The remaining addresses all have second octets of 128 or higher and therefore match the route."
+  },
+  {
+    id: "conn-112",
+    domain: "IP Connectivity",
+    type: "dragdrop",
+    question: "Drag the actions a router performs when forwarding a packet on the left into the correct order on the right.",
+    items: [
+      "Resolve the Layer 2 address of the next hop",
+      "Receive the frame and verify the frame check sequence",
+      "Encapsulate the packet in a new frame and forward it",
+      "Perform a longest-prefix lookup on the destination IP address",
+      "De-encapsulate the packet from the incoming frame"
+    ],
+    targets: [
+      "Step 1",
+      "Step 2",
+      "Step 3",
+      "Step 4",
+      "Step 5"
+    ],
+    answer: [1, 4, 3, 0, 2],
+    explanation: "A router first receives the frame and checks the FCS, then strips the Layer 2 header to extract the packet. It performs a routing table lookup using the longest prefix match on the destination IP address, resolves the next hop Layer 2 address through ARP or an existing adjacency, and finally builds a new frame and forwards it out the egress interface. The Layer 2 header is rewritten at every hop while the IP addresses remain unchanged."
+  },
+  {
+    id: "conn-113",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. What does the E2 designation in this routing table entry indicate?",
+    exhibit: "R7# show ip route 198.51.100.0\nRouting entry for 198.51.100.0/24\n  Known via \"ospf 1\", distance 110, metric 20, type extern 2, forward metric 4\n  Last update from 10.255.1.1 on GigabitEthernet0/2, 00:02:10 ago",
+    options: [
+      "The route was redistributed into OSPF and its metric does not increase as it is propagated through the OSPF domain",
+      "The route is an inter-area route learned from an ABR in another area",
+      "The route was learned from a second OSPF process running on the same router",
+      "The route accumulates the cost of every internal link in addition to the external metric"
+    ],
+    answer: [0],
+    explanation: "External type 2 routes are redistributed into OSPF by an ASBR and carry a fixed external metric that does not change as the route propagates; routers compare only the external cost. Inter-area routes are marked O IA, not E2, so the second option is wrong. The designation has nothing to do with multiple OSPF processes, and accumulating internal cost on top of the external metric describes E1 routes, not E2."
+  },
+  {
+    id: "conn-114",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. What does the value 02:12:43 in this routing table entry represent?",
+    exhibit: "R5# show ip route | include 10.99.0.0\nO    10.99.0.0/16 [110/74] via 10.1.1.2, 02:12:43, Serial0/0/1",
+    options: [
+      "The time remaining before the route expires and is removed from the table",
+      "The elapsed time since the route was last updated in the routing table",
+      "The total uptime of the Serial0/0/1 interface",
+      "The time the router took to converge after the last topology change"
+    ],
+    answer: [1],
+    explanation: "The timestamp in a dynamic route entry shows how long ago the route was placed in or last refreshed in the routing table, which helps identify recent topology changes. OSPF routes do not age out on a countdown timer in the routing table, so there is no expiration value here. The field is unrelated to interface uptime, which appears in show interfaces, and it does not measure convergence time."
+  },
+  {
+    id: "conn-115",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "An administrator configures these two commands on a router: ip route 10.77.0.0 255.255.0.0 192.168.1.2 and ip route 10.77.0.0 255.255.0.0 192.168.2.2. Both next hops are reachable. What is the result?",
+    options: [
+      "Only the first route entered is installed because static routes cannot be duplicated",
+      "Both routes are installed and the router load-balances traffic to 10.77.0.0/16 across the two next hops",
+      "The router rejects the second command with an error because the administrative distances are equal",
+      "The router installs both routes but uses the second one only when the first next hop fails"
+    ],
+    answer: [1],
+    explanation: "Two static routes to the same prefix and mask with the same administrative distance are both installed, and the router load-shares traffic across the two paths. The IOS does not reject a second static route to the same destination; equal-cost static routes are a supported design. A backup-only behavior would require a floating static route with a higher administrative distance on the second command, which was not configured here."
+  },
+  {
+    id: "conn-116",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "An engineer configures ip route 10.40.0.0 255.255.0.0 172.16.2.2 250 on a router that also learns 10.40.0.0/16 from OSPF. Which two statements about this configuration are true? (Choose two.)",
+    options: [
+      "The static route is installed only when no source with a lower administrative distance offers a route to 10.40.0.0/16",
+      "The value 250 replaces the default administrative distance of 1 for this static route",
+      "The value 250 is a metric that the router compares with the OSPF cost of the competing route",
+      "The static route is preferred over the OSPF route because static routes always override dynamic routes"
+    ],
+    answer: [0, 1],
+    explanation: "Appending 250 to the ip route command sets the administrative distance of the static route, overriding the default of 1 and making it a floating static. Because 250 is higher than the OSPF distance of 110, the static route stays out of the routing table until the OSPF route disappears, providing backup. The number is not a metric, and static routes win over dynamic routes only when their administrative distance is lower, which is deliberately not the case here."
+  },
+  {
+    id: "conn-117",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. Last month an engineer configured ip route 10.60.0.0 255.255.0.0 198.51.100.6 180 as a backup for a path learned through OSPF. Today the routing table shows the output in the exhibit. What can be concluded?",
+    exhibit: "R8# show ip route 10.60.0.0\nRouting entry for 10.60.0.0/16\n  Known via \"static\", distance 180, metric 0\n  Routing Descriptor Blocks:\n  * 198.51.100.6\n      Route metric is 0, traffic share count is 1",
+    options: [
+      "The OSPF route to 10.60.0.0/16 has been withdrawn, so the floating static route took over",
+      "The static route always appears in the table together with the OSPF route",
+      "The administrative distance of OSPF was raised above 180 by the engineer",
+      "The static route was installed because its metric of 0 beats the OSPF metric"
+    ],
+    answer: [0],
+    explanation: "A floating static route with distance 180 is suppressed while the OSPF route with distance 110 is present, so seeing it active in the table proves the OSPF route was lost, typically due to a primary link or neighbor failure. Only one source is ever installed for a given prefix and mask, so the routes never coexist. Metric is compared only within a single routing source, and there is no evidence the OSPF distance was changed."
+  },
+  {
+    id: "conn-118",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "What is the effect of configuring a static route with an administrative distance of 255?",
+    options: [
+      "The route is treated as the least preferred option but still installed if no other route exists",
+      "The route is never installed in the routing table because a distance of 255 means the source is not believed",
+      "The route is installed only for locally generated traffic, not for transit packets",
+      "The route is installed but never advertised to any routing protocol neighbors"
+    ],
+    answer: [1],
+    explanation: "An administrative distance of 255 marks a route source as untrusted, and the router will never install such a route in the routing table, even when no alternative exists. This makes it different from a high floating distance such as 250, which still installs when nothing better is available. The distance value has no effect that distinguishes locally generated from transit traffic, and advertisement behavior depends on redistribution configuration, not the distance itself."
+  },
+  {
+    id: "conn-119",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Which two conditions must be met for a static route configured with only a next-hop IP address to be installed in the routing table? (Choose two.)",
+    options: [
+      "The router must be able to resolve the next-hop address through another entry in the routing table",
+      "The interface used to reach the next hop must be in the up/up state",
+      "The next-hop device must respond to ICMP echo requests from the router",
+      "A dynamic routing protocol must also be advertising the destination prefix"
+    ],
+    answer: [0, 1],
+    explanation: "A recursive static route is installed only when the router can resolve the next-hop address, which requires another routing table entry, usually a connected route, that covers the next hop, and the interface providing that resolution must be up. The router never tests next-hop liveness with ping before installation, so an unreachable but resolvable next hop can still be installed. No dynamic protocol involvement is required for a static route to function."
+  },
+  {
+    id: "conn-120",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. How does the router forward a packet destined for 192.168.200.5?",
+    exhibit: "R6# show ip route | begin Gateway\nGateway of last resort is 10.0.0.7 to network 0.0.0.0\n\nO    192.168.0.0/16 [110/50] via 10.0.0.5, 00:40:12, GigabitEthernet0/1\nS    192.168.200.0/30 [1/0] via 10.0.0.6\nO*E2 0.0.0.0/0 [110/1] via 10.0.0.7, 00:40:12, GigabitEthernet0/1",
+    options: [
+      "It forwards the packet to 10.0.0.5",
+      "It forwards the packet to 10.0.0.6",
+      "It forwards the packet to 10.0.0.7",
+      "It drops the packet because no exact route exists"
+    ],
+    answer: [0],
+    explanation: "The static route 192.168.200.0/30 covers only addresses 192.168.200.0 through 192.168.200.3, so the destination .5 does not match it despite the prefix looking similar. The longest remaining match is the summary 192.168.0.0/16 through 10.0.0.5, which is more specific than the default route. The packet is not dropped because two candidate routes still cover the destination."
+  }
+);
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "conn-121",
+    domain: "IP Connectivity",
+    type: "dragdrop",
+    question: "Drag each routing protocol on the left to the description that matches it on the right.",
+    items: [
+      "RIP",
+      "BGP",
+      "OSPF",
+      "EIGRP"
+    ],
+    targets: [
+      "Link-state IGP that computes cost from interface bandwidth",
+      "Cisco-developed advanced distance vector protocol with a composite metric",
+      "Distance vector protocol that uses hop count with a maximum of 15",
+      "Path-vector protocol used to exchange routes between autonomous systems"
+    ],
+    answer: [2, 3, 0, 1],
+    explanation: "OSPF is a link-state protocol that floods LSAs and derives cost from the reference bandwidth divided by interface bandwidth. EIGRP is Cisco's advanced distance vector protocol whose composite metric uses bandwidth and delay by default. RIP is a classic distance vector protocol limited to 15 hops, making 16 unreachable. BGP is the path-vector protocol of the Internet, selecting routes by attributes such as AS path rather than a simple metric."
+  },
+  {
+    id: "conn-122",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. R1 should form an OSPF adjacency with R2 through GigabitEthernet0/0, but show ip ospf neighbor returns no output. Based on the exhibit, what is the cause?",
+    exhibit: "R1# show ip interface brief\nInterface              IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0     10.1.12.1       YES manual administratively down down\nGigabitEthernet0/1     10.1.13.1       YES manual up                    up\n\nR1# show ip ospf neighbor\nR1#",
+    options: [
+      "The interface has been shut down and requires the no shutdown command",
+      "The network statement for 10.1.12.0 is missing from the OSPF process",
+      "The interface is configured as passive under the OSPF process",
+      "The OSPF hello and dead timers do not match between R1 and R2"
+    ],
+    answer: [0],
+    explanation: "The status administratively down indicates the interface was disabled with the shutdown command, so no hellos can be sent or received and no adjacency can form; issuing no shutdown resolves it. A missing network statement, a passive interface, or mismatched timers could also prevent an adjacency, but none of those conditions produces the administratively down status shown in the exhibit, so they are not supported by the output."
+  },
+  {
+    id: "conn-123",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. R1 cannot form an OSPF adjacency with the neighbor on GigabitEthernet0/1. Which action resolves the problem?",
+    exhibit: "R1# debug ip ospf adj\nOSPF: Rcv pkt from 10.0.0.2, GigabitEthernet0/1 : Mismatched Authentication type. Input packet specified type 2, we use type 0",
+    options: [
+      "Configure MD5 authentication on R1's GigabitEthernet0/1 to match the neighbor",
+      "Remove the authentication key from the neighbor because R1 does not support type 2",
+      "Change the OSPF network type on both routers to point-to-point",
+      "Correct the hello interval on R1 to match the neighbor's value"
+    ],
+    answer: [0],
+    explanation: "Authentication type 2 is MD5 (message digest) and type 0 is null, so the neighbor is sending MD5-authenticated hellos while R1 has no authentication configured; enabling matching MD5 authentication and the same key on R1 fixes the adjacency. Removing security from the neighbor would also technically work but weakens the design and contradicts the intended policy, and the debug output points to authentication, not to network type or timer mismatches."
+  },
+  {
+    id: "conn-124",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Which two OSPF parameters are allowed to differ between two routers that successfully form an adjacency on an Ethernet segment? (Choose two.)",
+    options: [
+      "The OSPF process ID configured with the router ospf command",
+      "The interface priority used for DR and BDR election",
+      "The area ID assigned to the connecting interfaces",
+      "The hello interval configured on the connecting interfaces",
+      "The subnet mask configured on the connecting interfaces"
+    ],
+    answer: [0, 1],
+    explanation: "The OSPF process ID is locally significant and never exchanged in hellos, so neighbors can use different values. Interface priority is expected to vary because it determines which router becomes DR or BDR; differing values do not block the adjacency. In contrast, the area ID, hello and dead intervals, and the subnet and mask on a broadcast network must all match, or the routers discard each other's hello packets."
+  },
+  {
+    id: "conn-125",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "An engineer configures router-id 10.255.255.1 under an OSPF process that already has active neighbors, but show ip ospf continues to display the old router ID. What must the engineer do to apply the new ID?",
+    options: [
+      "Issue clear ip ospf process or reload the router",
+      "Remove and re-enter all network statements under the OSPF process",
+      "Shut down and re-enable every OSPF-enabled interface",
+      "Configure the same address on a new loopback interface first"
+    ],
+    answer: [0],
+    explanation: "The OSPF router ID is selected when the process initializes, so changing it on a running process takes effect only after the process restarts with clear ip ospf process or a reload. Re-entering network statements or bouncing interfaces resets adjacencies but does not force a new router ID selection. A loopback is unnecessary because an explicitly configured router-id always takes precedence over any interface address."
+  },
+  {
+    id: "conn-126",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. A junior engineer is concerned that no DR or BDR appears for this interface. What should the senior engineer explain?",
+    exhibit: "R3# show ip ospf interface GigabitEthernet0/1\nGigabitEthernet0/1 is up, line protocol is up\n  Internet Address 10.3.4.1/30, Area 0, Attached via Network Statement\n  Process ID 1, Router ID 3.3.3.3, Network Type POINT_TO_POINT, Cost: 10\n  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5\n  Neighbor Count is 1, Adjacent neighbor count is 1",
+    options: [
+      "Point-to-point network types never elect a DR or BDR, so the output is normal",
+      "The election has failed because both routers have priority 0",
+      "The adjacency is incomplete, so the DR fields have not yet been populated",
+      "A DR exists but is hidden until the dead timer expires once",
+    ],
+    answer: [0],
+    explanation: "On an OSPF point-to-point network type there are only two routers and every adjacency is full between them, so no DR or BDR election ever occurs and the fields are simply absent. The output already shows one fully adjacent neighbor, which rules out an incomplete adjacency. Priority 0 explanations apply only to broadcast or non-broadcast networks, and there is no mechanism that hides an elected DR until a timer expires."
+  },
+  {
+    id: "conn-127",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "An edge router must advertise a default route into OSPF at all times, even during periods when its own default route toward the ISP is missing from the routing table. Which command accomplishes this?",
+    options: [
+      "default-information originate always",
+      "default-information originate",
+      "ip route 0.0.0.0 0.0.0.0 null0 250",
+      "network 0.0.0.0 255.255.255.255 area 0"
+    ],
+    answer: [0],
+    explanation: "The always keyword makes the router advertise a default route into OSPF unconditionally, regardless of whether a default route exists in its own table. Without the keyword, default-information originate advertises the default only while the router itself has one, which fails the requirement. A static route to null0 would change local forwarding rather than guarantee advertisement, and a quad-zero network statement enables OSPF on interfaces but does not originate a default route."
+  },
+  {
+    id: "conn-128",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "An engineer configures auto-cost reference-bandwidth 10000 under the OSPF process. What OSPF cost is assigned to a GigabitEthernet interface after this change?",
+    options: [
+      "1",
+      "10",
+      "100",
+      "1000"
+    ],
+    answer: [1],
+    explanation: "The command sets the reference bandwidth to 10000 Mbps (10 Gbps), and OSPF cost is the reference bandwidth divided by the interface bandwidth. For a 1000 Mbps GigabitEthernet interface the result is 10000 / 1000 = 10. A cost of 1 would apply to a 10 Gigabit interface under this setting, and 100 would apply to FastEthernet, so those answers correspond to different interface speeds. Raising the reference bandwidth lets OSPF distinguish between gigabit and faster links."
+  },
+  {
+    id: "conn-129",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Which two commands display the local router's OSPF router ID? (Choose two.)",
+    options: [
+      "show ip ospf",
+      "show ip protocols",
+      "show ip route ospf",
+      "show ip ospf neighbor"
+    ],
+    answer: [0, 1],
+    explanation: "The show ip ospf command prints the router ID in its first line, and show ip protocols lists the router ID in the OSPF section along with networks and routing information sources. The show ip route ospf command lists only OSPF-learned prefixes with no router ID, and show ip ospf neighbor displays the router IDs of neighboring routers rather than the local one, which makes it a common trap answer."
+  },
+  {
+    id: "conn-130",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "An administrator enters network 0.0.0.0 255.255.255.255 area 0 under the OSPF process. What is the effect of this command?",
+    options: [
+      "OSPF is enabled in area 0 on every interface that has an IP address configured",
+      "The router originates a default route into area 0",
+      "OSPF is enabled only on the interface whose address is 0.0.0.0",
+      "The command is rejected because the wildcard mask is invalid"
+    ],
+    answer: [0],
+    explanation: "A wildcard mask of 255.255.255.255 means no bits need to match, so the statement covers every possible interface address and places all current and future IP-enabled interfaces into area 0. The command does not create or advertise a default route; that requires default-information originate. The wildcard is valid syntax, and matching 0.0.0.0 literally would require a wildcard of 0.0.0.0, not all ones."
+  },
+  {
+    id: "conn-131",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "To which destination address does an OSPF router send its periodic hello packets on a multiaccess Ethernet segment?",
+    options: [
+      "224.0.0.5",
+      "224.0.0.6",
+      "224.0.0.102",
+      "224.0.0.9"
+    ],
+    answer: [0],
+    explanation: "All OSPF routers listen to the AllSPFRouters multicast address 224.0.0.5, which is where periodic hellos are sent on broadcast networks. The address 224.0.0.6 is AllDRouters and is used only when sending updates to the DR and BDR. The address 224.0.0.102 belongs to HSRP version 2, and 224.0.0.9 is used by RIPv2, so both are distractors from other protocols."
+  },
+  {
+    id: "conn-132",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. R1 does not form an OSPF adjacency with a directly connected router on GigabitEthernet0/0, although the subnet 10.10.0.0/24 appears in the neighbor's database. Based on the output, what is the cause?",
+    exhibit: "R1# show ip protocols | section ospf\nRouting Protocol is \"ospf 1\"\n  Router ID 1.1.1.1\n  Number of areas in this router is 1. 1 normal 0 stub 0 nssa\n  Routing for Networks:\n    10.10.0.0 0.0.0.255 area 0\n  Passive Interface(s):\n    GigabitEthernet0/0\n  Routing Information Sources:\n    Gateway         Distance      Last Update",
+    options: [
+      "GigabitEthernet0/0 is passive, so R1 advertises the subnet but suppresses hello packets on it",
+      "The network statement uses an incorrect wildcard mask for the interface",
+      "The router ID 1.1.1.1 conflicts with the neighbor's router ID",
+      "Area 0 is a stub area, which prevents adjacency formation"
+    ],
+    answer: [0],
+    explanation: "The Passive Interface(s) section shows GigabitEthernet0/0 is passive, which means OSPF still advertises the connected subnet into the domain but never sends hellos on that interface, so no neighbor can form there. The network statement 10.10.0.0 0.0.0.255 correctly covers the interface, which is why the subnet is advertised at all. Nothing in the output indicates a duplicate router ID, and the summary line shows one normal area and zero stub areas."
+  },
+  {
+    id: "conn-133",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Two OSPF neighbors are stuck cycling through the EXSTART and EXCHANGE states because their interface MTUs differ. Which two actions resolve the problem? (Choose two.)",
+    options: [
+      "Configure the same MTU value on both connecting interfaces",
+      "Configure ip ospf mtu-ignore on the connecting interfaces",
+      "Increase the hello and dead intervals on both routers",
+      "Change the OSPF network type to broadcast on both routers",
+      "Issue clear ip ospf process on both routers"
+    ],
+    answer: [0, 1],
+    explanation: "MTU values are carried in database description packets, and a mismatch causes the routers to loop in EXSTART/EXCHANGE; matching the MTUs removes the conflict, while ip ospf mtu-ignore tells OSPF to skip the MTU check entirely. Adjusting timers or the network type does not affect the MTU comparison. Clearing the OSPF process restarts the adjacency but the routers will hit the same MTU mismatch and fail again."
+  },
+  {
+    id: "conn-134",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "An OSPF router stops receiving hello packets from a neighbor, and the dead interval for that neighbor expires. What does the router do?",
+    options: [
+      "It declares the neighbor down, removes the adjacency, floods updated LSAs, and recomputes SPF",
+      "It places the neighbor in the INIT state and keeps using the existing routes for another dead interval",
+      "It sends a unicast hello to the neighbor and waits for three more hello intervals before reacting",
+      "It marks the neighbor's routes as stale but continues forwarding on them until they are relearned"
+    ],
+    answer: [0],
+    explanation: "Expiry of the dead interval is the trigger for declaring a neighbor failed: the adjacency is torn down, the router originates updated LSAs reflecting the change, and SPF runs to compute new paths. OSPF does not return the neighbor to INIT while preserving its routes, nor does it probe with unicast hellos before reacting. Stale-route forwarding is not an OSPF behavior; routes through the failed neighbor are removed when SPF completes."
+  },
+  {
+    id: "conn-135",
+    domain: "IP Connectivity",
+    type: "dragdrop",
+    question: "Drag each OSPF packet type on the left to its function on the right.",
+    items: [
+      "Link-State Update",
+      "Hello",
+      "Link-State Acknowledgment",
+      "Database Description",
+      "Link-State Request"
+    ],
+    targets: [
+      "Discovers neighbors and maintains the relationship between them",
+      "Summarizes the database contents while an adjacency is forming",
+      "Asks a neighbor to send specific LSAs that are missing or outdated",
+      "Carries complete LSAs to neighbors during flooding and synchronization",
+      "Confirms the receipt of flooded LSAs to make flooding reliable"
+    ],
+    answer: [1, 3, 4, 0, 2],
+    explanation: "Hello packets discover neighbors and keep adjacencies alive through periodic exchange. Database Description packets list LSA headers so neighbors can compare database contents during EXCHANGE. Link-State Request packets ask for the full copies of LSAs the router is missing, and Link-State Update packets deliver those complete LSAs. Link-State Acknowledgment packets confirm receipt of updates, which is what makes OSPF flooding reliable."
+  }
+);
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "conn-136",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Refer to the exhibit. An engineer runs show ip protocols on R9. Which two facts about the OSPF process can be confirmed? (Choose two.)",
+    exhibit: "R9# show ip protocols\nRouting Protocol is \"ospf 10\"\n  Outgoing update filter list for all interfaces is not set\n  Incoming update filter list for all interfaces is not set\n  Router ID 192.0.2.11\n  Number of areas in this router is 1. 1 normal 0 stub 0 nssa\n  Maximum path: 4\n  Routing for Networks:\n    10.10.10.0 0.0.0.255 area 0\n  Routing Information Sources:\n    Gateway         Distance      Last Update\n    192.0.2.12           110      00:04:21\n  Distance: (default is 110)",
+    options: [
+      "The local OSPF router ID is 192.0.2.11",
+      "OSPF is enabled on interfaces whose addresses fall within 10.10.10.0/24",
+      "The OSPF process ID 10 must match on all neighboring routers",
+      "The administrative distance has been changed from its default value",
+      "The router 192.0.2.12 is the designated router for the segment"
+    ],
+    answer: [0, 1],
+    explanation: "The output explicitly shows the local router ID 192.0.2.11, and the network statement with wildcard 0.0.0.255 enables OSPF in area 0 on any interface inside 10.10.10.0/24. The process ID is locally significant and does not need to match neighbors. The line Distance: (default is 110) confirms the administrative distance is unchanged, and a routing information source is simply a router that supplied routes, not necessarily the DR."
+  },
+  {
+    id: "conn-137",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "An engineer configures IPv6 addresses and several ipv6 route statements on a new router. Hosts can ping the router's own interface addresses, but the router does not forward any IPv6 traffic between interfaces. What is the most likely cause?",
+    options: [
+      "The ipv6 unicast-routing command has not been enabled in global configuration",
+      "The static routes are missing administrative distance values",
+      "IPv6 requires a dynamic routing protocol before static routes become active",
+      "The interfaces are missing link-local addresses"
+    ],
+    answer: [0],
+    explanation: "Cisco routers do not route IPv6 traffic until ipv6 unicast-routing is enabled globally; without it the device acts as an IPv6 host, which is why its own interfaces answer pings but transit forwarding fails. Static routes use a default administrative distance of 1 and need no explicit value. No dynamic protocol is required for static routing, and link-local addresses are created automatically whenever IPv6 is enabled on an interface."
+  },
+  {
+    id: "conn-138",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. The router receives a packet destined for 2001:db8:0:b::25. Which next hop does it use?",
+    exhibit: "R2# show ipv6 route | begin Application\nS   2001:db8::/32 [1/0]\n     via 2001:db8:ffff::1\nO   2001:db8:0:8::/61 [110/20]\n     via 2001:db8:ffff::2, GigabitEthernet0/0\nO   2001:db8:0:a::/64 [110/10]\n     via 2001:db8:ffff::3, GigabitEthernet0/1",
+    options: [
+      "2001:db8:ffff::1",
+      "2001:db8:ffff::2",
+      "2001:db8:ffff::3",
+      "The packet is dropped because no route matches"
+    ],
+    answer: [1],
+    explanation: "The prefix 2001:db8:0:8::/61 spans subnets 2001:db8:0:8:: through 2001:db8:0:f::, so it covers the destination in subnet b, and it is a longer match than the /32 static route. The /64 route covers only subnet 2001:db8:0:a::/64, and the destination's fourth hextet is b, not a, so it does not apply. IPv6 forwarding uses longest prefix match exactly like IPv4, so the /61 route through 2001:db8:ffff::2 is selected."
+  },
+  {
+    id: "conn-139",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. Which conclusion can be drawn about the HSRP configuration on this interface?",
+    exhibit: "R1# show standby GigabitEthernet0/0 | include Virtual\n  Virtual IP address is 10.20.30.1\n  Active virtual MAC address is 0000.0c07.ac1e (MAC In Use)",
+    options: [
+      "The interface runs HSRP version 1 with group number 30",
+      "The interface runs HSRP version 2 with group number 30",
+      "The interface runs HSRP version 1 with group number 14",
+      "The interface runs HSRP version 2 with group number 510"
+    ],
+    answer: [0],
+    explanation: "The virtual MAC pattern 0000.0c07.acXX identifies HSRP version 1, where XX is the group number in hexadecimal; 0x1e converts to decimal 30. HSRP version 2 would instead use a MAC in the range 0000.0c9f.f000 through 0000.0c9f.ffff. Reading 1e as decimal 14 is the classic conversion mistake, since 14 decimal would be 0x0e, and nothing in this MAC format indicates version 2 or a four-digit group number."
+  },
+  {
+    id: "conn-140",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Two routers run HSRP version 2 with group number 5 on their LAN interfaces. Which virtual MAC address does the active router use for the group?",
+    options: [
+      "0000.0c07.ac05",
+      "0000.0c9f.f005",
+      "0000.0c9f.f050",
+      "0007.b400.0105"
+    ],
+    answer: [1],
+    explanation: "HSRP version 2 builds virtual MAC addresses from the range 0000.0c9f.f000 to 0000.0c9f.ffff, appending the group number in hexadecimal, so group 5 yields 0000.0c9f.f005. The address 0000.0c07.ac05 is the HSRP version 1 format for group 5 and is the strongest distractor. The value ending in f050 places the group digits in the wrong position, and 0007.b400.xxxx is the GLBP virtual MAC format, not HSRP."
+  },
+  {
+    id: "conn-141",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "R1 and R2 are both configured with standby 1 commands on interfaces in the same VLAN to provide a redundant gateway. Which two settings must match on the two routers for the HSRP group to operate correctly? (Choose two.)",
+    options: [
+      "The HSRP version configured on the interfaces",
+      "The virtual IP address assigned to the group",
+      "The HSRP priority value of each router",
+      "The physical interface IP address on each router"
+    ],
+    answer: [0, 1],
+    explanation: "Both routers must run the same HSRP version because version 1 and version 2 use different multicast addresses and packet formats, so mismatched versions cannot see each other's hellos. They must also agree on the virtual IP address, since that is the gateway address hosts use; a mismatch causes outages during failover. Priorities are expected to differ to control the active role, and the physical interface addresses must actually be different, unique addresses in the subnet."
+  },
+  {
+    id: "conn-142",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. R1, which is configured with priority 120 and standby 1 preempt on the same segment, has been powered off for maintenance. What happens to the HSRP roles when R1 comes back online?",
+    exhibit: "R2# show standby brief\n                     P indicates configured to preempt.\nInterface   Grp  Pri P State   Active          Standby         Virtual IP\nGi0/1       1    100   Active  local           unknown         10.20.0.1",
+    options: [
+      "R1 takes over as active because it has a higher priority and preemption is enabled",
+      "R2 remains active until it fails or is rebooted, because the active role is never surrendered",
+      "Both routers become active and load-balance traffic for the virtual IP",
+      "R1 becomes active only if R2 also has preemption enabled"
+    ],
+    answer: [0],
+    explanation: "Preemption allows a router with a higher priority to seize the active role from a lower-priority active router, so when R1 (priority 120, preempt enabled) boots, it preempts R2 (priority 100) and becomes active. Without preemption on R1, R2 would indeed keep the role, which is why the second option describes default behavior but not this scenario. HSRP permits only one active router per group, and preemption matters only on the router taking over, not on R2."
+  },
+  {
+    id: "conn-143",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "A network engineer needs a one-line-per-group summary showing the HSRP state, priority, active router, standby router, and virtual IP address for every group on a device. Which command provides this output?",
+    options: [
+      "show standby brief",
+      "show ip interface brief",
+      "show standby neighbors",
+      "show hsrp summary"
+    ],
+    answer: [0],
+    explanation: "The show standby brief command lists each HSRP group on a single line with its interface, group number, priority, preempt flag, state, active and standby addresses, and the virtual IP. The show ip interface brief command summarizes interface addresses and status but contains no HSRP information. There is no show hsrp summary command in IOS, and show standby neighbors does not provide the per-group role and priority summary requested."
+  },
+  {
+    id: "conn-144",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "A router that is currently HSRP active is configured with standby 10 track GigabitEthernet0/3 25. Which two statements about this configuration are true? (Choose two.)",
+    options: [
+      "When GigabitEthernet0/3 goes down, the router's HSRP priority decreases by 25",
+      "A failover occurs only if the standby router has preemption enabled and ends up with the higher priority",
+      "The router immediately gives up the active role when the tracked interface fails, regardless of priorities",
+      "The tracked interface is automatically placed into the same HSRP group"
+    ],
+    answer: [0, 1],
+    explanation: "Interface tracking lowers the router's priority by the configured decrement, 25 in this case, whenever the tracked interface goes down. The priority drop alone does not move the active role; the peer must have preemption enabled and must then hold the numerically higher priority to take over. The active router never abandons its role automatically just because tracking fired, and tracking does not enroll the tracked interface in the HSRP group; it only monitors its state."
+  },
+  {
+    id: "conn-145",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. Hosts on VLAN 50 use 10.5.5.1 as their default gateway. Users report that connectivity is lost whenever R1 fails and R2 takes over the active role. What is the problem?",
+    exhibit: "R1# show running-config interface Gi0/1\ninterface GigabitEthernet0/1\n ip address 10.5.5.2 255.255.255.0\n standby 1 ip 10.5.5.1\n standby 1 priority 120\n standby 1 preempt\n\nR2# show running-config interface Gi0/1\ninterface GigabitEthernet0/1\n ip address 10.5.5.3 255.255.255.0\n standby 1 ip 10.5.5.254\n standby 1 priority 100",
+    options: [
+      "The two routers are configured with different virtual IP addresses for the same HSRP group",
+      "R2 is missing the preempt command, which prevents it from forwarding traffic",
+      "The priorities must be equal for the group to provide redundancy",
+      "The routers' physical addresses are in the same subnet, which conflicts with HSRP"
+    ],
+    answer: [0],
+    explanation: "R1 defines the virtual IP as 10.5.5.1 while R2 defines it as 10.5.5.254, so when R2 becomes active it answers for 10.5.5.254 and stops serving the gateway address 10.5.5.1 that hosts are configured to use. Preemption is not required on R2 to become active after R1 fails; it only controls taking the role back from a live router. Differing priorities are normal and intended, and HSRP requires the physical addresses to share the subnet."
+  },
+  {
+    id: "conn-146",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "An engineer adds standby 1 preempt delay minimum 120 to a distribution router. What is the purpose of this command?",
+    options: [
+      "It makes the router wait 120 seconds after coming up before taking over the active role, allowing routing protocols to converge first",
+      "It delays all HSRP hello packets by 120 milliseconds to reduce CPU load",
+      "It forces the router to remain in the standby state for 120 seconds after every hello",
+      "It prevents any other router from preempting this router for 120 seconds"
+    ],
+    answer: [0],
+    explanation: "The preempt delay minimum timer postpones preemption for the configured number of seconds after the router becomes eligible, typically after a reload, so its routing protocols can converge before it starts forwarding as the active gateway. Without the delay, a recovering router could preempt immediately and black-hole traffic while its routing table is still empty. The command does not alter hello timing, impose a recurring standby hold-down, or protect the router from being preempted by others."
+  },
+  {
+    id: "conn-147",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Refer to the exhibit. Which two statements about this router are true? (Choose two.)",
+    exhibit: "R1# show standby GigabitEthernet0/0\nGigabitEthernet0/0 - Group 1 (version 2)\n  State is Active\n    2 state changes, last state change 00:41:18\n  Virtual IP address is 10.1.1.1\n  Active virtual MAC address is 0000.0c9f.f001 (MAC In Use)\n  Hello time 3 sec, hold time 10 sec\n  Preemption enabled\n  Active router is local\n  Standby router is 10.1.1.3, priority 90 (expires in 9.328 sec)\n  Priority 110 (configured 110)",
+    options: [
+      "This router currently forwards frames sent to the virtual MAC address 0000.0c9f.f001",
+      "The group is running HSRP version 2, as confirmed by both the header and the virtual MAC format",
+      "The standby router will preempt this router because its hold timer is about to expire",
+      "Preemption is disabled, so the roles can change only after a failure",
+      "The group is running HSRP version 1 because the group number is 1"
+    ],
+    answer: [0, 1],
+    explanation: "The state Active means this router owns the virtual MAC and IP and forwards traffic addressed to the virtual gateway. The header shows version 2, and the virtual MAC 0000.0c9f.f001 falls in the HSRPv2 range, confirming it. The expires timer next to the standby router simply counts down until the next expected hello, not an impending preemption, and the standby's priority 90 is lower anyway. The output explicitly states preemption is enabled, and the group number does not determine the version."
+  },
+  {
+    id: "conn-148",
+    domain: "IP Connectivity",
+    type: "dragdrop",
+    question: "Drag each value on the left to the HSRP attribute it represents on the right.",
+    items: [
+      "0000.0C9F.Fxxx",
+      "224.0.0.2",
+      "0000.0C07.ACxx",
+      "224.0.0.102"
+    ],
+    targets: [
+      "HSRP version 1 multicast destination address",
+      "HSRP version 2 multicast destination address",
+      "HSRP version 1 virtual MAC address pattern",
+      "HSRP version 2 virtual MAC address pattern"
+    ],
+    answer: [1, 3, 2, 0],
+    explanation: "HSRP version 1 sends its hellos to 224.0.0.2 and derives the virtual MAC from 0000.0C07.ACxx, where xx is the group number in hex, which limits groups to 0 through 255. HSRP version 2 moved to the multicast address 224.0.0.102 to avoid conflicts with other protocols on 224.0.0.2 and uses virtual MACs in the 0000.0C9F.F000 to 0000.0C9F.FFFF range, supporting group numbers up to 4095."
+  },
+  {
+    id: "conn-149",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "A router has the subnet 10.8.8.0/24 configured on interface GigabitEthernet0/2, and an OSPF neighbor also advertises a route to 10.8.8.0/24. Which route does the router use for that prefix?",
+    options: [
+      "The connected route, because its administrative distance of 0 is lower than any dynamic protocol",
+      "The OSPF route, because dynamic routes are refreshed and therefore more reliable",
+      "Both routes, installed together for redundancy",
+      "The OSPF route, because its metric is compared against the connected route's metric of 0"
+    ],
+    answer: [0],
+    explanation: "Directly connected networks have an administrative distance of 0, the most trusted value possible, so the connected route is always installed in preference to the same prefix learned from OSPF at distance 110. Administrative distance is compared before metric, so the protocols' metrics never enter the decision. A routing table holds only one source per identical prefix and mask, so the routes are not installed together, and route freshness is not a selection criterion."
+  },
+  {
+    id: "conn-150",
+    domain: "IP Connectivity",
+    type: "dragdrop",
+    question: "Drag each verification command on the left to the task it accomplishes on the right.",
+    items: [
+      "show ip route",
+      "show standby brief",
+      "show ip ospf interface",
+      "show ip ospf neighbor"
+    ],
+    targets: [
+      "Verifies the adjacency state with each OSPF neighbor",
+      "Displays the best paths the router has installed for forwarding",
+      "Summarizes HSRP roles, priorities, and virtual IPs per group",
+      "Shows OSPF timers, cost, network type, and DR/BDR for a link"
+    ],
+    answer: [3, 0, 1, 2],
+    explanation: "The show ip ospf neighbor command lists each neighbor with its state, such as FULL or 2WAY, making it the primary adjacency check. The show ip route command displays the routes actually installed for packet forwarding after best-path selection. The show standby brief command summarizes every HSRP group's role, priority, and virtual IP on one line each. The show ip ospf interface command reveals per-link OSPF details including hello and dead timers, cost, network type, and the DR and BDR."
+  }
+);
