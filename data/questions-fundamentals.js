@@ -444,3 +444,229 @@
     explanation: "A /26 block starting at .0 covers addresses .0 through .63, which includes both .20 and .60. A /27 splits that range into .0-.31 and .32-.63, placing the two hosts in different subnets, and a /28 separates them even further. A /25 (.0-.127) also contains both hosts but is larger than necessary, so it is not the smallest valid subnet."
   }
 );
+
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "nf-031",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "A network uses the mask 255.255.255.224 throughout the 10.10.10.0/24 range. Which three addresses are valid subnet (network) addresses? (Choose three.)",
+    options: [
+      "10.10.10.64",
+      "10.10.10.96",
+      "10.10.10.80",
+      "10.10.10.160",
+      "10.10.10.200"
+    ],
+    answer: [0, 1, 3],
+    explanation: "A /27 mask creates subnets on multiples of 32: .0, .32, .64, .96, .128, .160, .192, and .224. The addresses .64, .96, and .160 fall exactly on those boundaries. The address .80 sits inside the 10.10.10.64/27 subnet and .200 sits inside 10.10.10.192/27, so both are host addresses rather than subnet addresses."
+  },
+  {
+    id: "nf-032",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A company must divide the network 192.168.50.0/24 into at least 6 subnets, each supporting a minimum of 25 hosts. Which prefix length satisfies both requirements?",
+    options: [
+      "/26",
+      "/27",
+      "/28",
+      "/29"
+    ],
+    answer: [1],
+    explanation: "A /27 creates 8 subnets from a /24 (meeting the 6-subnet requirement) and provides 30 usable hosts each (meeting the 25-host requirement). A /26 yields only 4 subnets, which is too few. A /28 creates 16 subnets but supports only 14 hosts each, and a /29 supports just 6 hosts, so neither meets the host requirement."
+  },
+  {
+    id: "nf-033",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Which range of destination addresses does this ACL entry match?",
+    exhibit: "access-list 110 permit tcp any 192.168.1.48 0.0.0.7 eq 443",
+    options: [
+      "192.168.1.48 through 192.168.1.55",
+      "192.168.1.48 through 192.168.1.63",
+      "192.168.1.49 through 192.168.1.54",
+      "192.168.1.40 through 192.168.1.47"
+    ],
+    answer: [0],
+    explanation: "The wildcard 0.0.0.7 ignores the last 3 bits, matching a block of 8 addresses starting at the configured base, so 192.168.1.48 through 192.168.1.55 are matched. The range ending at .63 would require wildcard 0.0.0.15, the range .49-.54 incorrectly excludes the block edges (ACL wildcards match all addresses in the block, including network and broadcast values), and .40-.47 is the previous block of 8."
+  },
+  {
+    id: "nf-034",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An ISP allocates the block 203.0.113.0/24 for point-to-point customer links, each addressed as a /30. How many /30 subnets can be created from the block?",
+    options: [
+      "62",
+      "64",
+      "128",
+      "32"
+    ],
+    answer: [1],
+    explanation: "Going from /24 to /30 borrows 6 bits, producing 2^6 = 64 subnets, each containing 4 addresses with 2 usable hosts. The answer 62 wrongly subtracts two as if subnets were host addresses, 128 corresponds to /31 subnetting, and 32 corresponds to /29 subnetting."
+  },
+  {
+    id: "nf-035",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Which destination IP address is matched by the static route shown?",
+    exhibit: "R1# show ip route static\nS     172.25.40.0/21 [1/0] via 10.0.0.2",
+    options: [
+      "172.25.47.254",
+      "172.25.48.1",
+      "172.25.39.255",
+      "172.25.55.1"
+    ],
+    answer: [0],
+    explanation: "The route 172.25.40.0/21 covers third-octet values 40 through 47, so it matches 172.25.40.0 through 172.25.47.255, which includes 172.25.47.254. The address 172.25.48.1 belongs to the next /21 block, 172.25.39.255 is the last address of the previous block, and 172.25.55.1 would only match if the prefix were /20 or shorter."
+  },
+  {
+    id: "nf-036",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "An administrator divides 10.10.0.0/16 into /22 subnets. Which two are valid subnet IDs from this plan? (Choose two.)",
+    options: [
+      "10.10.8.0",
+      "10.10.10.0",
+      "10.10.20.0",
+      "10.10.6.0"
+    ],
+    answer: [0, 2],
+    explanation: "A /22 increments the third octet in steps of 4, so valid subnet IDs occur at multiples of 4: 0, 4, 8, 12, 16, 20, and so on. Both 10.10.8.0 and 10.10.20.0 fall on those boundaries. The values 10 and 6 are not multiples of 4; 10.10.10.0 lies inside 10.10.8.0/22 and 10.10.6.0 lies inside 10.10.4.0/22."
+  },
+  {
+    id: "nf-037",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Why does the router reject the new address on GigabitEthernet0/1?",
+    exhibit: "R1# show ip interface brief | include Gigabit\nGigabitEthernet0/0   10.6.4.1     YES manual up    up\nGigabitEthernet0/1   unassigned   YES unset  up    up\n\nR1(config)# interface GigabitEthernet0/1\nR1(config-if)# ip address 10.6.4.193 255.255.255.192\n% 10.6.4.192 overlaps with GigabitEthernet0/0\n\n! GigabitEthernet0/0 is configured with mask 255.255.254.0",
+    options: [
+      "The /23 on GigabitEthernet0/0 already includes the entire 10.6.4.192/26 range",
+      "10.6.4.193 is the network address of the new subnet",
+      "Two interfaces on a router can never use addresses from the same major network",
+      "The new mask must match the mask used on GigabitEthernet0/0 exactly"
+    ],
+    answer: [0],
+    explanation: "GigabitEthernet0/0 uses 10.6.4.1/23, which spans 10.6.4.0 through 10.6.5.255 and therefore already contains the proposed 10.6.4.192/26 block. IOS rejects any connected subnet that overlaps another interface. The address .193 is a valid host within a /26, different subnets of the same major network are perfectly legal on different interfaces, and there is no requirement for masks to match between interfaces."
+  },
+  {
+    id: "nf-038",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Which representation of the IPv6 address 2001:0db8:0000:0000:0000:00a4:0000:0017 is both valid and maximally compressed?",
+    options: [
+      "2001:db8::a4:0:17",
+      "2001:db8::a4::17",
+      "2001:db8:0:0:0:a4::17",
+      "2001:db8::a4:17"
+    ],
+    answer: [0],
+    explanation: "The longest run of all-zero groups (three groups) is replaced by ::, and leading zeros in each group are removed, producing 2001:db8::a4:0:17. The form with two :: symbols is invalid because the address length would be ambiguous. Using :: for the single zero group after a4 instead of the longer run is not maximal compression, and 2001:db8::a4:17 deletes a zero group entirely, changing the address."
+  },
+  {
+    id: "nf-039",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. The interface is configured for EUI-64 addressing. Which IPv6 address does the router generate on GigabitEthernet0/0?",
+    exhibit: "R1# show interfaces GigabitEthernet0/0 | include bia\n  Hardware is iGbE, address is 001a.2b3c.4d5e (bia 001a.2b3c.4d5e)\n\ninterface GigabitEthernet0/0\n ipv6 address 2001:DB8:AA:1::/64 eui-64",
+    options: [
+      "2001:DB8:AA:1:21A:2BFF:FE3C:4D5E",
+      "2001:DB8:AA:1:1A:2BFF:FE3C:4D5E",
+      "2001:DB8:AA:1:21A:2BFE:FF3C:4D5E",
+      "2001:DB8:AA:1:FFFE:1A:2B3C:4D5E"
+    ],
+    answer: [0],
+    explanation: "EUI-64 splits the MAC 001a.2b3c.4d5e in half, inserts FFFE in the middle (001a:2bFF:FE3c:4d5e), and inverts the seventh bit of the first byte, changing 00 to 02. This yields the interface ID 021a:2bff:fe3c:4d5e, written 21A:2BFF:FE3C:4D5E without leading zeros. The second option skips the bit flip, the third inserts FEFF instead of FFFE, and the fourth places FFFE at the front instead of the middle."
+  },
+  {
+    id: "nf-040",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A host is assigned the IPv6 address 2001:db8:1:1:aabb:ccdd:1234:5678. Which solicited-node multicast address does the host join for this address?",
+    options: [
+      "FF02::1:FF34:5678",
+      "FF02::FF34:5678",
+      "FF02::1:FF12:3456",
+      "FF05::1:FF34:5678"
+    ],
+    answer: [0],
+    explanation: "The solicited-node multicast address is formed by appending the last 24 bits of the unicast address to the prefix FF02::1:FF00:0/104, giving FF02::1:FF34:5678. The option missing the 1: portion does not use the correct /104 prefix, FF02::1:FF12:3456 takes bits from the wrong end of the address, and FF05 is a site-local multicast scope rather than the required link-local scope."
+  },
+  {
+    id: "nf-041",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Which IPv6 address is a valid link-local address that a host could assign to its interface automatically?",
+    options: [
+      "FE80::1AB3:4CD9",
+      "FEC0::1AB3:4CD9",
+      "FF02::1AB3:4CD9",
+      "2001:DB8::1AB3:4CD9"
+    ],
+    answer: [0],
+    explanation: "Link-local addresses come from FE80::/10, so FE80::1AB3:4CD9 is valid and is generated automatically on every IPv6-enabled interface. FEC0::/10 is the deprecated site-local range, FF02:: addresses are link-local multicast destinations and cannot be assigned as interface unicast addresses, and 2001:DB8::/32 is the documentation range within global unicast space."
+  },
+  {
+    id: "nf-042",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two statements about IPv6 link-local addresses are true? (Choose two.)",
+    options: [
+      "One is required on every IPv6-enabled interface",
+      "Packets sourced from them are never forwarded by routers to other links",
+      "They must be globally unique across the entire network",
+      "They are assigned by a DHCPv6 server by default"
+    ],
+    answer: [0, 1],
+    explanation: "Every IPv6 interface must have a link-local address from FE80::/10, and these addresses are valid only on the local segment, so routers never forward traffic using them beyond the link. They only need to be unique on their own link, not globally, and they are self-generated (via EUI-64 or a random ID) rather than assigned by DHCPv6."
+  },
+  {
+    id: "nf-043",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A company wants internal-only IPv6 addressing that is routable inside the organization but not on the public internet, similar to RFC 1918 in IPv4. Which address should be used?",
+    options: [
+      "FD6A:8089:1234::1",
+      "FE80::1234:1",
+      "2001:DB8:1234::1",
+      "FF05::1234:1"
+    ],
+    answer: [0],
+    explanation: "Unique local addresses (ULAs) occupy FC00::/7, and in practice addresses are generated under FD00::/8 with a random global ID, so FD6A:8089:1234::1 fits the requirement. FE80:: addresses are link-local and cannot be routed between internal subnets, 2001:DB8::/32 is the documentation prefix within global unicast space, and FF05:: is a multicast scope, not unicast addressing."
+  },
+  {
+    id: "nf-044",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A host must discover its default gateway by sending a Router Solicitation. To which IPv6 multicast group does it send the message so that only routers process it?",
+    options: [
+      "FF02::2",
+      "FF02::1",
+      "FF02::5",
+      "FF02::A"
+    ],
+    answer: [0],
+    explanation: "All IPv6 routers on a link join the all-routers multicast group FF02::2, which is where hosts send Router Solicitations. FF02::1 is the all-nodes group, which every IPv6 device joins, so using it would deliver the message to all hosts rather than only routers. FF02::5 is used by OSPFv3 routers and FF02::A by EIGRP, both for routing protocol traffic rather than neighbor discovery."
+  },
+  {
+    id: "nf-045",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each IPv6 prefix to the address type it identifies.",
+    items: [
+      "2000::/3",
+      "FC00::/7",
+      "FE80::/10",
+      "FF00::/8",
+      "::1/128"
+    ],
+    targets: [
+      "Link-local unicast",
+      "Global unicast",
+      "Multicast",
+      "Unique local unicast",
+      "Loopback"
+    ],
+    answer: [2, 0, 3, 1, 4],
+    explanation: "FE80::/10 defines link-local unicast addresses required on every interface, 2000::/3 is the current global unicast allocation, FF00::/8 covers all multicast addresses, FC00::/7 defines unique local (private) unicast space, and ::1/128 is the loopback address equivalent to 127.0.0.1 in IPv4. Confusing FE80 with FC00 is common because both are non-global unicast ranges."
+  }
+);

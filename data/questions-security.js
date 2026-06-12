@@ -662,3 +662,228 @@
     explanation: "With DHCP snooping enabled on VLAN 10, every port is untrusted by default except Gi0/1, which is explicitly trusted. Server-originated messages such as DHCPOFFER and DHCPACK are only accepted on trusted ports, so the offers from the rogue router on a user port are dropped. The VLAN assignment does not exempt traffic from inspection, the trusted server port is not err-disabled by someone else's rogue device, and rate limiting is a separate optional feature that applies to client messages, not a default action for rogue offers."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "sec-046",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Which two DHCP message types does a switch with DHCP snooping enabled discard when they are received on an untrusted port? (Choose two.)",
+    options: [
+      "DHCPOFFER",
+      "DHCPACK",
+      "DHCPDISCOVER",
+      "DHCPREQUEST"
+    ],
+    answer: [0, 1],
+    explanation: "DHCPOFFER and DHCPACK are messages sent by DHCP servers, and DHCP snooping only allows server messages to enter through trusted ports, so they are dropped on untrusted interfaces. DHCPDISCOVER and DHCPREQUEST are client messages and are expected on untrusted access ports where end hosts connect, so the switch forwards them after inspection. Blocking client messages on untrusted ports would break DHCP for every legitimate user."
+  },
+  {
+    id: "sec-047",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Which information does the DHCP snooping binding database record for each completed DHCP lease on an untrusted port?",
+    options: [
+      "Client MAC address, assigned IP address, lease time, VLAN, and interface",
+      "Client hostname, username, and the authenticating RADIUS server",
+      "Server MAC address, scope name, and remaining pool size",
+      "Client MAC address and default gateway only"
+    ],
+    answer: [0],
+    explanation: "The binding database maps each client MAC address to its DHCP-assigned IP address along with the lease time, VLAN, and the switch interface where the lease was observed. This table is the reference that Dynamic ARP Inspection and IP Source Guard use to validate ARP messages and source IP addresses. The database contains no usernames or RADIUS information, no DHCP scope statistics, and it records far more than just the MAC address and gateway."
+  },
+  {
+    id: "sec-048",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "An attacker on an access port sends forged ARP replies that bind the default gateway's IP address to the attacker's MAC address. Which switch feature prevents this attack?",
+    options: [
+      "Dynamic ARP Inspection",
+      "DHCP snooping by itself",
+      "Port security with sticky MAC addresses",
+      "BPDU guard"
+    ],
+    answer: [0],
+    explanation: "Dynamic ARP Inspection intercepts ARP packets on untrusted ports and verifies that the sender IP-to-MAC binding matches an entry in the DHCP snooping database or a configured ARP ACL, dropping forged replies used for man-in-the-middle attacks. DHCP snooping alone inspects only DHCP traffic and builds the binding table but does not examine ARP packets. Port security limits which MAC addresses may transmit but cannot detect a legitimate MAC sending lies about IP ownership, and BPDU guard protects spanning tree rather than ARP."
+  },
+  {
+    id: "sec-049",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. After Dynamic ARP Inspection is enabled, a server with a statically configured IP address on untrusted port Gi0/12 in VLAN 20 can no longer communicate. What is the cause?",
+    exhibit: "ip dhcp snooping\nip dhcp snooping vlan 20\nip arp inspection vlan 20\n!\ninterface GigabitEthernet0/10\n description Uplink-to-Distribution\n ip dhcp snooping trust\n ip arp inspection trust",
+    options: [
+      "The server never obtained a DHCP lease, so its ARP packets match no binding entry and are dropped",
+      "DAI blocks all static IP addresses by design and the server must be converted to DHCP",
+      "The uplink should be untrusted so that bindings can be learned from the distribution switch",
+      "ARP inspection and DHCP snooping cannot be enabled on the same VLAN"
+    ],
+    answer: [0],
+    explanation: "DAI validates ARP packets on untrusted ports against the DHCP snooping binding database. A statically addressed host never performs a DHCP exchange, so no binding exists and its ARP packets are discarded. The supported fix is to create an ARP ACL for the static host or mark its port trusted, not to force DHCP on the server, so the second option overstates the design. Uplinks toward the network infrastructure are correctly trusted, and DHCP snooping with DAI on the same VLAN is the normal, supported combination."
+  },
+  {
+    id: "sec-050",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Which two statements about Dynamic ARP Inspection are true? (Choose two.)",
+    options: [
+      "ARP packets received on trusted interfaces bypass inspection",
+      "It validates ARP packets using the DHCP snooping binding database",
+      "It prevents DHCP starvation attacks by rate-limiting DISCOVER messages",
+      "It requires port security to be enabled on every untrusted interface",
+      "It inspects only gratuitous ARP packets and ignores ARP replies"
+    ],
+    answer: [0, 1],
+    explanation: "DAI inspects ARP packets arriving on untrusted ports and compares the sender bindings against the DHCP snooping database or static ARP ACLs, while traffic on trusted ports is forwarded without validation. DHCP starvation is mitigated by DHCP snooping rate limiting and port security, not by DAI. Port security is an independent feature that DAI does not require, and DAI examines all ARP requests and replies on untrusted ports, not just gratuitous ARP."
+  },
+  {
+    id: "sec-051",
+    domain: "Security Fundamentals",
+    type: "dragdrop",
+    question: "Drag each Layer 2 security feature on the left to the attack it mitigates on the right.",
+    items: [
+      "802.1X",
+      "Dynamic ARP Inspection",
+      "Port security",
+      "DHCP snooping"
+    ],
+    targets: [
+      "Rogue DHCP server offering malicious gateway information",
+      "ARP cache poisoning for man-in-the-middle attacks",
+      "CAM table overflow from flooded source MAC addresses",
+      "Unauthorized devices connecting without authenticating"
+    ],
+    answer: [3, 1, 2, 0],
+    explanation: "DHCP snooping drops server messages on untrusted ports, defeating rogue DHCP servers. Dynamic ARP Inspection validates ARP bindings against the snooping database to stop ARP poisoning man-in-the-middle attacks. Port security limits the number of source MAC addresses per port, preventing CAM table overflow floods that would force the switch to act like a hub. 802.1X requires devices to authenticate through a RADIUS server before the port forwards traffic, blocking unauthorized access."
+  },
+  {
+    id: "sec-052",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Which credentials are required for a console connection and for an SSH connection to the router?",
+    exhibit: "username admin secret S3cur3Pa55\n!\nline console 0\n password cisco123\n login\nline vty 0 4\n login local\n transport input ssh",
+    options: [
+      "Console requires the password cisco123; SSH requires the username admin with password S3cur3Pa55",
+      "Both console and SSH require the username admin with password S3cur3Pa55",
+      "Console requires the username admin; SSH requires the line password cisco123",
+      "Console requires no credentials; SSH requires only the password cisco123"
+    ],
+    answer: [0],
+    explanation: "The console line uses the login command with a line password, so a console user is prompted only for the password cisco123. The vty lines use login local, which authenticates against the local username database, so SSH users must supply the admin username and its secret. The credential sources are configured independently per line, so the same method does not apply to both, and the login command on the console means credentials are definitely required there."
+  },
+  {
+    id: "sec-053",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An auditor reviews the configuration after service password-encryption was enabled. Which statement about the vty password is true?",
+    exhibit: "line vty 0 4\n password 7 0822455D0A16\n login",
+    options: [
+      "It is encoded with the weak, reversible type 7 algorithm and can be decoded with freely available tools",
+      "It is protected with a one-way MD5 hash that cannot be reversed",
+      "It is encrypted with AES and can only be recovered using the configured master key",
+      "It remains in plaintext because service password-encryption affects only the enable password"
+    ],
+    answer: [0],
+    explanation: "The service password-encryption command applies the Vigenere-based type 7 encoding to line and other plaintext passwords, indicated by the 7 in the configuration. This encoding only deters casual shoulder surfing; numerous public tools reverse it instantly. It is not a one-way MD5 hash, which is what enable secret uses and is shown as type 5, and it is not AES, which applies to type 6 encryption with a configured master key. The command clearly did change the password from plaintext, so the last option is wrong."
+  },
+  {
+    id: "sec-054",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "A user account is created with the command username netops privilege 15 secret Str0ngPw. What is the effect when this user logs in to the router through a vty line configured with login local?",
+    options: [
+      "The user is placed directly into privileged EXEC mode without entering an enable password",
+      "The user starts in user EXEC mode and must still enter the enable secret to reach privileged EXEC mode",
+      "The user can run all configuration commands but cannot view the running configuration",
+      "The user is restricted to show commands defined at privilege level 15"
+    ],
+    answer: [0],
+    explanation: "Privilege level 15 is the highest IOS privilege level and corresponds to privileged EXEC mode, so a user assigned that level lands at the # prompt immediately after authenticating, with no enable password required. Default users at level 1 start in user EXEC mode and need the enable secret. Level 15 grants full access including configuration mode and viewing the running configuration, so the options describing restrictions are incorrect."
+  },
+  {
+    id: "sec-055",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Which two actions harden access to the management plane of a Cisco router? (Choose two.)",
+    options: [
+      "Configure transport input ssh on the vty lines to disable Telnet",
+      "Apply an ACL with the access-class command to restrict which source addresses can reach the vty lines",
+      "Enable the ip http server command so administrators avoid using the CLI",
+      "Configure service password-encryption as the sole protection for privileged access",
+      "Replace the enable secret with an enable password for backward compatibility"
+    ],
+    answer: [0, 1],
+    explanation: "Restricting the vty lines to SSH removes plaintext Telnet from the management plane, and an access-class ACL limits management connections to approved administrative subnets. Enabling the unencrypted HTTP server adds an insecure management vector. Service password-encryption only applies reversible type 7 encoding and is not sufficient protection on its own, and replacing the hashed enable secret with the plaintext enable password weakens security instead of improving it."
+  },
+  {
+    id: "sec-056",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An engineer prepares a router for SSH management but the crypto key generate rsa command is rejected. Which configuration must be completed first?",
+    exhibit: "Router(config)# crypto key generate rsa\n% Please define a domain-name first.",
+    options: [
+      "Configure a domain name with the ip domain-name command",
+      "Configure the vty lines with transport input ssh",
+      "Enable SSH version 2 with the ip ssh version 2 command",
+      "Create a local user account with the username command"
+    ],
+    answer: [0],
+    explanation: "RSA key pairs are named using the device hostname combined with the domain name, so IOS requires both a non-default hostname and an ip domain-name before the keys can be generated. The vty transport setting, SSH version, and local user accounts are all part of a complete SSH configuration, but none of them is a prerequisite for key generation, and the error message explicitly identifies the missing domain name."
+  },
+  {
+    id: "sec-057",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Which authentication scenario is an example of true multifactor authentication?",
+    options: [
+      "A password combined with a one-time code generated by an app on the user's smartphone",
+      "A password combined with a four-digit PIN",
+      "A fingerprint scan combined with facial recognition",
+      "Two different passwords entered on separate login screens"
+    ],
+    answer: [0],
+    explanation: "Multifactor authentication requires factors from at least two different categories: something you know, something you have, and something you are. A password is a knowledge factor and a one-time code from a smartphone app proves possession of the device, so together they form two distinct factors. A password plus a PIN combines two knowledge factors, fingerprint plus face combines two inherence factors, and two passwords are again the same single category, so none of those qualifies as multifactor."
+  },
+  {
+    id: "sec-058",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "A data center requires a retina scan before administrators can enter the server room. Which authentication factor does the retina scan represent?",
+    options: [
+      "Something you are",
+      "Something you have",
+      "Something you know",
+      "Somewhere you are"
+    ],
+    answer: [0],
+    explanation: "Biometric characteristics such as retina patterns, fingerprints, and facial geometry are inherence factors, classified as something you are. A badge or token would be something you have, and a password or PIN would be something you know. Location-based conditions such as connecting from a specific network are sometimes described as somewhere you are, but a biometric scan measures a physical trait of the person, not a location."
+  },
+  {
+    id: "sec-059",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Which two practices are recommended elements of a corporate password policy? (Choose two.)",
+    options: [
+      "Require passwords to mix uppercase, lowercase, numeric, and special characters",
+      "Require an additional authentication factor such as a hardware token or biometric for sensitive access",
+      "Encourage users to reuse one strong password across all corporate systems",
+      "Store user passwords in a plaintext spreadsheet managed by the helpdesk",
+      "Set passwords to never expire so users are not tempted to write them down"
+    ],
+    answer: [0, 1],
+    explanation: "Complexity requirements increase the search space against brute-force and dictionary attacks, and layering multifactor authentication on top of passwords protects accounts even when a password is leaked. Reusing one password across systems means a single breach compromises everything, plaintext storage exposes every credential to anyone who obtains the file, and a blanket never-expire rule without compensating controls leaves compromised passwords valid indefinitely."
+  },
+  {
+    id: "sec-060",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "During the establishment of a site-to-site IPsec VPN, what is the purpose of IKE Phase 1?",
+    options: [
+      "To authenticate the peers and build a secure management channel used to negotiate the IPsec SAs",
+      "To encrypt the user data that flows between the two sites",
+      "To exchange routing updates between the VPN gateways",
+      "To negotiate the transform set used by ESP for the data tunnel"
+    ],
+    answer: [0],
+    explanation: "IKE Phase 1 authenticates the two peers using methods such as pre-shared keys or certificates and establishes the ISAKMP security association, a protected control channel. IKE Phase 2 then runs inside that channel to negotiate the IPsec SAs and transform sets that actually protect user data. User traffic encryption is performed by ESP after both phases complete, and routing updates are exchanged by routing protocols, not by IKE."
+  }
+);
