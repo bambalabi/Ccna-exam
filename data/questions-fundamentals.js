@@ -670,3 +670,464 @@
     explanation: "FE80::/10 defines link-local unicast addresses required on every interface, 2000::/3 is the current global unicast allocation, FF00::/8 covers all multicast addresses, FC00::/7 defines unique local (private) unicast space, and ::1/128 is the loopback address equivalent to 127.0.0.1 in IPv4. Confusing FE80 with FC00 is common because both are non-global unicast ranges."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "nf-046",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two capabilities distinguish a next-generation firewall from a traditional stateful firewall? (Choose two.)",
+    options: [
+      "Application-layer (Layer 7) inspection that identifies traffic regardless of port",
+      "Integrated intrusion prevention that blocks traffic matching attack signatures",
+      "Stateful tracking of TCP sessions in a connection table",
+      "Packet filtering based on source and destination IP addresses"
+    ],
+    answer: [0, 1],
+    explanation: "An NGFW adds application visibility and control (identifying applications even when they use nonstandard ports) and an integrated IPS engine on top of classic firewall functions. Stateful session tracking and IP-based packet filtering are not differentiators because traditional stateful firewalls already perform both of those functions."
+  },
+  {
+    id: "nf-047",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A campus deploys 200 lightweight access points. Which function does the wireless LAN controller provide in this design?",
+    options: [
+      "It centrally manages AP configuration, security policies, and RF channel/power assignments through CAPWAP tunnels",
+      "It converts the lightweight APs to autonomous mode so each AP can be managed individually",
+      "It provides PoE power to each access point over the CAPWAP tunnel",
+      "It replaces the need for a DHCP server by assigning addresses to all wireless clients"
+    ],
+    answer: [0],
+    explanation: "Lightweight APs build CAPWAP tunnels to the WLC, which centralizes configuration, security policy, client authentication handling, and dynamic RF management for all APs. The WLC does not convert APs to autonomous mode; that is the opposite of the lightweight model. PoE is delivered by the access switch over the physical cable, not over CAPWAP, and DHCP services are provided by a DHCP server, not inherently by the controller."
+  },
+  {
+    id: "nf-048",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two functions does Cisco Catalyst Center (formerly DNA Center) provide in an enterprise network? (Choose two.)",
+    options: [
+      "Centralized automation and intent-based provisioning of network device configurations",
+      "Assurance analytics that use telemetry from devices to identify network health issues",
+      "Termination of CAPWAP tunnels from lightweight access points",
+      "Acting as the default gateway for campus VLANs"
+    ],
+    answer: [0, 1],
+    explanation: "Catalyst Center is a controller and analytics platform: it automates device provisioning based on expressed intent and provides Assurance, which analyzes streaming telemetry to surface client, device, and application issues. CAPWAP tunnels terminate on a wireless LAN controller, not on Catalyst Center, and default gateway services are provided by routers or Layer 3 switches in the data path."
+  },
+  {
+    id: "nf-049",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An engineer must enable routing between VLAN 10 and VLAN 20 in a wiring closet without installing a separate router. Which device capability satisfies the requirement?",
+    options: [
+      "A Layer 3 switch configured with switched virtual interfaces for each VLAN",
+      "A Layer 2 switch with both VLANs allowed on a trunk port",
+      "A Layer 2 switch with the two VLANs merged into a single VLAN",
+      "A wireless LAN controller bridging the two VLANs"
+    ],
+    answer: [0],
+    explanation: "A Layer 3 switch can route between VLANs internally using SVIs (interface vlan 10, interface vlan 20), eliminating the need for an external router. A Layer 2 switch only forwards frames within VLANs; trunking carries multiple VLANs but performs no routing between them. Merging the VLANs removes the segmentation rather than routing between the existing VLANs, and a WLC is not an inter-VLAN routing device for wired closets."
+  },
+  {
+    id: "nf-050",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A new access point requires 25 W of power and must be powered over its Ethernet cable from the access switch. Which standard must the switch port support?",
+    options: [
+      "802.3at (PoE+), which delivers up to 30 W at the PSE",
+      "802.3af (PoE), which delivers up to 15.4 W at the PSE",
+      "802.1Q, which delivers power over the trunk VLAN",
+      "802.3ab, which delivers power over 1000BASE-T links"
+    ],
+    answer: [0],
+    explanation: "802.3at (PoE+) supplies up to 30 W from the power sourcing equipment, which covers the 25 W requirement. 802.3af is limited to 15.4 W at the PSE (about 12.95 W at the device), which is insufficient. 802.1Q is the VLAN tagging standard and 802.3ab defines 1000BASE-T signaling; neither defines power delivery."
+  },
+  {
+    id: "nf-051",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each network device to the function it performs.",
+    items: [
+      "IPS",
+      "wireless LAN controller",
+      "router",
+      "Layer 2 switch",
+      "next-generation firewall"
+    ],
+    targets: [
+      "Makes forwarding decisions based on destination IP addresses between networks",
+      "Forwards frames within a LAN based on destination MAC addresses",
+      "Enforces security policy with application-level (Layer 7) traffic inspection",
+      "Centrally manages configuration and RF settings for lightweight APs",
+      "Sits inline, matches traffic against attack signatures, and drops malicious packets"
+    ],
+    answer: [2, 3, 4, 1, 0],
+    explanation: "Routers route packets between networks using destination IP addresses, while Layer 2 switches forward frames inside a LAN using MAC addresses. An NGFW enforces policy with deep, application-aware inspection, a WLC centrally manages lightweight APs over CAPWAP, and an IPS sits inline to drop traffic that matches known attack signatures. Confusing the NGFW and IPS is common; the IPS is focused on signature-based threat blocking, while the NGFW is the broader policy enforcement point."
+  },
+  {
+    id: "nf-052",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. A data center uses the architecture shown. To which switches do the servers connect?",
+    exhibit: "        Spine1        Spine2\n        /  |  \\       /  |  \\\n       /   |   \\     /   |   \\\n   Leaf1  Leaf2  Leaf3  (each leaf connects\n                         to every spine)",
+    options: [
+      "Only to the leaf switches",
+      "Only to the spine switches",
+      "To both the spine and leaf switches for redundancy",
+      "Directly to the core layer above the spines"
+    ],
+    answer: [0],
+    explanation: "In a spine-leaf fabric, endpoints such as servers attach only to leaf switches; the spine layer interconnects the leaves and carries no host connections. Attaching servers to spines would break the uniform any-leaf-to-any-leaf forwarding model that gives the design its predictable latency. There is no separate core layer above the spines in a standard two-tier spine-leaf fabric."
+  },
+  {
+    id: "nf-053",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. A small campus is built as shown, with the access switches dual-homed to a pair of switches that also terminate the WAN router. Which network design does this represent?",
+    exhibit: "            WAN Router\n                |\n        +-------+-------+\n        |               |\n     SwitchA --------- SwitchB   (combined core/distribution)\n      |   \\            /   |\n      |    \\          /    |\n   Access1   \\      /    Access2\n              Access3",
+    options: [
+      "Two-tier collapsed core",
+      "Three-tier hierarchical design",
+      "Spine-leaf fabric",
+      "Full mesh WAN topology"
+    ],
+    answer: [0],
+    explanation: "When the core and distribution functions are combined into a single switch pair that aggregates the access layer and connects to the WAN, the design is a two-tier or collapsed core architecture, common in small and midsize campuses. A three-tier design would have separate distribution and core layers. It is not spine-leaf because the access switches do not each connect to every upstream switch in a uniform fabric role, and the diagram shows a LAN hierarchy, not a WAN mesh."
+  },
+  {
+    id: "nf-054",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two statements about a spine-leaf architecture are true? (Choose two.)",
+    options: [
+      "Every leaf switch connects to every spine switch",
+      "Traffic between any two leaf switches crosses a single spine, giving predictable latency",
+      "Spine switches are interconnected with high-speed links to each other",
+      "End hosts attach to the spine layer for the shortest path"
+    ],
+    answer: [0, 1],
+    explanation: "The defining rules of spine-leaf are that each leaf uplinks to every spine and that any leaf-to-leaf path is exactly leaf-spine-leaf, which makes east-west latency consistent. Spines do not connect to each other in a standard fabric, because all forwarding flows through leaf-spine paths. Hosts never attach to spines; they attach only to leaf switches."
+  },
+  {
+    id: "nf-055",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Which characteristic describes a typical SOHO network deployment?",
+    options: [
+      "A single integrated device provides routing, switching, wireless access, and basic firewall functions",
+      "Separate dedicated appliances are used for routing, security, and wireless control",
+      "A spine-leaf fabric interconnects redundant access switches",
+      "Dual WAN routers run first-hop redundancy protocols for gateway failover"
+    ],
+    answer: [0],
+    explanation: "Small office/home office networks usually rely on one multifunction device that combines router, switch, access point, and firewall/NAT functions to minimize cost and complexity. Dedicated appliances per function, spine-leaf fabrics, and redundant gateway designs with FHRPs are characteristics of enterprise and data center networks, not SOHO environments."
+  },
+  {
+    id: "nf-056",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A company connects six branch routers in a full mesh WAN so that every router has a direct link to every other router. How many point-to-point links are required?",
+    options: [
+      "6",
+      "12",
+      "15",
+      "30"
+    ],
+    answer: [2],
+    explanation: "A full mesh of n nodes requires n(n-1)/2 links, so six routers need 6 x 5 / 2 = 15 links. The value 30 results from forgetting to divide by two (counting each link twice), 12 would be a partial mesh count, and 6 corresponds to a ring or hub-and-spoke style topology rather than a full mesh."
+  },
+  {
+    id: "nf-057",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each network layer or role to its primary function.",
+    items: [
+      "core layer",
+      "leaf switch",
+      "access layer",
+      "spine switch",
+      "distribution layer"
+    ],
+    targets: [
+      "Connects end devices and supplies PoE to phones and APs",
+      "Aggregates access switches and enforces routing and policy boundaries",
+      "Provides a fast, resilient backbone between distribution blocks",
+      "Connects servers and uplinks to every switch in the fabric backbone",
+      "Forms the data center backbone that interconnects all leaf switches"
+    ],
+    answer: [2, 4, 0, 1, 3],
+    explanation: "In the campus hierarchy, the access layer terminates endpoints and provides PoE, the distribution layer aggregates access switches and applies policy, and the core provides fast transport between distribution blocks. In the data center, leaf switches connect servers and uplink to all spines, while spine switches form the backbone interconnecting the leaves. Mixing up distribution and core is common; remember the core is kept simple and fast while policy lives at distribution."
+  },
+  {
+    id: "nf-058",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A company decommissions its on-premises email servers and subscribes to Microsoft 365 so that employees access mail through a provider-hosted application. Which cloud service model is the company consuming?",
+    options: [
+      "SaaS",
+      "IaaS",
+      "PaaS",
+      "Private cloud"
+    ],
+    answer: [0],
+    explanation: "With Software as a Service, the provider hosts and operates the complete application, and the customer simply consumes it, which matches subscribing to hosted email. IaaS would give the company raw compute, storage, and networking on which it would still install and run its own mail servers, and PaaS provides a development platform for building applications. Private cloud describes who owns the infrastructure, not the service model being consumed here."
+  },
+  {
+    id: "nf-059",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two are essential characteristics of cloud computing as defined by NIST? (Choose two.)",
+    options: [
+      "On-demand self-service provisioning of resources",
+      "Rapid elasticity that scales resources up and down with demand",
+      "Dedicated physical hardware assigned permanently to each customer",
+      "A requirement that all workloads run in a public provider's facility"
+    ],
+    answer: [0, 1],
+    explanation: "NIST's essential cloud characteristics include on-demand self-service, rapid elasticity, broad network access, resource pooling, and measured service. Resource pooling means hardware is shared among tenants, so permanently dedicated physical hardware is the opposite of the model. Cloud also does not require a public provider; private and hybrid clouds are valid deployment models."
+  },
+  {
+    id: "nf-060",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. A company builds its WAN as shown. Which statement about this topology is true?",
+    exhibit: "            HQ Router\n           /    |    \\\n          /     |     \\\n     Branch1 Branch2 Branch3\n  (no links exist between branch sites)",
+    options: [
+      "It is a hub-and-spoke topology, and traffic between branches must transit the HQ router",
+      "It is a full mesh topology that provides a direct path between all sites",
+      "It is a hub-and-spoke topology, and branches communicate directly with each other",
+      "It is a partial mesh topology with redundant paths from each branch"
+    ],
+    answer: [0],
+    explanation: "With every branch connected only to HQ, the design is hub-and-spoke, so any branch-to-branch traffic must hairpin through the hub, adding latency and making HQ a single point of failure. A full mesh would require direct links between all sites, and a partial mesh would add at least some branch-to-branch links. The option claiming branches communicate directly contradicts the topology, since no spoke-to-spoke links exist."
+  }
+);
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "nf-061",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An engineer must connect two campus buildings that are 10 km apart with a 1 Gbps fiber link. Which media and transceiver combination is appropriate?",
+    options: [
+      "Single-mode fiber with 1000BASE-LX/LH SFPs",
+      "Multimode fiber with 1000BASE-SX SFPs",
+      "Cat6a UTP with 1000BASE-T SFPs",
+      "Multimode fiber with 1000BASE-T SFPs"
+    ],
+    answer: [0],
+    explanation: "At 10 km, only single-mode fiber works; 1000BASE-LX/LH optics over SMF support distances up to 10 km. 1000BASE-SX over multimode fiber is limited to roughly 550 m, far short of the requirement. Copper UTP of any category is limited to 100 m, and 1000BASE-T transceivers terminate copper, not multimode fiber."
+  },
+  {
+    id: "nf-062",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A workstation requires a 10 Gbps copper connection over a 90 m horizontal cable run. Which cable category is the minimum that supports this requirement?",
+    options: [
+      "Cat6a",
+      "Cat6",
+      "Cat5e",
+      "Cat3"
+    ],
+    answer: [0],
+    explanation: "Cat6a supports 10GBASE-T at the full 100 m channel length, so it covers a 90 m run. Cat6 is the tempting distractor, but it supports 10GBASE-T only to about 37-55 m depending on alien crosstalk conditions, which fails at 90 m. Cat5e tops out at 1 Gbps (and 2.5/5GBASE-T in some cases), and Cat3 is limited to 10 Mbps Ethernet and voice."
+  },
+  {
+    id: "nf-063",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "A switch interface reports a steadily increasing number of late collisions. Which two conditions can cause this counter to increment? (Choose two.)",
+    options: [
+      "A duplex mismatch between the two ends of the link",
+      "A cable segment that exceeds the maximum allowed length",
+      "A speed mismatch that prevents the link from negotiating",
+      "Excessive broadcast traffic in the VLAN"
+    ],
+    answer: [0, 1],
+    explanation: "Late collisions occur after the first 64 bytes of a frame have been transmitted, which legitimately happens only when a duplex mismatch makes one side transmit while the other believes it owns the wire, or when the physical segment is so long that the collision signal arrives too late. A speed mismatch on hard-coded ports prevents the link from coming up at all rather than causing late collisions, and broadcast traffic is valid traffic that does not create collisions on a properly operating link."
+  },
+  {
+    id: "nf-064",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Users on this port report intermittent slowness. What is the most likely cause of the output shown?",
+    exhibit: "Switch# show interfaces FastEthernet0/4\nFastEthernet0/4 is up, line protocol is up\n  Full-duplex, 100Mb/s, media type is 10/100BaseTX\n  5 minute input rate 184000 bits/sec, 41 packets/sec\n     7421 input errors, 6918 CRC, 0 frame, 0 overrun, 0 ignored\n     503 runts, 0 giants, 0 throttles\n     0 output errors, 0 collisions, 0 late collisions",
+    options: [
+      "The remote end of the link is operating in half-duplex (duplex mismatch)",
+      "The interface is administratively shut down",
+      "The port has negotiated the wrong speed and the link is down",
+      "Spanning tree has placed the port in a blocking state"
+    ],
+    answer: [0],
+    explanation: "A full-duplex port facing a half-duplex peer receives frames that the peer truncated when it detected what it believed were collisions, which appears on the full-duplex side as incrementing CRC errors and runts while its own collision counters stay at zero. The interface is clearly up/up, so it is neither shut down nor failed speed negotiation. A blocking spanning-tree state would stop user traffic entirely rather than corrupt frames."
+  },
+  {
+    id: "nf-065",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Both ends of this link are confirmed to be hard-coded to full duplex and 1000 Mbps. What is the most likely cause of the errors?",
+    exhibit: "Switch# show interfaces GigabitEthernet0/2\nGigabitEthernet0/2 is up, line protocol is up\n  Full-duplex, 1000Mb/s, link type is force-up\n     12904 input errors, 12877 CRC, 0 frame\n     0 runts, 0 giants\n     0 output errors, 0 collisions, 0 late collisions",
+    options: [
+      "A damaged cable or electromagnetic interference is corrupting frames in transit",
+      "A duplex mismatch is causing the far end to abort transmissions",
+      "The MAC address table has overflowed",
+      "The interface MTU is set lower than the frame size"
+    ],
+    answer: [0],
+    explanation: "When CRC and input errors increment on a link verified to match in speed and duplex, the frames are being corrupted on the wire, which points to a faulty cable, bad connector, marginal transceiver, or EMI near the cable path. A duplex mismatch is ruled out because both sides are hard-coded full duplex and no runts or collisions appear. MAC table overflow causes flooding, not CRC errors, and an MTU problem would show giants or drops rather than failed checksums."
+  },
+  {
+    id: "nf-066",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An engineer connects two older switches together with a copper patch cable, but neither switch supports auto-MDIX and the link stays down. Which cable resolves the problem?",
+    options: [
+      "A crossover cable that swaps the transmit and receive pairs",
+      "A straight-through cable wired identically on both ends",
+      "A rollover cable wired in reverse pin order",
+      "A coaxial cable with BNC connectors"
+    ],
+    answer: [0],
+    explanation: "Like devices such as two switches transmit on the same pins, so without auto-MDIX a crossover cable is required to connect transmit pins on one side to receive pins on the other. A straight-through cable is used between unlike devices, such as a switch and a host or router. A rollover cable is for console access to the RJ-45 console port, and coaxial cable is not used for switch-to-switch Ethernet uplinks."
+  },
+  {
+    id: "nf-067",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each interface error counter to the condition it indicates.",
+    items: [
+      "late collisions",
+      "CRC errors",
+      "runts",
+      "giants"
+    ],
+    targets: [
+      "Frames received that are smaller than 64 bytes",
+      "Frames received that exceed the maximum allowed size",
+      "Frames received that failed the frame check sequence",
+      "Collisions detected after the first 64 bytes of a frame were sent"
+    ],
+    answer: [2, 3, 1, 0],
+    explanation: "Runts are frames under the 64-byte Ethernet minimum, often fragments produced by collisions, while giants exceed the maximum frame size, frequently due to an MTU mismatch. CRC errors mean the frame check sequence failed, indicating corruption from bad cabling, EMI, or duplex problems. Late collisions occur after the 64-byte slot time has passed and point to duplex mismatches or cable runs that are too long."
+  },
+  {
+    id: "nf-068",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. The switch receives a frame on Gi0/1 in VLAN 10 destined to MAC address 0050.7966.cc0a. What does the switch do with the frame?",
+    exhibit: "Switch# show mac address-table dynamic\n          Mac Address Table\n-------------------------------------------\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n  10    0050.7966.aa01    DYNAMIC     Gi0/1\n  10    0050.7966.bb02    DYNAMIC     Gi0/2\n  20    0050.7966.cc0a    DYNAMIC     Gi0/5",
+    options: [
+      "It floods the frame out all VLAN 10 ports except Gi0/1",
+      "It forwards the frame out Gi0/5 where the MAC address is learned",
+      "It drops the frame because the destination is in a different VLAN",
+      "It sends the frame to the default gateway for routing"
+    ],
+    answer: [0],
+    explanation: "MAC address table lookups are performed per VLAN, and 0050.7966.cc0a is learned only in VLAN 20, so for a VLAN 10 frame the destination is an unknown unicast. A switch floods unknown unicast frames out every port in the same VLAN except the ingress port. It does not forward out Gi0/5 because that entry belongs to VLAN 20, it does not silently drop unknown unicasts, and a Layer 2 switch does not redirect frames to a gateway."
+  },
+  {
+    id: "nf-069",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "How does a switch populate its MAC address table?",
+    options: [
+      "It records the source MAC address of each received frame along with the ingress port and VLAN",
+      "It records the destination MAC address of each received frame along with the egress port",
+      "It queries each connected host with an ARP request during boot",
+      "It downloads the table from the neighboring switches using CDP"
+    ],
+    answer: [0],
+    explanation: "Switches learn by examining the source MAC address of incoming frames and binding it to the receiving port and VLAN; destinations are then looked up against these learned entries. Recording destination addresses is backwards, since the destination tells the switch where to send, not where a host lives. ARP is used by hosts and routers to resolve IP-to-MAC mappings, not by switches to build their tables, and CDP shares device information, not MAC address tables."
+  },
+  {
+    id: "nf-070",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "A switch receives a frame on port Gi0/3 with destination MAC FFFF.FFFF.FFFF and an unknown source MAC. Which two actions does the switch take? (Choose two.)",
+    options: [
+      "It forwards the frame out all ports in the same VLAN except Gi0/3",
+      "It adds the frame's source MAC address to the MAC address table for Gi0/3",
+      "It drops the frame because the destination address is invalid",
+      "It forwards the frame out all ports in every VLAN"
+    ],
+    answer: [0, 1],
+    explanation: "A destination of FFFF.FFFF.FFFF is the broadcast address, which the switch floods to every port in the same VLAN except the one on which it arrived; simultaneously, it learns the unknown source MAC against the ingress port. Broadcasts are valid Layer 2 traffic and are never dropped for being broadcast. Flooding never crosses VLAN boundaries, since each VLAN is a separate broadcast domain."
+  },
+  {
+    id: "nf-071",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Gi0/9 connects to a server NIC that is hard-coded to 100 Mbps full duplex, and the cable has tested good. Why does the link fail to come up?",
+    exhibit: "Switch# show running-config interface GigabitEthernet0/9\ninterface GigabitEthernet0/9\n speed 1000\n duplex full\n!\nSwitch# show interfaces GigabitEthernet0/9 status\nPort      Name   Status       Vlan  Duplex  Speed Type\nGi0/9            notconnect   30    full    1000  10/100/1000BaseTX",
+    options: [
+      "The switch port and the server NIC are hard-coded to different speeds, so the link cannot establish",
+      "A duplex mismatch is causing late collisions that keep the port down",
+      "The cable is a straight-through type when a crossover is required",
+      "VLAN 30 has not been created on the switch"
+    ],
+    answer: [0],
+    explanation: "With autonegotiation disabled on both ends, the speeds must match exactly; a port forced to 1000 Mbps cannot synchronize with a NIC forced to 100 Mbps, so the link never comes up and shows notconnect. A duplex mismatch produces an up/up link with errors, not a down link. The cable has tested good and modern gigabit ports support auto-MDIX, and a missing VLAN affects forwarding, not physical link establishment."
+  },
+  {
+    id: "nf-072",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A host has been silent on the network for several minutes, and its dynamic entry has disappeared from the switch MAC address table. What is the default aging time that caused the entry to be removed?",
+    options: [
+      "300 seconds",
+      "30 seconds",
+      "3600 seconds",
+      "Dynamic entries never age out until the port goes down"
+    ],
+    answer: [0],
+    explanation: "Cisco switches age out dynamic MAC entries after 300 seconds (5 minutes) without receiving a frame from that source address. After removal, frames destined to that MAC are flooded as unknown unicast until the host transmits again and is relearned. The 30-second value is closer to spanning-tree timers, 3600 seconds is not a default, and only static entries persist regardless of activity."
+  },
+  {
+    id: "nf-073",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each cable or media type to the scenario where it is the appropriate choice.",
+    items: [
+      "rollover cable",
+      "multimode fiber",
+      "coaxial cable",
+      "single-mode fiber",
+      "Cat6a UTP"
+    ],
+    targets: [
+      "A 40 km metro link between two data centers",
+      "A 400 m link between two buildings on the same campus",
+      "A 10 Gbps link to a desktop located 80 m from the closet",
+      "Console access to the RJ-45 console port of a router",
+      "The drop from a cable modem to the provider's plant"
+    ],
+    answer: [3, 1, 4, 0, 2],
+    explanation: "Single-mode fiber with long-reach optics is the only option for a 40 km span, while multimode fiber economically covers campus distances up to a few hundred meters. Cat6a UTP carries 10GBASE-T to 100 m for desktop drops, a rollover cable is purpose-built for RJ-45 console access, and coaxial cable connects cable modems to the DOCSIS provider network. Swapping SMF and MMF is the classic error; MMF cannot reach 40 km."
+  },
+  {
+    id: "nf-074",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An engineer needs a cost-effective transceiver for a 1 Gbps link over existing multimode fiber between two switches 300 m apart. Which SFP should be used?",
+    options: [
+      "1000BASE-SX",
+      "1000BASE-ZX",
+      "1000BASE-T",
+      "100BASE-FX"
+    ],
+    answer: [0],
+    explanation: "1000BASE-SX is the short-reach gigabit optic designed for multimode fiber and covers up to roughly 550 m, making it the economical fit for a 300 m MMF run. 1000BASE-ZX is a long-haul single-mode optic reaching about 70 km and would be wasted here besides being mismatched to MMF. 1000BASE-T is a copper transceiver limited to 100 m of UTP, and 100BASE-FX only provides 100 Mbps, failing the gigabit requirement."
+  },
+  {
+    id: "nf-075",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two advantages does fiber-optic cabling provide over copper UTP cabling? (Choose two.)",
+    options: [
+      "Immunity to electromagnetic interference",
+      "Support for much longer distances between devices",
+      "Lower cost of termination tools and connectors",
+      "The ability to deliver PoE to attached devices"
+    ],
+    answer: [0, 1],
+    explanation: "Fiber transmits light rather than electrical signals, so it is immune to EMI and crosstalk, and it spans distances from hundreds of meters on multimode to tens of kilometers on single-mode, far beyond copper's 100 m limit. Fiber termination is actually more expensive and skill-intensive than copper, and PoE requires electrical conductors, so power delivery is an advantage of copper, not fiber."
+  }
+);

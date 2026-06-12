@@ -923,3 +923,450 @@
     explanation: "Active/active forms an LACP bundle since either side may initiate, but passive/passive fails because neither sends the first LACPDU. Desirable/auto succeeds under PAgP, while auto/auto fails for the same passive-passive reason. Mode on neither sends nor processes negotiation frames, so pairing it with active (or desirable) leaves the negotiating side unsatisfied and no stable channel forms."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "na-061",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. Three switches are connected in a triangle and all run Rapid PVST+ for VLAN 10. Based on the output collected from each switch, which switch is elected root bridge for VLAN 10?",
+    exhibit: "SW1# show spanning-tree vlan 10 bridge\nVLAN0010   32778 (32768,  10)  0001.1111.1111   2    20  15  rstp\n\nSW2# show spanning-tree vlan 10 bridge\nVLAN0010   28682 (28672,  10)  00d0.ffff.ffff   2    20  15  rstp\n\nSW3# show spanning-tree vlan 10 bridge\nVLAN0010   28682 (28672,  10)  000a.bbbb.bbbb   2    20  15  rstp",
+    options: [
+      "SW1, because it has the lowest MAC address of the three switches",
+      "SW2, because its bridge ID was learned before SW3 joined the topology",
+      "SW3, because it ties with SW2 on priority and has the lower MAC address",
+      "The root cannot be determined without knowing the port costs between the switches"
+    ],
+    answer: [2],
+    explanation: "Root election compares the bridge priority field first and only uses the MAC address as a tiebreaker. SW2 and SW3 share the lowest priority (28672), so the election moves to the MAC tiebreak, which SW3 wins because 000a.bbbb.bbbb is lower than 00d0.ffff.ffff. SW1 has the lowest MAC overall, but its higher priority of 32768 removes it from contention before MAC is ever compared. Port costs influence root port selection on each switch, not the root bridge election itself."
+  },
+  {
+    id: "na-062",
+    domain: "Network Access",
+    type: "multi",
+    question: "Refer to the exhibit. Which two conclusions can be drawn about VLAN 10 spanning tree on SW3? (Choose two.)",
+    exhibit: "SW3# show spanning-tree vlan 10\nVLAN0010\n  Spanning tree enabled protocol rstp\n  Root ID    Priority    24586\n             Address     0017.5a4b.0001\n             Cost        4\n             Port        25 (GigabitEthernet0/1)\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec\n\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     0023.04ee.be01",
+    options: [
+      "SW3 is not the root bridge for VLAN 10",
+      "The root bridge was configured with a priority of 24576",
+      "SW3 has had its bridge priority manually lowered",
+      "GigabitEthernet0/1 is a designated port for VLAN 10",
+      "The root bridge is at least two switch hops away from SW3"
+    ],
+    answer: [0, 1],
+    explanation: "The output lists a separate Root ID with a different MAC address plus a root cost and root port, which only appears when the local switch is not the root. The root advertises priority 24586, which is the configured value 24576 plus the sys-id-ext of 10, so the administrator set 24576. SW3 still has the default 32768 (shown as 32778 with the VLAN added), so its priority was not changed. Gi0/1 is identified as the root port, not a designated port, and a root cost of 4 equals a single gigabit hop, so the root is directly connected."
+  },
+  {
+    id: "na-063",
+    domain: "Network Access",
+    type: "single",
+    question: "SW3 connects directly to the root bridge SW1 through FastEthernet0/1 and connects to SW2 through GigabitEthernet0/1. SW2 connects to SW1 through another gigabit link. All interfaces use default IEEE short-method costs. Which port does SW3 select as its root port?",
+    options: [
+      "FastEthernet0/1, because a directly connected path to the root is always preferred",
+      "GigabitEthernet0/1, because the total path cost of 8 is lower than the direct path cost of 19",
+      "FastEthernet0/1, because it has the lower interface number on SW3",
+      "GigabitEthernet0/1, because gigabit interfaces are always preferred regardless of cost"
+    ],
+    answer: [1],
+    explanation: "Root port selection is based on the lowest cumulative cost to the root, not hop count or directness. The path through SW2 accumulates 4 + 4 = 8 (two gigabit links), which beats the direct FastEthernet path cost of 19. The idea that a direct connection wins is a common trap; STP happily takes more hops if the total cost is lower. Interface numbers and raw bandwidth only matter as later tiebreakers when costs are equal."
+  },
+  {
+    id: "na-064",
+    domain: "Network Access",
+    type: "single",
+    question: "A nonroot switch has two uplinks with identical cumulative path cost to the root bridge, but each uplink connects to a different upstream switch. Which criterion does the switch evaluate next to choose its root port?",
+    options: [
+      "The lowest local interface number",
+      "The lowest sender port ID in the received BPDUs",
+      "The lowest sender bridge ID in the received BPDUs",
+      "The interface with the highest negotiated bandwidth"
+    ],
+    answer: [2],
+    explanation: "When root path costs tie, the switch prefers the port that receives BPDUs from the neighbor with the lowest sender bridge ID. The sender port ID is only consulted later, when both candidate ports receive BPDUs from the same upstream switch, so it cannot break this particular tie first. Local interface numbering and bandwidth are not part of the IEEE decision sequence; bandwidth only influences the cost value that was already found to be equal."
+  },
+  {
+    id: "na-065",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. The administrator never configured a spanning-tree priority on this switch, yet the output shows 32778. What explains this value?",
+    exhibit: "SW2# show spanning-tree vlan 10 | include Bridge ID|Priority|Address\n  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)\n             Address     5897.bdaa.3c80",
+    options: [
+      "The extended system ID adds the VLAN number to the configured priority field",
+      "A previous administrator configured spanning-tree vlan 10 priority 32778",
+      "The switch increments its priority by 10 each time a topology change occurs",
+      "Rapid PVST+ automatically raises the priority of switches that are not the root"
+    ],
+    answer: [0],
+    explanation: "With the extended system ID, the 16-bit priority field is split into a 4-bit configurable priority and a 12-bit system ID that carries the VLAN number, so the displayed value is 32768 + 10 for VLAN 10. A value of 32778 cannot be configured directly because priorities must be multiples of 4096. Topology changes never modify the bridge priority, and Rapid PVST+ does not penalize nonroot switches; the value is purely the default priority plus the VLAN ID."
+  },
+  {
+    id: "na-066",
+    domain: "Network Access",
+    type: "dragdrop",
+    question: "Match each 802.1D spanning-tree port state to its description.",
+    items: ["Learning", "Blocking", "Listening", "Forwarding"],
+    targets: [
+      "Receives BPDUs but does not learn MAC addresses or forward frames",
+      "Sends and receives BPDUs to determine the port role but does not learn MAC addresses",
+      "Populates the MAC address table but still discards user data frames",
+      "Sends and receives user data and learns source MAC addresses"
+    ],
+    answer: [1, 2, 0, 3],
+    explanation: "A blocking port only listens to BPDUs to stay aware of the topology while discarding all data frames. Listening is the first transitional state, where the port participates in BPDU exchange to settle its role, but the MAC table is untouched. Learning then builds the MAC address table for 15 seconds before forwarding finally passes user traffic. Mixing up listening and learning is the classic error: learning is the state that fills the table, while listening only handles BPDUs."
+  },
+  {
+    id: "na-067",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. A user reports that a desk port went dead this morning after the facilities team rearranged some equipment. Based on the output, what happened and what must the administrator do to restore service?",
+    exhibit: "SW1# show interfaces status err-disabled\nPort      Name               Status       Reason               Err-disabled Vlans\nGi0/7     DESK-PORT          err-disabled bpduguard\n\nSW1# show logging | include Gi0/7\n%SPANTREE-2-BLOCK_BPDUGUARD: Received BPDU on port Gi0/7 with BPDU Guard enabled. Disabling port.\n%PM-4-ERR_DISABLE: bpduguard error detected on Gi0/7, putting Gi0/7 in err-disable state",
+    options: [
+      "A device sending BPDUs was connected to the edge port; remove it, then issue shutdown and no shutdown on Gi0/7",
+      "The port detected a unidirectional link; replace the cable and the port recovers automatically",
+      "A superior BPDU arrived and root guard blocked the port; it recovers as soon as the BPDUs stop",
+      "The PortFast feature failed; remove spanning-tree portfast from the interface to recover it"
+    ],
+    answer: [0],
+    explanation: "BPDU guard err-disables an edge port the moment any BPDU arrives, which typically means a switch or bridging device was plugged into a port intended for end hosts. After removing the offending device, the administrator must bounce the port with shutdown and no shutdown, or rely on errdisable recovery if it is configured. Root guard behaves differently: it puts the port in a root-inconsistent state that self-recovers, and it never err-disables. Unidirectional link issues involve loop guard or UDLD, not the bpduguard reason code shown."
+  },
+  {
+    id: "na-068",
+    domain: "Network Access",
+    type: "single",
+    question: "An engineer must ensure that switches added by another department downstream of the distribution layer can never take over as the spanning-tree root. On which ports should root guard be applied?",
+    options: [
+      "On the distribution switch's designated ports facing the downstream department switches",
+      "On the root ports of every downstream department switch",
+      "On all access ports where end-user workstations connect",
+      "On the uplinks of the current root bridge toward the distribution layer"
+    ],
+    answer: [0],
+    explanation: "Root guard is applied on designated ports that face parts of the network that must never contain the root; if a superior BPDU arrives there, the port moves to root-inconsistent and stops forwarding until the superior BPDUs cease. Applying it on root ports would be self-defeating because those ports must accept superior BPDUs from the legitimate root. Access ports with workstations are better protected with PortFast and BPDU guard, since hosts should send no BPDUs at all. Configuring it on the root bridge's own uplinks does not control where downstream superior BPDUs can appear."
+  },
+  {
+    id: "na-069",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. What condition caused the log message on SW2?",
+    exhibit: "SW2# show logging | include LOOPGUARD\n%SPANTREE-2-LOOPGUARD_BLOCK: Loop guard blocking port GigabitEthernet0/2 on VLAN0010.",
+    options: [
+      "Gi0/2 received a BPDU with a better bridge ID than the current root",
+      "Gi0/2 stopped receiving BPDUs, likely due to a unidirectional link, and loop guard prevented it from transitioning to forwarding",
+      "Gi0/2 received a BPDU while configured as a PortFast edge port",
+      "Gi0/2 detected a duplex mismatch and was placed in err-disabled state"
+    ],
+    answer: [1],
+    explanation: "Loop guard watches nondesignated ports that normally receive BPDUs; if those BPDUs suddenly stop, which often indicates a unidirectional fiber or transceiver fault, the port is placed in a loop-inconsistent blocking state instead of aging out the BPDU information and forwarding, which would create a loop. A superior BPDU would trigger root guard, not loop guard. A BPDU on a PortFast edge port triggers BPDU guard. Loop guard does not err-disable the port; it recovers automatically once BPDUs are received again."
+  },
+  {
+    id: "na-070",
+    domain: "Network Access",
+    type: "multi",
+    question: "Which two statements accurately describe how Rapid Spanning Tree (802.1w) improves on legacy 802.1D? (Choose two.)",
+    options: [
+      "RSTP merges the blocking and listening states into a single discarding state",
+      "RSTP uses a proposal and agreement handshake on point-to-point links instead of waiting on timers",
+      "RSTP eliminates the learning state so ports transition directly to forwarding",
+      "In RSTP, only the root bridge generates BPDUs and other switches relay them",
+      "RSTP requires PortFast on every port to achieve fast convergence"
+    ],
+    answer: [0, 1],
+    explanation: "RSTP collapses the old disabled, blocking, and listening states into discarding, leaving just discarding, learning, and forwarding. On full-duplex point-to-point links it negotiates rapid transitions through an explicit proposal and agreement exchange, removing the dependence on forward-delay timers. The learning state still exists in RSTP, so ports do not jump straight to forwarding. Every RSTP switch originates its own BPDUs each hello interval rather than relaying the root's, and PortFast equivalents are only needed on edge ports, not everywhere."
+  },
+  {
+    id: "na-071",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. Why is GigabitEthernet0/2 on SW2 assigned the backup role?",
+    exhibit: "SW2# show spanning-tree vlan 10\n<output omitted>\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- ----\nGi0/1               Desg FWD 19        128.1    Shr\nGi0/2               Back BLK 19        128.2    Shr",
+    options: [
+      "It provides a redundant path to the root bridge through a neighboring switch",
+      "It connects to the same shared segment as Gi0/1, for which SW2 is already the designated switch",
+      "It received a BPDU with an inferior bridge ID and was demoted",
+      "It is waiting for the proposal and agreement handshake to complete"
+    ],
+    answer: [1],
+    explanation: "A backup port is a discarding port that receives the switch's own BPDUs because another local port, here Gi0/1, is the designated port on the very same shared segment, typically through a hub. It backs up the designated port for that segment, not the path toward the root; a redundant path to the root through a different switch would be an alternate port instead. The Shr link type confirms a half-duplex shared segment, which is the only topology where backup ports normally appear. Inferior BPDUs and pending handshakes do not produce the backup role."
+  },
+  {
+    id: "na-072",
+    domain: "Network Access",
+    type: "dragdrop",
+    question: "Match each Rapid PVST+ port role to its description.",
+    items: ["Alternate port", "Root port", "Backup port", "Designated port"],
+    targets: [
+      "The single best port toward the root bridge on a nonroot switch",
+      "The forwarding port on each segment responsible for sending BPDUs onto that segment",
+      "A discarding port that offers a redundant path to the root through a different neighboring switch",
+      "A discarding port that provides redundancy to a segment this switch already serves as designated"
+    ],
+    answer: [1, 3, 0, 2],
+    explanation: "Each nonroot switch elects exactly one root port, the lowest-cost path toward the root, while every segment has one designated port that forwards and originates BPDUs onto it. An alternate port discards traffic but holds a backup path to the root learned from another switch's superior BPDUs, allowing rapid failover if the root port dies. A backup port also discards, but it backs up the local switch's own designated port on a shared segment, which is why it only appears with hubs or half-duplex links. Confusing alternate with backup is the most common mistake: alternate protects the root path, backup protects a segment."
+  },
+  {
+    id: "na-073",
+    domain: "Network Access",
+    type: "single",
+    question: "An engineer issues the command spanning-tree vlan 10 root primary on SW2 while another switch currently holds the root role with priority 20480. What does the command actually configure?",
+    options: [
+      "It sets SW2's VLAN 10 priority to a value 4096 lower than the current root, in this case 16384",
+      "It always sets SW2's VLAN 10 priority to 24576 regardless of the current root",
+      "It enables a dynamic process that keeps lowering SW2's priority whenever a better root appears",
+      "It sets SW2's priority to 0 to guarantee it permanently remains the root bridge"
+    ],
+    answer: [0],
+    explanation: "The root primary macro checks the current root's priority: it configures 24576 if the existing root is at 24576 or higher, but if the root is already below 24576 it sets the local priority 4096 less than the root's value, so here SW2 receives 16384. It is a one-time calculation, not a running process, so a switch later configured with a still lower priority can steal the root role. Priority 0 is only what an administrator might set manually; the macro never uses it, which is why root primary offers no permanent guarantee."
+  },
+  {
+    id: "na-074",
+    domain: "Network Access",
+    type: "single",
+    question: "SW2 and SW3 are both nonroot switches connected by a single link. SW2 has a root path cost of 4 and SW3 has a root path cost of 8. Which port becomes the designated port on the segment between them, and what happens to the other port?",
+    options: [
+      "SW2's port becomes designated because of its lower root path cost; SW3's port becomes an alternate discarding port",
+      "SW3's port becomes designated because the switch farther from the root must forward; SW2's port blocks",
+      "Both ports forward because each switch already has a root port elsewhere",
+      "The port on the switch with the lower MAC address becomes designated regardless of cost"
+    ],
+    answer: [0],
+    explanation: "On every segment, the designated port belongs to the switch that advertises the lowest cost to the root, so SW2 with cost 4 wins over SW3 with cost 8. SW3's end of the link can be neither root port nor designated, so RSTP assigns it the alternate role and keeps it discarding to break the potential loop. Both ports forwarding would create exactly the loop STP exists to prevent. Bridge ID, including MAC address, is only consulted as a tiebreaker when the advertised root path costs are equal."
+  },
+  {
+    id: "na-075",
+    domain: "Network Access",
+    type: "multi",
+    question: "Which two statements about Rapid PVST+ on Cisco Catalyst switches are true? (Choose two.)",
+    options: [
+      "A separate RSTP instance runs for each active VLAN",
+      "Every switch generates its own BPDUs each hello interval, even if it is not the root",
+      "All VLANs must share a single common root bridge",
+      "Convergence after a link failure depends on the max-age and forward-delay timers expiring",
+      "Rapid PVST+ BPDUs are identical in format to legacy 802.1D BPDUs"
+    ],
+    answer: [0, 1],
+    explanation: "Rapid PVST+ is Cisco's per-VLAN implementation of 802.1w, so each VLAN runs an independent RSTP instance with its own root election, which enables per-VLAN load sharing rather than forcing one common root. Unlike 802.1D, where switches relay BPDUs originated by the root, every RSTP switch sources its own BPDUs each hello time, and a neighbor's silence is detected after just three missed hellos. Convergence relies on proposal and agreement handshakes rather than max-age and forward-delay expiry, and the BPDUs are version 2 frames that legacy 802.1D bridges do not generate."
+  }
+);
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "na-076",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. Which statement about GigabitEthernet0/2 on SW3 is true?",
+    exhibit: "SW3# show spanning-tree vlan 10\n<output omitted>\nInterface           Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- ----\nGi0/1               Root FWD 4         128.1    P2p\nGi0/2               Altn BLK 4         128.2    P2p",
+    options: [
+      "It is discarding traffic but can transition to the root port role almost immediately if Gi0/1 fails",
+      "It will begin forwarding after the max-age, listening, and learning timers expire, about 50 seconds after a failure",
+      "It is faulty and must be administratively recovered with shutdown and no shutdown",
+      "It is sending superior BPDUs to force the neighboring switch to block its own port"
+    ],
+    answer: [0],
+    explanation: "An alternate port stores the best BPDU it receives from another switch and serves as a precomputed backup path to the root. Because the topology runs RSTP (P2p link type), the switch can promote the alternate port to root port and move it to forwarding within a few seconds using the proposal and agreement mechanism, without waiting on legacy timers. The 50-second timer sequence applies to classic 802.1D, not Rapid PVST+. The port is healthy, and alternate ports receive superior BPDUs rather than send them."
+  },
+  {
+    id: "na-077",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. The network runs legacy 802.1D PVST+ with the timers shown. A blocked port on SW4 stops receiving BPDUs because of an indirect failure two switches away. Approximately how long before that port starts forwarding user traffic?",
+    exhibit: "SW4# show spanning-tree vlan 10 | include Hello\n             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec",
+    options: [
+      "30 seconds",
+      "35 seconds",
+      "50 seconds",
+      "20 seconds"
+    ],
+    answer: [2],
+    explanation: "For an indirect failure, the blocked port must first age out the stored superior BPDU, which takes the full max-age of 20 seconds, then move through listening (15 seconds) and learning (15 seconds), for a total of about 50 seconds. The 30-second answer applies only to a directly connected failure, where the port detects loss of carrier and skips the max-age wait, going straight to listening and learning. Twenty seconds is just the max-age component, and 35 seconds incorrectly combines max-age with only one forward-delay period."
+  },
+  {
+    id: "na-078",
+    domain: "Network Access",
+    type: "single",
+    question: "Which set of values lists the default IEEE short-method spanning-tree path costs for 10 Mbps, 100 Mbps, 1 Gbps, and 10 Gbps links, in that order?",
+    options: [
+      "100, 19, 4, 2",
+      "100, 10, 4, 1",
+      "250, 19, 10, 2",
+      "19, 4, 2, 1"
+    ],
+    answer: [0],
+    explanation: "The classic short-method costs are 100 for 10 Mbps Ethernet, 19 for FastEthernet, 4 for gigabit, and 2 for 10 gigabit, and these are the values Catalyst switches use by default. The other sequences mix in plausible-looking but wrong numbers; for example, 10 was never the FastEthernet cost, and the last option shifts every value one speed class too fast. Knowing these defaults is essential for root-port math, such as recognizing that two gigabit hops (4 + 4 = 8) beat one FastEthernet hop (19)."
+  },
+  {
+    id: "na-079",
+    domain: "Network Access",
+    type: "dragdrop",
+    question: "Match each spanning-tree protection feature to its function.",
+    items: ["Loop guard", "BPDU guard", "Root guard", "PortFast"],
+    targets: [
+      "Lets an edge port skip listening and learning so it forwards immediately",
+      "Err-disables an edge port the moment any BPDU is received on it",
+      "Blocks a designated port that receives a superior BPDU from a switch that must not become root",
+      "Blocks a nondesignated port that unexpectedly stops receiving BPDUs"
+    ],
+    answer: [3, 1, 2, 0],
+    explanation: "PortFast accelerates edge ports straight to forwarding, while BPDU guard backs it up by err-disabling the port if a BPDU ever arrives, stopping rogue switches at the access edge. Root guard polices designated ports facing parts of the network that must never win the root election, placing them in root-inconsistent state on receipt of a superior BPDU. Loop guard solves the opposite problem: it reacts to the absence of expected BPDUs, typically from a unidirectional link, by holding the port in loop-inconsistent state instead of letting it creep into forwarding."
+  },
+  {
+    id: "na-080",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. The current root bridge for VLAN 10 uses priority 28672. Given the error shown, which priority value should the engineer configure so that SW1 deterministically becomes the root?",
+    exhibit: "SW1(config)# spanning-tree vlan 10 priority 28000\n% Bridge Priority must be in increments of 4096.\n% Allowed values are:\n  0     4096  8192  12288 16384 20480 24576 28672\n  32768 36864 40960 45056 49152 53248 57344 61440",
+    options: [
+      "24576",
+      "28000, but entered with the spanning-tree vlan 10 root primary command instead",
+      "28671",
+      "32768"
+    ],
+    answer: [0],
+    explanation: "Bridge priority occupies only the upper 4 bits of the priority field when the extended system ID is in use, so it must be a multiple of 4096; 24576 is the highest allowed value that is still lower than the current root's 28672. Values such as 28000 or 28671 are rejected outright because they are not on the 4096 boundary, and no alternative command makes them valid. Configuring 32768 would leave SW1 with a worse priority than the existing root, so it could never win the election."
+  },
+  {
+    id: "na-081",
+    domain: "Network Access",
+    type: "multi",
+    question: "When a switch must choose its root port, which three criteria are evaluated, in order, after the root bridge has been identified? (Choose three.)",
+    options: [
+      "Lowest cumulative path cost to the root bridge",
+      "Lowest sender bridge ID in the received BPDUs",
+      "Lowest sender port ID in the received BPDUs",
+      "Lowest local MAC address on the candidate interface",
+      "Highest interface bandwidth on the candidate interface"
+    ],
+    answer: [0, 1, 2],
+    explanation: "Root port election proceeds through a strict sequence: lowest accumulated cost to the root, then lowest sender bridge ID, then lowest sender port ID (port priority followed by port number) when both candidate ports connect to the same neighbor. The local MAC address belongs to the bridge ID used in root elections, not to per-port root-port selection. Bandwidth is only an input to the cost calculation; once costs are computed, raw interface speed is never compared directly."
+  },
+  {
+    id: "na-082",
+    domain: "Network Access",
+    type: "single",
+    question: "A campus has two distribution switches, D1 and D2, and access switches with one uplink to each. With Rapid PVST+, how can the engineer make both uplinks carry traffic instead of leaving one fully idle?",
+    options: [
+      "Configure D1 as root primary for odd VLANs and D2 as root primary for even VLANs so each uplink forwards for different VLANs",
+      "Increase the port cost on the idle uplink so spanning tree unblocks it for all VLANs",
+      "Enable PortFast on both uplinks so neither is ever placed in the blocking state",
+      "Configure the same bridge priority on D1 and D2 so the root role is shared equally"
+    ],
+    answer: [0],
+    explanation: "Because Rapid PVST+ runs an independent spanning-tree instance per VLAN, the engineer can place the root for some VLANs on D1 and for the others on D2; each access switch then forwards toward a different uplink depending on the VLAN, using both links simultaneously. Raising the cost of the idle uplink makes it even less attractive and changes nothing for forwarding. PortFast is strictly for edge ports and would invite loops on inter-switch links. Identical priorities do not share the root role; the lower MAC address simply wins all VLANs, recreating the original problem."
+  },
+  {
+    id: "na-083",
+    domain: "Network Access",
+    type: "single",
+    question: "An RSTP edge port configured with spanning-tree portfast, but without BPDU guard, receives a BPDU. What happens?",
+    options: [
+      "The port immediately loses its edge status and becomes a normal spanning-tree port that can generate topology changes",
+      "The port is placed in the err-disabled state until an administrator recovers it",
+      "The port ignores the BPDU because edge ports do not process spanning-tree frames",
+      "The port forwards the BPDU to all other ports in the same VLAN"
+    ],
+    answer: [0],
+    explanation: "PortFast assumes the port leads to a host, so receiving a BPDU proves that assumption wrong; the port silently drops its edge status and behaves as a regular RSTP port, participating in role computation and triggering topology change handling. Err-disable only occurs when BPDU guard is also configured, which this scenario explicitly excludes. Edge ports still listen for BPDUs precisely so they can detect this situation, and switches never flood BPDUs as if they were data frames; BPDUs are consumed and regenerated per switch."
+  },
+  {
+    id: "na-084",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. The link between SW1 and SW2 is an inter-switch link running Rapid PVST+. What is the consequence of the link type shown, and how can it be corrected?",
+    exhibit: "SW1# show spanning-tree interface gigabitEthernet 0/3\nVlan                Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- ----\nVLAN0010            Desg FWD 19        128.3    Shr",
+    options: [
+      "The half-duplex link is treated as shared, so RSTP cannot use the proposal and agreement handshake; configuring full duplex restores rapid transitions",
+      "The shared type indicates a trunk carrying multiple VLANs; converting the port to access mode restores rapid convergence",
+      "The Shr flag means the port connects to a hub, and RSTP is automatically disabled; replace the hub with a switch",
+      "The link type has no effect on convergence because RSTP always converges within one hello interval"
+    ],
+    answer: [0],
+    explanation: "RSTP classifies a port's link type from its duplex: full duplex becomes point-to-point and half duplex becomes shared. On a shared link the proposal and agreement handshake is not attempted, so the port falls back to slower, timer-based transitions even though RSTP is running. Setting both ends to full duplex (or fixing whatever forced half duplex) restores P2p classification and rapid convergence. Trunking has nothing to do with the Shr flag, RSTP is not disabled by it, and convergence speed absolutely depends on this classification."
+  },
+  {
+    id: "na-085",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. A neighboring switch connected to SW1 suffers a sudden power failure and stops transmitting. Based on the output, what is the maximum time its entry remains in SW1's CDP neighbor table?",
+    exhibit: "SW1# show cdp\nGlobal CDP information:\n        Sending CDP packets every 60 seconds\n        Sending a holdtime value of 180 seconds\n        Sending CDPv2 advertisements is  enabled",
+    options: [
+      "60 seconds after the failure",
+      "180 seconds after the last advertisement was received",
+      "240 seconds, the sum of the timer and the holdtime",
+      "The entry is removed immediately when the interface goes down"
+    ],
+    answer: [1],
+    explanation: "Each CDP advertisement carries a holdtime telling the receiver how long to retain the entry without hearing another update, so SW1 keeps the neighbor for up to 180 seconds after the last frame it received. The 60-second value is only the advertisement interval, not a retention timer. CDP does not add the two values together. Immediate removal happens only if SW1's own connected interface physically goes down; a remote device dying without dropping link state must age out via holdtime."
+  },
+  {
+    id: "na-086",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. A technician must trace the cable between SW1 and SW2. Which statement correctly describes the physical connection?",
+    exhibit: "SW1# show cdp neighbors\nCapability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge,\n                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone\n\nDevice ID        Local Intrfce     Holdtme    Capability  Platform  Port ID\nSW2              Gig 0/3           155        S I         WS-C2960  Gig 0/2\nRT1              Gig 0/24          133        R S I       ISR4321   Gig 0/0/1",
+    options: [
+      "SW1's Gi0/3 connects to SW2's Gi0/2",
+      "SW1's Gi0/2 connects to SW2's Gi0/3",
+      "SW2's Gi0/3 connects to SW1's Gi0/2",
+      "SW1's Gi0/3 connects to SW2's Gi0/3"
+    ],
+    answer: [0],
+    explanation: "In show cdp neighbors output taken on SW1, the Local Intrfce column is SW1's own port and the Port ID column is the interface on the remote device, so SW1 Gi0/3 plugs into SW2 Gi0/2. Reversing the two columns is the classic misread and produces the second and third options. The interface numbers on the two ends have no reason to match, so assuming Gi0/3 connects to Gi0/3 is also wrong."
+  },
+  {
+    id: "na-087",
+    domain: "Network Access",
+    type: "multi",
+    question: "Which two statements correctly contrast LLDP with CDP on Cisco switches? (Choose two.)",
+    options: [
+      "LLDP is the IEEE 802.1AB standard and interoperates with non-Cisco devices, while CDP is Cisco proprietary",
+      "LLDP transmission and reception can be disabled independently on an interface, while CDP is toggled as a whole per interface",
+      "LLDP is enabled globally by default on Cisco switches, while CDP must be enabled manually",
+      "LLDP advertisements are carried over UDP, while CDP runs directly over Ethernet",
+      "CDP supports advertising the native VLAN, while LLDP has no comparable capability"
+    ],
+    answer: [0, 1],
+    explanation: "LLDP is the vendor-neutral IEEE 802.1AB protocol, making it the choice in multivendor environments, whereas CDP only runs between Cisco devices. LLDP also offers finer interface control through the separate lldp transmit and lldp receive commands, while CDP on an interface is simply on or off with no cdp enable. The defaults are the reverse of the third option: CDP runs by default and LLDP requires lldp run. Both protocols operate directly at Layer 2 using multicast frames, not UDP, and LLDP TLVs can convey VLAN information as well."
+  },
+  {
+    id: "na-088",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. An engineer needs to discover non-Cisco devices attached to SW1 but receives the error shown. Which configuration resolves the problem?",
+    exhibit: "SW1# show lldp neighbors\n% LLDP is not enabled",
+    options: [
+      "Enter lldp run in global configuration mode",
+      "Enter lldp enable on each interface that connects to a non-Cisco device",
+      "Enter cdp run in global configuration mode, because LLDP relies on the CDP process",
+      "Enter lldp transmit on each interface, which also activates the global LLDP process"
+    ],
+    answer: [0],
+    explanation: "Unlike CDP, LLDP is disabled by default on Cisco IOS switches and must be activated globally with lldp run before any neighbors can be learned. The per-interface commands are lldp transmit and lldp receive, which fine-tune direction once the global process exists, but they do not start LLDP by themselves, and lldp enable is not a valid IOS command. CDP and LLDP are completely independent protocols, so enabling CDP has no effect on LLDP operation."
+  },
+  {
+    id: "na-089",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. An engineer ran show cdp neighbors first, then collected the output shown. Which piece of information in this output is NOT available in the brief show cdp neighbors listing?",
+    exhibit: "SW1# show cdp neighbors detail\n-------------------------\nDevice ID: SW2.example.local\nEntry address(es):\n  IP address: 10.1.99.2\nPlatform: cisco WS-C2960X-24TS-L,  Capabilities: Switch IGMP\nInterface: GigabitEthernet0/3,  Port ID (outgoing port): GigabitEthernet0/2\nHoldtime : 152 sec\n\nVersion :\nCisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.2(7)E\n\nNative VLAN: 99\nDuplex: full",
+    options: [
+      "The neighbor's device ID",
+      "The neighbor's IP address",
+      "The neighbor's platform",
+      "The neighbor's outgoing port ID"
+    ],
+    answer: [1],
+    explanation: "The brief show cdp neighbors table includes the device ID, local interface, holdtime, capabilities, platform, and remote port ID, but it never lists Layer 3 addresses. The management IP address, along with the IOS version, native VLAN, and duplex setting, appears only in show cdp neighbors detail or show cdp entry output. This distinction matters operationally because finding a neighbor's address to SSH into requires the detail form of the command."
+  },
+  {
+    id: "na-090",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. Security policy states that devices in the public lobby must not learn any topology information from the switch, but discovery protocols must keep running everywhere else, including on ports with Cisco IP phones. Which configuration meets the requirement?",
+    exhibit: "SW1# show running-config interface gigabitEthernet 0/15\ninterface GigabitEthernet0/15\n description LOBBY-KIOSK\n switchport mode access\n switchport access vlan 50\n spanning-tree portfast",
+    options: [
+      "Configure no cdp enable and no lldp transmit on interface Gi0/15",
+      "Configure no cdp run and no lldp run in global configuration mode",
+      "Configure switchport nonegotiate on interface Gi0/15",
+      "Configure cdp holdtime 10 in global configuration mode"
+    ],
+    answer: [0],
+    explanation: "Disabling CDP and LLDP advertisements on just the lobby interface stops the switch from leaking its hostname, platform, IOS version, and addressing to untrusted devices while leaving discovery intact elsewhere. The global no cdp run and no lldp run commands would kill discovery on every port, breaking the requirement and disrupting IP phones that rely on CDP to learn the voice VLAN. The switchport nonegotiate command only suppresses DTP, which is unrelated to information disclosure, and shortening the CDP holdtime changes aging, not what is advertised."
+  }
+);
