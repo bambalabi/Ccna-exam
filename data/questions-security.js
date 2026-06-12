@@ -887,3 +887,455 @@
     explanation: "IKE Phase 1 authenticates the two peers using methods such as pre-shared keys or certificates and establishes the ISAKMP security association, a protected control channel. IKE Phase 2 then runs inside that channel to negotiate the IPsec SAs and transform sets that actually protect user data. User traffic encryption is performed by ESP after both phases complete, and routing updates are exchanged by routing protocols, not by IKE."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "sec-061",
+    domain: "Security Fundamentals",
+    type: "dragdrop",
+    question: "Drag each security term on the left to its matching definition on the right.",
+    items: ["Exploit", "Mitigation technique", "Threat", "Vulnerability"],
+    targets: [
+      "A weakness in a system or its design that can be compromised",
+      "A potential danger that may take advantage of a weakness",
+      "A tool, script, or method used to take advantage of a weakness",
+      "A countermeasure that reduces the likelihood or impact of an attack"
+    ],
+    answer: [3, 2, 0, 1],
+    explanation: "A vulnerability is the weakness itself, while a threat is the potential danger that could act on that weakness. An exploit is the concrete mechanism, such as a script or technique, that actually takes advantage of the vulnerability. A mitigation technique, such as a patch or an ACL, is the countermeasure that reduces risk. Confusing threat and exploit is the classic trap: the threat is potential, whereas the exploit is the realized method."
+  },
+  {
+    id: "sec-062",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "An attacker attempts to log in to many different corporate user accounts using the same single commonly used password, then waits an hour before trying a second password against the same set of accounts. Which type of attack is described?",
+    options: [
+      "Dictionary attack against a single account",
+      "Password spraying",
+      "On-path (man-in-the-middle) attack",
+      "Brute-force attack against a single account"
+    ],
+    answer: [1],
+    explanation: "Password spraying tries one or a few common passwords across many accounts and paces the attempts to stay under account-lockout and detection thresholds. A dictionary or brute-force attack instead targets one account with many candidate passwords, which quickly triggers lockout policies. An on-path attack intercepts traffic between two parties and does not involve guessing credentials at a login prompt."
+  },
+  {
+    id: "sec-063",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "An attacker connects a laptop to an access port and runs a tool that sends thousands of frames per second, each with a different bogus source MAC address. Shortly afterward, the switch begins forwarding unicast traffic out all ports in the VLAN and the attacker captures other users' conversations. Which attack is being performed?",
+    options: [
+      "ARP poisoning",
+      "VLAN hopping",
+      "MAC address flooding (CAM table overflow)",
+      "DHCP starvation"
+    ],
+    answer: [2],
+    explanation: "Flooding frames with random source MACs exhausts the switch MAC address (CAM) table; once it is full, the switch cannot learn new addresses and floods unknown unicast traffic out every port, letting the attacker eavesdrop. Port security with a low maximum MAC count mitigates this attack. ARP poisoning forges ARP replies rather than source MACs, DHCP starvation exhausts the DHCP pool with bogus DISCOVER messages, and VLAN hopping abuses trunk negotiation or double tagging."
+  },
+  {
+    id: "sec-064",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Which three security services does an IPsec VPN provide for traffic between two sites? (Choose three.)",
+    options: [
+      "Confidentiality through encryption of the protected traffic",
+      "Data integrity through hashed message authentication codes",
+      "Origin authentication of the VPN peers",
+      "Guaranteed bandwidth for the tunneled traffic",
+      "Automatic compression of all tunneled traffic"
+    ],
+    answer: [0, 1, 2],
+    explanation: "IPsec provides confidentiality (encryption with algorithms such as AES), integrity (HMACs such as SHA-based hashes detect modification in transit), and authentication of the peers (pre-shared keys or certificates), plus anti-replay protection. IPsec does not reserve bandwidth, which is a QoS function, and it does not compress traffic; encryption actually makes payloads incompressible downstream."
+  },
+  {
+    id: "sec-065",
+    domain: "Security Fundamentals",
+    type: "dragdrop",
+    question: "Drag each IPsec component on the left to its matching description on the right.",
+    items: ["Transport mode", "IKE", "ESP", "Tunnel mode", "AH"],
+    targets: [
+      "Encrypts and authenticates the payload and is identified by IP protocol 50",
+      "Provides integrity and origin authentication but no encryption, IP protocol 51",
+      "Negotiates security associations and exchanges keys between the peers",
+      "Encapsulates the entire original IP packet behind a new IP header",
+      "Protects only the payload and reuses the original IP header"
+    ],
+    answer: [2, 4, 1, 3, 0],
+    explanation: "ESP (IP protocol 50) provides encryption plus integrity and is the protocol used in virtually all modern IPsec deployments, while AH (IP protocol 51) authenticates but never encrypts. IKE is the control-plane protocol that builds the security associations and derives keys before any user data is protected. Tunnel mode hides the original IP header inside a new one, which is required for site-to-site gateways, whereas transport mode keeps the original header and protects only the payload, typically for host-to-host traffic."
+  },
+  {
+    id: "sec-066",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "A site-to-site IPsec VPN using ESP fails to establish data connectivity because one router sits behind a PAT device that cannot translate the ESP packets. Which feature allows the tunnel to operate through the PAT device?",
+    options: [
+      "AH in transport mode",
+      "GRE without IPsec",
+      "NAT Traversal, which encapsulates ESP inside UDP port 4500",
+      "Switching the tunnel from IKEv2 to IKEv1"
+    ],
+    answer: [2],
+    explanation: "ESP is IP protocol 50 and carries no Layer 4 port numbers, so a PAT device has nothing to translate and drops or mistranslates the packets. NAT Traversal (NAT-T) detects the NAT during IKE negotiation and wraps ESP inside UDP port 4500, giving the PAT device ports to work with. AH is even worse through NAT because it authenticates the IP header, plain GRE provides no encryption, and changing the IKE version does not address the missing port information in ESP."
+  },
+  {
+    id: "sec-067",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. During which stage of IPsec VPN establishment are the parameters shown negotiated between the two peers?",
+    exhibit: "crypto ipsec transform-set STRONG esp-aes 256 esp-sha256-hmac\n mode tunnel",
+    options: [
+      "IKE Phase 1 main mode",
+      "The TCP three-way handshake that precedes ISAKMP",
+      "DH group selection for the management session",
+      "IKE Phase 2, which builds the IPsec security associations"
+    ],
+    answer: [3],
+    explanation: "A transform set defines the encryption and hashing used to protect actual user data (here ESP with AES-256 and SHA-256), and these parameters are negotiated during IKE Phase 2, sometimes called quick mode. IKE Phase 1 negotiates the protected ISAKMP control channel and authenticates the peers but does not agree on the data-plane transforms. ISAKMP runs over UDP 500, not TCP, so no TCP handshake is involved."
+  },
+  {
+    id: "sec-068",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "A company must build an encrypted site-to-site tunnel between two routers that also carries OSPF, which uses multicast hello packets, between the sites. Which solution meets the requirement?",
+    options: [
+      "GRE over IPsec",
+      "A pure IPsec ESP tunnel without encapsulation enhancements",
+      "Clientless SSL VPN between the two routers",
+      "AH in transport mode"
+    ],
+    answer: [0],
+    explanation: "Traditional IPsec protects only unicast IP traffic and cannot natively carry multicast routing protocol packets such as OSPF hellos. Encapsulating traffic in GRE first turns the multicast packets into unicast GRE packets, which IPsec can then encrypt, so GRE over IPsec supports routing protocols across the tunnel. A pure ESP tunnel drops the multicast hellos, clientless SSL VPN is a browser-based remote-access technology rather than a router-to-router tunnel, and AH provides no encryption at all."
+  },
+  {
+    id: "sec-069",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "A site-to-site VPN configured to use AH consistently fails when packets pass through an intermediate NAT device, even though the same path works for other traffic. Why does AH fail in this scenario?",
+    options: [
+      "AH uses UDP port 500, which NAT devices always block",
+      "AH integrity protection covers the IP header, so the NAT address change invalidates the hash",
+      "AH encrypts the IP header so the NAT device cannot read the destination address",
+      "AH supports only IPv6 and the NAT device is IPv4-only"
+    ],
+    answer: [1],
+    explanation: "AH computes its integrity check value over the payload and the immutable fields of the IP header, including the source and destination addresses. When NAT rewrites an address, the receiver recomputes the hash, gets a mismatch, and discards the packet, so AH is fundamentally incompatible with NAT. AH does not encrypt anything, which also rules out the encrypted-header option, and it is identified by IP protocol 51 rather than a UDP port. ESP with NAT-T is the standard workaround."
+  },
+  {
+    id: "sec-070",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "External contractors must reach two internal web applications from personal devices on which the company is not permitted to install any VPN software. Which remote-access solution should the engineer deploy?",
+    options: [
+      "Site-to-site IPsec tunnels to each contractor location",
+      "An IKEv2 IPsec client VPN with AnyConnect installed on each device",
+      "A GRE tunnel from each contractor device",
+      "A clientless SSL VPN portal accessed through a standard web browser"
+    ],
+    answer: [3],
+    explanation: "A clientless SSL VPN uses the TLS capability already built into every web browser, so contractors simply log in to an HTTPS portal and are proxied to the published internal web applications with no software installation. An AnyConnect or IKEv2 client solution violates the no-software constraint. Site-to-site tunnels terminate between gateways and are impractical for roaming personal devices, and GRE provides no encryption or per-user authentication."
+  },
+  {
+    id: "sec-071",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Which two statements accurately compare site-to-site and remote-access VPNs? (Choose two.)",
+    options: [
+      "A site-to-site VPN is terminated on gateways and is transparent to the end hosts at each site",
+      "A remote-access VPN typically requires client software or a browser session on the user device",
+      "A site-to-site VPN requires VPN client software on every host at both sites",
+      "A remote-access VPN can only use IPsec and never TLS"
+    ],
+    answer: [0, 1],
+    explanation: "In a site-to-site VPN the routers or firewalls at each location encrypt traffic between the sites, so individual hosts need no VPN configuration and are unaware of the tunnel. Remote-access VPNs serve individual users, who connect either with installed client software such as AnyConnect or through a clientless TLS browser portal. The claim that every host needs client software in a site-to-site design reverses the models, and remote-access VPNs commonly use TLS in addition to IPsec, so the IPsec-only statement is false."
+  },
+  {
+    id: "sec-072",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "A network team must choose between TACACS+ and RADIUS for managing administrator logins to routers and switches. Which two characteristics are advantages of TACACS+ over RADIUS for this purpose? (Choose two.)",
+    options: [
+      "It encrypts the entire packet body rather than only the password field",
+      "It supports granular, per-command authorization for device administration",
+      "It uses UDP, which reduces session overhead",
+      "It is an open standard implemented identically by all vendors",
+      "It combines authentication and authorization into a single exchange"
+    ],
+    answer: [0, 1],
+    explanation: "TACACS+ encrypts the full packet body, whereas RADIUS obscures only the user password and sends other attributes in cleartext, and TACACS+ fully separates authentication, authorization, and accounting, enabling per-command authorization that is ideal for device administration. TACACS+ uses TCP port 49, not UDP, so the UDP statement describes RADIUS. TACACS+ is Cisco-proprietary in origin while RADIUS is the open standard, and combining authentication with authorization in one exchange is RADIUS behavior, generally considered a limitation for device management."
+  },
+  {
+    id: "sec-073",
+    domain: "Security Fundamentals",
+    type: "dragdrop",
+    question: "Drag each protocol characteristic on the left to the AAA protocol attribute it describes on the right.",
+    items: [
+      "Encrypts only the password field",
+      "TCP port 49",
+      "UDP ports 1812 and 1813",
+      "Encrypts the entire packet body"
+    ],
+    targets: [
+      "TACACS+ transport protocol and port",
+      "RADIUS authentication and accounting ports",
+      "TACACS+ payload protection",
+      "RADIUS payload protection"
+    ],
+    answer: [1, 2, 3, 0],
+    explanation: "TACACS+ runs over TCP port 49 and encrypts the entire body of every packet, which is why it is preferred for device administration. RADIUS uses UDP, with port 1812 for authentication and 1813 for accounting (legacy implementations used 1645 and 1646), and it protects only the user password attribute while the rest of the packet travels in cleartext. Mixing up the transport protocols is the most common error: TCP belongs to TACACS+ and UDP to RADIUS."
+  },
+  {
+    id: "sec-074",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. All TACACS+ servers become unreachable because of a WAN outage. What happens when an administrator attempts to open an SSH session to the router?",
+    exhibit: "aaa new-model\naaa authentication login default group tacacs+ local\n!\ntacacs server TAC1\n address ipv4 10.10.10.21\n key Tacacs123\n!\nusername admin privilege 15 secret Adm1nP@ss\n!\nline vty 0 4\n login authentication default\n transport input ssh",
+    options: [
+      "The session is rejected until at least one TACACS+ server responds",
+      "The router authenticates the administrator against the local username database",
+      "The router grants access without any authentication",
+      "The administrator must supply the enable secret instead of a username"
+    ],
+    answer: [1],
+    explanation: "The method list group tacacs+ local tries the TACACS+ server group first and falls back to the next method only when the servers do not respond, so during the outage the local account admin is used. The fallback occurs only on server unreachability; if a reachable server returns a FAIL for bad credentials, the router does not move on to the local database. Access is never granted without authentication, and the enable secret governs privileged EXEC access, not the initial login method."
+  },
+  {
+    id: "sec-075",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "A security team wants to eliminate password use for network administrators and instead authenticate them with cryptographic credentials that are issued by an internal CA and installed on corporate laptops. Which password alternative does this describe?",
+    options: [
+      "Biometric authentication",
+      "One-time passwords delivered by SMS",
+      "Digital certificates",
+      "A longer passphrase policy"
+    ],
+    answer: [2],
+    explanation: "Digital certificates issued by a certificate authority bind a public key to an identity, letting the laptop prove who it is through cryptographic operations instead of a memorized secret. Biometrics rely on physical characteristics such as fingerprints rather than issued credentials, SMS one-time passwords are still passwords and depend on a phone channel, and a longer passphrase policy strengthens passwords rather than eliminating them."
+  }
+);
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "sec-076",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. No other authentication commands are configured on the device. What happens when a user attempts to open a Telnet session to the router?",
+    exhibit: "line vty 0 4\n login\n transport input telnet ssh",
+    options: [
+      "The user is prompted for the enable secret",
+      "The connection is refused because the login command requires a line password that has not been set",
+      "The user is authenticated against the local username database",
+      "The user is placed directly into user EXEC mode with no password"
+    ],
+    answer: [1],
+    explanation: "The login command tells the vty lines to authenticate with the line password, but no password command is present, so IOS rejects the session with the message password required, but none set. Authentication against local usernames would require login local instead of login. The enable secret protects privileged EXEC mode, not the initial line login, and IOS never bypasses authentication on vty lines that are configured with login."
+  },
+  {
+    id: "sec-077",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An engineer must additionally permit SSH from only host 10.10.20.77 to server 172.16.30.9 without disturbing the existing entries. Which configuration meets the requirement?",
+    exhibit: "R1# show access-lists\nExtended IP access list BRANCH-IN\n    10 deny ip 10.99.0.0 0.0.255.255 any\n    20 permit tcp 10.10.20.0 0.0.0.255 host 172.16.30.9 eq 443\n    30 deny ip any any log",
+    options: [
+      "ip access-list extended BRANCH-IN\n 35 permit tcp host 10.10.20.77 host 172.16.30.9 eq 22",
+      "ip access-list extended BRANCH-IN\n permit tcp host 10.10.20.77 host 172.16.30.9 eq 22",
+      "ip access-list extended BRANCH-IN\n 25 permit tcp host 10.10.20.77 host 172.16.30.9 eq 22",
+      "ip access-list extended BRANCH-IN\n 5 permit tcp 10.10.20.0 0.0.0.255 host 172.16.30.9 eq 22"
+    ],
+    answer: [2],
+    explanation: "Inserting the entry at sequence 25 places it before the explicit deny ip any any at line 30, so the SSH traffic from host 10.10.20.77 is matched and permitted while every other line is untouched. Adding the statement at sequence 35, or appending it with no sequence number (which places it at the end), positions it after the deny any entry where it can never be matched. Permitting the entire 10.10.20.0/24 subnet at sequence 5 allows SSH from far more hosts than the single address the requirement specifies."
+  },
+  {
+    id: "sec-078",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An engineer must ensure that only hosts in the 10.0.100.0/24 management subnet can open SSH sessions to the router itself, without affecting traffic that is routed through the router. Which command completes the configuration?",
+    exhibit: "access-list 5 permit 10.0.100.0 0.0.0.255\n!\nline vty 0 4\n transport input ssh\n login local",
+    options: [
+      "ip access-group 5 in applied to every Layer 3 interface",
+      "access-class 5 out configured under line vty 0 4",
+      "ip access-group 5 out applied to the management interface",
+      "access-class 5 in configured under line vty 0 4"
+    ],
+    answer: [3],
+    explanation: "The access-class command applies an ACL to the vty lines and filters only sessions destined to the router itself, so access-class 5 in permits SSH solely from 10.0.100.0/24 regardless of which interface the connection arrives on. Applying ip access-group 5 in on every interface would also filter transit traffic, breaking ordinary forwarding for other sources. The out direction on access-class restricts outbound connections that users initiate from the router, which does not address the requirement."
+  },
+  {
+    id: "sec-079",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Refer to the exhibit. Which two source addresses are permitted to establish SSH sessions through the interface? (Choose two.)",
+    exhibit: "access-list 120 permit tcp 172.16.4.0 0.0.3.255 any eq 22\naccess-list 120 deny ip any any\n!\ninterface GigabitEthernet0/0\n ip access-group 120 in",
+    options: [
+      "172.16.5.66",
+      "172.16.8.1",
+      "172.16.3.254",
+      "172.16.7.254",
+      "172.16.12.22"
+    ],
+    answer: [0, 3],
+    explanation: "The wildcard mask 0.0.3.255 leaves the last two bits of the third octet and the entire fourth octet unchecked, so the permit statement matches sources 172.16.4.0 through 172.16.7.255. Both 172.16.5.66 and 172.16.7.254 fall inside that block. The address 172.16.3.254 is just below the range, while 172.16.8.1 and 172.16.12.22 are above it, so all three are dropped by the explicit deny ip any any."
+  },
+  {
+    id: "sec-080",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. The offending device has been removed and errdisable recovery is not configured on the switch. Which action returns GigabitEthernet0/5 to service?",
+    exhibit: "SW1# show port-security interface gigabitEthernet 0/5\nPort Security              : Enabled\nPort Status                : Secure-shutdown\nViolation Mode             : Shutdown\nAging Time                 : 0 mins\nAging Type                 : Absolute\nMaximum MAC Addresses      : 1\nTotal MAC Addresses        : 0\nLast Source Address:Vlan   : 000c.2911.aa34:10\nSecurity Violation Count   : 1",
+    options: [
+      "Wait for the interface to recover automatically after the aging timer expires",
+      "Change the violation mode to restrict so the port comes back up",
+      "Enter shutdown followed by no shutdown on the interface",
+      "Enter clear mac address-table dynamic interface gigabitEthernet 0/5"
+    ],
+    answer: [2],
+    explanation: "A Secure-shutdown status means the port is err-disabled after a shutdown-mode violation, and without errdisable recovery the only way to restore it is to administratively shut and then no shut the interface. The aging timer shown is 0 and applies to secure MAC entries, not to err-disabled recovery, so the port never recovers on its own. Changing the violation mode affects future violations but does not re-enable a port that is already err-disabled, and clearing the dynamic MAC table has no effect on the err-disabled state."
+  },
+  {
+    id: "sec-081",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. What is the effect of the aging configuration on the secure MAC addresses learned on the interface?",
+    exhibit: "interface GigabitEthernet0/7\n switchport mode access\n switchport port-security\n switchport port-security maximum 2\n switchport port-security aging time 10\n switchport port-security aging type inactivity",
+    options: [
+      "All secure MAC addresses are deleted every 10 minutes regardless of traffic",
+      "A dynamically learned secure MAC address is removed after it sends no traffic for 10 minutes, freeing a slot for a new device",
+      "The interface is err-disabled if a connected device stays idle for 10 minutes",
+      "Sticky secure MAC addresses are removed from the startup configuration after 10 minutes"
+    ],
+    answer: [1],
+    explanation: "With aging type inactivity, the 10-minute timer counts only periods with no traffic from a secure address, so an idle device's MAC is aged out and one of the two allowed slots opens for a different device. Aging type absolute, not inactivity, would remove entries 10 minutes after they were learned regardless of activity. Aging never err-disables a port, and sticky addresses do not age out and are saved to the configuration rather than removed from it."
+  },
+  {
+    id: "sec-082",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. A compromised host on GigabitEthernet0/2 begins flooding DHCPDISCOVER messages at 200 packets per second to exhaust the DHCP pool. How does the switch respond?",
+    exhibit: "ip dhcp snooping\nip dhcp snooping vlan 10\n!\ninterface GigabitEthernet0/2\n switchport mode access\n switchport access vlan 10\n ip dhcp snooping limit rate 10",
+    options: [
+      "It places GigabitEthernet0/2 in the err-disabled state",
+      "It forwards the first 10 packets each second and silently drops the excess while the port stays up",
+      "It marks the interface as trusted so the server can answer faster",
+      "It rate-limits all traffic on the interface to 10 packets per second"
+    ],
+    answer: [0],
+    explanation: "The ip dhcp snooping limit rate command sets a ceiling on DHCP packets per second for the untrusted port, and when the rate is exceeded the switch err-disables the interface, cutting off the starvation attack at its source. The limit does not merely police the excess DHCP packets, which is why the drop-and-stay-up option is wrong, and it applies only to DHCP traffic rather than to all frames. Trust state is configured manually with ip dhcp snooping trust and is never assigned dynamically."
+  },
+  {
+    id: "sec-083",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. SW1 and SW2 both run DHCP snooping and Dynamic ARP Inspection on VLAN 20, and each switch builds bindings only for its directly connected hosts. Hosts on SW1 cannot communicate with hosts on SW2 because SW2 drops their ARP packets arriving on the trunk. Which configuration change on SW2 resolves the problem?",
+    exhibit: "SW2 configuration:\nip dhcp snooping\nip dhcp snooping vlan 20\nip arp inspection vlan 20\n!\ninterface GigabitEthernet0/1\n description Trunk to SW1\n switchport mode trunk",
+    options: [
+      "Configure ip arp inspection trust on interface GigabitEthernet0/1",
+      "Configure ip dhcp snooping trust on all access ports in VLAN 20",
+      "Create an ARP access list that lists every host connected to SW1",
+      "Disable DHCP snooping on VLAN 20 so the binding table is no longer consulted"
+    ],
+    answer: [0],
+    explanation: "DAI validates ARP packets received on untrusted ports against the local DHCP snooping binding table, and SW2 has no bindings for hosts that obtained their leases through SW1, so their legitimate ARP packets are dropped on the trunk. Because SW1 already inspects its own hosts, the inter-switch trunk should be configured with ip arp inspection trust, which is Cisco's recommended design for switch-to-switch links. Trusting all access ports would let any host poison ARP, an ARP access list for every DHCP client is unmanageable, and disabling DHCP snooping breaks DAI entirely."
+  },
+  {
+    id: "sec-084",
+    domain: "Security Fundamentals",
+    type: "dragdrop",
+    question: "Drag each wireless security technology on the left to its matching description on the right.",
+    items: ["GCMP", "TKIP", "SAE", "AES-CCMP"],
+    targets: [
+      "Legacy encryption protocol introduced with the original WPA certification",
+      "Encryption protocol required by the WPA2 certification",
+      "Authentication method that replaces the PSK exchange in WPA3-Personal",
+      "Stronger encryption protocol introduced with WPA3"
+    ],
+    answer: [1, 3, 2, 0],
+    explanation: "WPA was a stopgap that introduced TKIP, a per-packet keying wrapper around the old RC4 cipher, while WPA2 mandated the far stronger AES-based CCMP. WPA3 introduces GCMP for encryption and Simultaneous Authentication of Equals (SAE) for personal-mode authentication, replacing the WPA2 pre-shared key handshake that is vulnerable to offline dictionary attacks. The common trap is pairing SAE with encryption; SAE is an authentication and key-establishment method, not a cipher."
+  },
+  {
+    id: "sec-085",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Which two security improvements does WPA3 provide over WPA2? (Choose two.)",
+    options: [
+      "Simultaneous Authentication of Equals replaces the WPA2 pre-shared key handshake, resisting offline dictionary attacks",
+      "TKIP is reintroduced for backward compatibility with legacy clients",
+      "Protected Management Frames (802.11w) are required rather than optional",
+      "Open networks must authenticate clients with shared WEP keys",
+      "Enterprise mode no longer requires an authentication server"
+    ],
+    answer: [0, 2],
+    explanation: "WPA3-Personal uses SAE, a password-authenticated key exchange that defeats the offline dictionary attacks possible against captured WPA2 four-way handshakes and provides forward secrecy. WPA3 also makes Protected Management Frames mandatory, blocking deauthentication and disassociation spoofing. TKIP is prohibited rather than reintroduced, WEP has been deprecated for years and has no role in WPA3, and WPA3-Enterprise still relies on 802.1X with an authentication server."
+  },
+  {
+    id: "sec-086",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "A warehouse uses legacy handheld inventory scanners whose radios support only TKIP encryption. Which Wi-Fi security certification must the WLAN supporting these scanners operate under?",
+    options: [
+      "WPA2",
+      "WPA3",
+      "WPA",
+      "WEP"
+    ],
+    answer: [2],
+    explanation: "TKIP was introduced with the original WPA certification as a firmware-upgradable improvement over WEP, so devices limited to TKIP require a WPA WLAN. WPA2 certification mandates AES-CCMP, and WPA3 requires CCMP or GCMP while explicitly prohibiting TKIP, so neither supports TKIP-only clients. WEP is a separate, broken encryption scheme that predates TKIP and is not the certification under which TKIP operates."
+  },
+  {
+    id: "sec-087",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "Which two statements about WPA2 Enterprise mode are true? (Choose two.)",
+    options: [
+      "Each user is authenticated individually using 802.1X with an EAP method",
+      "It requires an authentication server, typically RADIUS, to validate credentials",
+      "All users share one pre-shared key that is configured on every client",
+      "It cannot use AES-CCMP encryption",
+      "It is configured on a WLC by entering a passphrase under the WLAN Security tab"
+    ],
+    answer: [0, 1],
+    explanation: "Enterprise mode replaces the shared passphrase with 802.1X authentication, in which each user or device presents individual credentials through an EAP method and a RADIUS server makes the authentication decision. This provides per-user accountability and the ability to revoke a single user without rekeying everyone. A shared pre-shared key and a passphrase entered on the WLC describe Personal (PSK) mode, and both Personal and Enterprise WPA2 use AES-CCMP for encryption."
+  },
+  {
+    id: "sec-088",
+    domain: "Security Fundamentals",
+    type: "dragdrop",
+    question: "Drag each 802.1X component on the left to its matching role on the right.",
+    items: ["Authentication server", "EAP", "Supplicant", "Authenticator"],
+    targets: [
+      "Software on the endpoint that requests network access and supplies credentials",
+      "Switch or access point that relays credentials and opens or blocks the port",
+      "System that validates the credentials and returns the access decision",
+      "Framework that defines how authentication messages are carried between the components"
+    ],
+    answer: [2, 3, 0, 1],
+    explanation: "In 802.1X the supplicant is the client software on the endpoint, the authenticator is the switch or AP that sits in the middle and enforces the port state, and the authentication server, usually RADIUS, makes the actual accept or reject decision. EAP is not a device role at all; it is the extensible framework whose messages are carried over the LAN (EAPoL) between supplicant and authenticator and inside RADIUS to the server. Swapping the supplicant and authenticator roles is the most frequent mistake."
+  },
+  {
+    id: "sec-089",
+    domain: "Security Fundamentals",
+    type: "multi",
+    question: "An engineer is creating a WLAN on a Cisco WLC GUI that must use WPA2 with a pre-shared key. Which two configuration steps are required on the WLAN's Security settings? (Choose two.)",
+    options: [
+      "On the Layer 2 tab, set Layer 2 Security to WPA+WPA2 and enable the WPA2 policy with AES encryption",
+      "Under Authentication Key Management, enable PSK and enter the pre-shared key",
+      "On the Layer 3 tab, enable Web Policy with passthrough",
+      "Under AAA Servers, define a RADIUS authentication server for the WLAN",
+      "Under Authentication Key Management, enable 802.1X"
+    ],
+    answer: [0, 1],
+    explanation: "WPA2 Personal on a WLC is configured on the WLAN's Security > Layer 2 tab by choosing WPA+WPA2 as the Layer 2 security method, enabling the WPA2 policy with AES, then selecting PSK under Authentication Key Management and entering the key. Enabling 802.1X key management or defining a RADIUS server applies to WPA2 Enterprise, not PSK. Layer 3 Web Policy creates web authentication or passthrough portals, which is a separate security mechanism that is not required for WPA2-PSK."
+  },
+  {
+    id: "sec-090",
+    domain: "Security Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An engineer enters the command shown on a router. Which effect does the command have?",
+    exhibit: "R1(config)# login block-for 300 attempts 3 within 60",
+    options: [
+      "Each login prompt is delayed by 60 seconds to slow down automated tools",
+      "A user account is locked for 300 seconds after 3 failed attempts on that account",
+      "If 3 login attempts fail within 60 seconds, the router enters a quiet mode that blocks login attempts for 300 seconds",
+      "Only 3 concurrent vty sessions are allowed, each limited to 300 seconds"
+    ],
+    answer: [2],
+    explanation: "The login block-for command mitigates brute-force and dictionary attacks: when the threshold of 3 failed attempts within 60 seconds is reached, the router enters a quiet period of 300 seconds during which it refuses login connections, except from sources permitted by an optional quiet-mode ACL. The protection is device-wide rather than per-account, so the account-lockout option is wrong. It introduces no per-prompt delay and has nothing to do with limiting concurrent vty sessions or session duration."
+  }
+);
