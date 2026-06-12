@@ -649,3 +649,222 @@
     explanation: "Double quotation marks make \"GigabitEthernet0/1\" a string, while the bare digits 24 form a number because they are unquoted. The literal true is one of the two Boolean values. Square brackets enclosing comma-separated values define an array, and curly braces enclosing key-value pairs define an object. Recognizing these delimiters matters because quoting a number or Boolean silently turns it into a string, a frequent source of automation bugs."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "auto-046",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. Which statement about the data types in this JSON object is true?",
+    exhibit: "{\n  \"vlan\": {\n    \"id\": \"100\",\n    \"name\": \"USERS\",\n    \"ports\": 24,\n    \"active\": true\n  }\n}",
+    options: [
+      "The value of id is a string even though it contains only digits",
+      "The value of id is a number because it contains only digits",
+      "The value of ports is a string because all object values inherit the type of the first key",
+      "The value of active is a string containing the word true"
+    ],
+    answer: [0],
+    explanation: "Quotation marks determine the type: because \"100\" is enclosed in double quotes it is a string, and a script that performs arithmetic on it without conversion will fail or misbehave. Content alone never makes a value a number; the unquoted 24 for ports is a number precisely because it lacks quotes. JSON values are typed independently, so there is no inheritance from other keys, and the unquoted literal true for active is a Boolean, not a string."
+  },
+  {
+    id: "auto-047",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Due to a network timeout, an automation script does not receive a response and retransmits the identical POST /api/v1/vlans request that the controller had in fact already processed. What is the likely outcome?",
+    options: [
+      "A second, duplicate VLAN object may be created because POST is not idempotent",
+      "The controller silently ignores the retry because HTTP guarantees duplicate suppression",
+      "The retry replaces the first object because POST always overwrites by URI",
+      "The controller returns 404 because the collection URI no longer exists after the first POST"
+    ],
+    answer: [0],
+    explanation: "POST is defined as non-idempotent, so each accepted request to a collection URI can create another resource, and a blind retry after a timeout commonly produces duplicates unless the API implements its own deduplication keys. HTTP itself provides no duplicate suppression. Overwriting an existing resource at a specific URI is the behavior of PUT, not POST to a collection. The collection URI continues to exist after a creation, so a 404 on the retry would not be expected."
+  },
+  {
+    id: "auto-048",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. What is the purpose of the Content-Type header in this request?",
+    exhibit: "POST /api/v1/vlans HTTP/1.1\nHost: controller.example.com\nContent-Type: application/json\nAccept: application/json\n\n{ \"vlanId\": 30, \"name\": \"IOT\" }",
+    options: [
+      "It tells the server that the request body is formatted as JSON",
+      "It tells the server which format the client wants the response body to use",
+      "It authenticates the client to the API endpoint",
+      "It specifies which HTTP version the server must use for the response"
+    ],
+    answer: [0],
+    explanation: "Content-Type describes the media type of the body the sender is transmitting, so application/json informs the server that the payload should be parsed as JSON. Declaring the format the client prefers for the response is the job of the Accept header, which is also present in the exhibit and is the classic distractor. Authentication is carried by the Authorization header or similar mechanisms, and the HTTP protocol version appears on the request line, not in a header."
+  },
+  {
+    id: "auto-049",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Which two statements about JSON syntax are true? (Choose two.)",
+    options: [
+      "Every key in an object must be a string enclosed in double quotes",
+      "An object is an unordered collection of key-value pairs enclosed in curly braces",
+      "Comments can be added to any line by prefixing it with two slashes",
+      "A trailing comma after the final element of an array is permitted"
+    ],
+    answer: [0, 1],
+    explanation: "JSON mandates that object keys be double-quoted strings, and an object is defined as a brace-delimited set of key-value pairs whose order carries no meaning. Unlike many programming languages, JSON has no comment syntax, so slash-prefixed comments make a document invalid, a difference that often surprises engineers coming from JavaScript. Trailing commas after the last element of an array or object are likewise forbidden by the standard, even though some lenient parsers tolerate them."
+  },
+  {
+    id: "auto-050",
+    domain: "Automation and Programmability",
+    type: "dragdrop",
+    question: "Drag each tool or interface on the left to the description that matches it on the right.",
+    items: ["Terraform", "REST API", "Ansible", "Puppet"],
+    targets: [
+      "Agentless tool that pushes YAML playbooks to devices over SSH",
+      "Declarative tool that uses HCL and tracks deployments in a state file",
+      "Tool whose traditional model uses an agent that pulls manifests from a master",
+      "Stateless HTTP-based interface used by applications to interact with a controller"
+    ],
+    answer: [2, 0, 3, 1],
+    explanation: "Ansible is agentless and pushes YAML playbooks over SSH from a control node. Terraform declares the desired end state in HCL and records what it built in a state file so it can compute changes. Puppet's classic architecture installs an agent on each node that periodically pulls compiled manifests from a master server. A REST API is not a configuration tool at all but a stateless HTTP interface through which applications and scripts exchange data with a controller."
+  },
+  {
+    id: "auto-051",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. How does the tool that consumes this file apply the configuration to the infrastructure?",
+    exhibit: "resource \"iosxe_vlan\" \"users\" {\n  vlan_id = 100\n  name    = \"USERS\"\n}",
+    options: [
+      "It compares the declared end state with its recorded state and makes only the changes needed to converge",
+      "It executes the lines top to bottom as an ordered list of imperative CLI commands",
+      "It emails the file to the device administrator for manual entry",
+      "It converts the block into SNMP SET operations against the VLAN MIB"
+    ],
+    answer: [0],
+    explanation: "The block syntax with the resource keyword identifies HashiCorp Configuration Language, so the consuming tool is Terraform, which is declarative: terraform plan diffs the desired state against the state file and the real infrastructure, and terraform apply performs only the necessary additions, changes, or deletions. HCL is not an ordered script of CLI commands, which distinguishes it from imperative approaches. Terraform providers talk to device or controller APIs programmatically, not through email and not by generating SNMP SET operations."
+  },
+  {
+    id: "auto-052",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Which two HTTP methods are idempotent, meaning that repeating the identical request leaves the server in the same state as issuing it once? (Choose two.)",
+    options: [
+      "GET",
+      "PUT",
+      "POST",
+      "PATCH"
+    ],
+    answer: [0, 1],
+    explanation: "GET is safe and idempotent because it only reads data, and PUT is idempotent because it replaces the resource at a given URI with the same representation no matter how many times it is repeated. POST is explicitly non-idempotent, since each request can create another resource or trigger the action again. PATCH applies a partial modification and is not guaranteed idempotent; for example, a patch that appends to a list or increments a value changes the result on every repetition."
+  },
+  {
+    id: "auto-053",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Refer to the exhibit. Which statement describes the top-level structure of this JSON document returned by an API?",
+    exhibit: "[\n  { \"id\": 1, \"hostname\": \"R1\" },\n  { \"id\": 2, \"hostname\": \"R2\" }\n]",
+    options: [
+      "It is an array whose two elements are objects",
+      "It is an object containing two arrays",
+      "It is invalid because a JSON document must begin with a curly brace",
+      "It is a single object with four key-value pairs"
+    ],
+    answer: [0],
+    explanation: "The outermost delimiters are square brackets, so the document is an array, and each of its two comma-separated elements is a curly-brace object with id and hostname keys. An object containing arrays would start with a curly brace and use named keys. A JSON text may legally have an array, an object, or even a bare scalar as its top level, so starting with a bracket is valid. The two objects remain separate elements; their keys are not merged into one object."
+  },
+  {
+    id: "auto-054",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "An engineer opens an SSH session to a router to change its configuration, and a monitoring server polls the same router with SNMP. Which plane of the device do these activities use?",
+    options: [
+      "The management plane",
+      "The data plane",
+      "The control plane",
+      "The policy plane"
+    ],
+    answer: [0],
+    explanation: "Protocols through which humans and tools administer a device, including SSH, SNMP, syslog, NETCONF, and HTTPS APIs, belong to the management plane. The data plane is the per-packet forwarding machinery that moves user traffic through the device. The control plane comprises protocols such as OSPF and STP that the device uses to build its forwarding intelligence. There is no standard plane called the policy plane; policy is expressed through the management plane and enforced by the other two."
+  },
+  {
+    id: "auto-055",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "Which Cisco Catalyst Center capability ingests streaming telemetry from devices and applies machine learning to identify when network behavior deviates from its learned baseline?",
+    options: [
+      "Assurance with AI-driven analytics",
+      "The configuration template editor",
+      "Software image management (SWIM)",
+      "Discovery and inventory collection"
+    ],
+    answer: [0],
+    explanation: "The Assurance function of Catalyst Center continuously receives telemetry, learns site-specific baselines with machine learning, and raises AI-driven issues when behavior drifts from normal, enabling proactive troubleshooting. The template editor only generates and deploys CLI configurations and performs no analytics. Software image management standardizes and distributes device operating system images. Discovery and inventory build the database of managed devices, which Assurance consumes, but discovery itself does no baseline analysis."
+  },
+  {
+    id: "auto-056",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Refer to the exhibit. Which two statements about this JSON object are true? (Choose two.)",
+    exhibit: "{\n  \"interface\": \"Loopback0\",\n  \"ipv4\": \"10.255.0.1\",\n  \"enabled\": false,\n  \"mtu\": 1500,\n  \"neighbors\": []\n}",
+    options: [
+      "The value of enabled is a Boolean",
+      "The value of neighbors is a valid empty array",
+      "The value of mtu is a string because it appears after a colon",
+      "The value of ipv4 is a number because it contains digits"
+    ],
+    answer: [0, 1],
+    explanation: "The unquoted literal false is a JSON Boolean, and a pair of empty square brackets is a perfectly legal array containing zero elements, a common way for APIs to represent no results. Every JSON value appears after a colon, so that tells you nothing about type; mtu is a number because 1500 is unquoted. The ipv4 value is wrapped in double quotes, making it a string, which is also necessary because the dotted-decimal form would not be a valid JSON number anyway."
+  },
+  {
+    id: "auto-057",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "REST APIs are described as stateless. What does this mean for a client making a series of calls to a controller?",
+    options: [
+      "Each request must carry all the information the server needs, because the server retains no client session context between requests",
+      "The controller discards its configuration database after every request",
+      "The client may send each request only once and can never retry",
+      "All requests must use the GET method because other methods change state"
+    ],
+    answer: [0],
+    explanation: "Statelessness means the server treats every request independently, so the client includes everything required, such as its authentication token and full resource path, on each call rather than relying on remembered session context. The server's own data, including the configuration database, naturally persists; statelessness concerns client session state, not stored resources. Retries are allowed and are exactly why idempotent methods matter. All HTTP methods remain available; statelessness is unrelated to whether a request reads or modifies resources."
+  },
+  {
+    id: "auto-058",
+    domain: "Automation and Programmability",
+    type: "dragdrop",
+    question: "Drag each software-defined networking term on the left to its description on the right.",
+    items: ["Underlay", "Northbound API", "Overlay", "Southbound API"],
+    targets: [
+      "Interface that automation applications use to communicate with the controller",
+      "Interface the controller uses to program and manage the network devices",
+      "Logical tunnels, such as VXLAN, built on top of the physical network",
+      "Physical routed network that provides IP reachability between fabric devices"
+    ],
+    answer: [1, 3, 2, 0],
+    explanation: "The northbound API faces upward from the controller toward scripts, dashboards, and orchestration platforms, while the southbound interface faces downward to configure and monitor the managed devices. Within the fabric itself, the overlay is the virtual layer of tunnels such as VXLAN that carries endpoint traffic and policy, and the underlay is the physical routed infrastructure whose sole responsibility is delivering IP reachability between the tunnel endpoints."
+  },
+  {
+    id: "auto-059",
+    domain: "Automation and Programmability",
+    type: "single",
+    question: "A team adopts a generative AI assistant that drafts device configurations from natural-language requests. Which operational safeguard is most important before the output reaches production devices?",
+    options: [
+      "Have an engineer review and validate the generated configuration, because the model can produce plausible but incorrect commands",
+      "Disable logging on the devices so the AI-generated commands are not recorded",
+      "Deploy the output immediately to all devices so any error is at least consistent everywhere",
+      "Convert the generated configuration from JSON to XML before deployment"
+    ],
+    answer: [0],
+    explanation: "Generative models are probabilistic and can hallucinate syntax or semantics that look correct but are wrong for the platform or the intent, so human review and testing, ideally in a lab or staged rollout, is the essential control. Disabling logging removes accountability and makes troubleshooting harder, the opposite of a safeguard. Pushing unverified output everywhere simultaneously maximizes the blast radius of any error. The serialization format of the output has no bearing on whether its content is correct."
+  },
+  {
+    id: "auto-060",
+    domain: "Automation and Programmability",
+    type: "multi",
+    question: "Which two statements describe the underlay network in a Cisco SD-Access fabric? (Choose two.)",
+    options: [
+      "It consists of routed point-to-point links running an IGP to provide IP reachability between fabric nodes",
+      "It transports the VXLAN-encapsulated traffic generated by the overlay",
+      "It assigns endpoints to virtual networks and applies group-based policy tags",
+      "It tracks endpoint-to-location mappings so hosts can roam between edge switches"
+    ],
+    answer: [0, 1],
+    explanation: "The underlay is intentionally simple: routed links with an IGP, commonly IS-IS in SD-Access, whose only job is to provide stable IP reachability among the fabric nodes, and across that reachability it carries the VXLAN-encapsulated packets created by the overlay. Assigning endpoints to virtual networks and stamping traffic with group tags is overlay functionality. Tracking endpoint-to-location mappings for roaming is performed by the fabric's LISP-based control plane, which also belongs to the overlay rather than the underlay."
+  }
+);
