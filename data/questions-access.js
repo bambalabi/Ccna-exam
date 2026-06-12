@@ -1593,3 +1593,228 @@
     explanation: "The management interface is the controller's primary in-band address; APs discover and join the WLC there, and CAPWAP tunnels terminate on it. Dynamic interfaces act like VLAN interfaces for client traffic, linking each WLAN to its wired VLAN. The virtual interface intentionally uses a nonroutable placeholder address (such as 192.0.2.1) for DHCP relay and web-auth redirects, so requiring routability is backwards. The service port is strictly for out-of-band management and recovery and never carries client data, and redundancy interfaces relate to HA pairing, not WLAN creation."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "na-106",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. Three switches share the same Layer 2 domain and exchange BPDUs on VLAN 20. Which switch is elected the root bridge for VLAN 20?",
+    exhibit: "SW1# show spanning-tree vlan 20 | include Priority|Address\n  Bridge ID  Priority    24596  (priority 24576 sys-id-ext 20)\n             Address     00d0.1a2b.3c4d\n\nSW2# show spanning-tree vlan 20 | include Priority|Address\n  Bridge ID  Priority    24596  (priority 24576 sys-id-ext 20)\n             Address     000a.b1c2.d3e4\n\nSW3# show spanning-tree vlan 20 | include Priority|Address\n  Bridge ID  Priority    28692  (priority 28672 sys-id-ext 20)\n             Address     0001.aaaa.bbbb",
+    options: [
+      "SW1, because it has the lowest configured priority value",
+      "SW2, because it ties with SW1 on priority and has the lower MAC address",
+      "SW3, because it has the lowest MAC address of the three switches",
+      "It cannot be determined without comparing the root path costs of the uplinks"
+    ],
+    answer: [1],
+    explanation: "Root election compares the full bridge ID: priority first, then MAC address as the tiebreaker. SW1 and SW2 tie at 24596 (24576 plus sys-id-ext 20), beating SW3 at 28692, so SW3 is eliminated despite owning the lowest MAC address; the MAC only matters between switches that tie on priority. Between SW1 and SW2, 000a.b1c2.d3e4 is numerically lower than 00d0.1a2b.3c4d, so SW2 wins. Root path cost plays no role in root bridge election; it is used afterwards for root port selection."
+  },
+  {
+    id: "na-107",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. Hosts in VLAN 30 on the far side of the Gi0/1 trunk cannot communicate with local VLAN 30 hosts, although VLANs 10 and 20 work normally. What is the most likely cause?",
+    exhibit: "SW1# show interfaces trunk\nPort        Mode             Encapsulation  Status        Native vlan\nGi0/1       on               802.1q         trunking      1\n\nPort        Vlans allowed on trunk\nGi0/1       10,20,30\n\nPort        Vlans allowed and active in management domain\nGi0/1       10,20\n\nPort        Vlans in spanning tree forwarding state and not pruned\nGi0/1       10,20",
+    options: [
+      "VLAN 30 has not been created in the VLAN database on SW1",
+      "VLAN 30 was removed from the allowed list with the switchport trunk allowed vlan command",
+      "Spanning tree has placed VLAN 30 in the blocking state on Gi0/1",
+      "The native VLAN mismatch on the trunk is dropping VLAN 30 traffic"
+    ],
+    answer: [0],
+    explanation: "VLAN 30 appears in the allowed list but disappears from the allowed and active line, which means the VLAN simply does not exist (or is shut down) in SW1's VLAN database; creating it with the vlan 30 command resolves the issue. If it had been removed from the allowed list, it would not appear on the first line at all. A spanning-tree block would still show the VLAN as active in the management domain, only omitting it from the forwarding-state line. Nothing in the output indicates a native VLAN mismatch, and a mismatch would affect untagged traffic, not a single tagged VLAN."
+  },
+  {
+    id: "na-108",
+    domain: "Network Access",
+    type: "single",
+    question: "A new 802.11ax access point requires up to 25.5 watts to run both radios at full capability. The access switch currently provides only IEEE 802.3af power, and the AP boots with one radio disabled. Which PoE standard must the switch port support to power the AP fully?",
+    options: [
+      "802.3af, after CDP renegotiates the power allocation to 25.5 watts",
+      "802.3at (PoE+), which can deliver up to 30 watts per port",
+      "802.3bt, because any draw above 15.4 watts requires four-pair power",
+      "Cisco UPOE, because IEEE standards cannot exceed 20 watts per port"
+    ],
+    answer: [1],
+    explanation: "802.3af tops out at 15.4 W from the PSE (about 12.95 W usable at the device), which is why the AP disables a radio; no negotiation can push it beyond the standard's limit. 802.3at, known as PoE+, raises the supply to 30 W per port, comfortably covering a 25.5 W draw. 802.3bt (60 W or 90 W) and Cisco UPOE would also work but are overkill and not required, and the claim that IEEE standards cannot exceed 20 W is simply false."
+  },
+  {
+    id: "na-109",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. Company policy says that ports disabled by BPDU guard must return to service automatically after five minutes, with no manual intervention. Which configuration satisfies the policy?",
+    exhibit: "SW1# show interfaces status err-disabled\nPort      Name        Status        Reason\nGi0/12    USER-PORT   err-disabled  bpduguard\n\nSW1# show errdisable recovery | include bpduguard\nbpduguard                    Disabled",
+    options: [
+      "errdisable recovery cause bpduguard and errdisable recovery interval 300 in global configuration",
+      "shutdown followed by no shutdown applied to interface Gi0/12",
+      "spanning-tree portfast bpdufilter default in global configuration",
+      "no spanning-tree portfast bpduguard default so the port can never be err-disabled again"
+    ],
+    answer: [0],
+    explanation: "Automatic recovery requires globally enabling the recovery cause with errdisable recovery cause bpduguard and setting the timer with errdisable recovery interval 300; the switch then re-enables the port after five minutes (and disables it again if BPDUs persist). Bouncing the port with shutdown and no shutdown works but is exactly the manual intervention the policy forbids. BPDU filter does not recover anything; it suppresses BPDU processing and can silently invite loops. Removing BPDU guard altogether eliminates the protection rather than meeting the recovery requirement."
+  },
+  {
+    id: "na-110",
+    domain: "Network Access",
+    type: "multi",
+    question: "Which two statements about creating WLANs on a Cisco wireless LAN controller are true? (Choose two.)",
+    options: [
+      "The controller can define many WLANs, but an access point broadcasts a maximum of 16 of them",
+      "The WLAN profile name and the SSID must be configured as identical strings",
+      "A newly created WLAN remains disabled until the administrator sets its status to enabled",
+      "Every WLAN automatically uses the virtual interface to bridge client data to the wired network",
+      "Two WLANs on the same controller can never be configured with the same SSID"
+    ],
+    answer: [0, 2],
+    explanation: "An AireOS controller can store hundreds of WLAN definitions, yet each AP advertises at most 16 of them, which is why AP groups exist to select which WLANs go where. A new WLAN is created with its status disabled, so clients cannot associate until the engineer checks the enabled box. The profile name is an internal label that may differ from the broadcast SSID. Client data maps through the management or a dynamic interface, never the virtual interface, which only handles functions such as web-auth redirection. Duplicate SSIDs are permitted on different WLAN IDs, commonly used to offer the same SSID with different security to different AP groups."
+  },
+  {
+    id: "na-111",
+    domain: "Network Access",
+    type: "single",
+    question: "An engineer creates a WLAN on a Cisco WLC that will carry traffic from wireless IP phones. Which QoS profile should be assigned to the WLAN to give voice frames the appropriate over-the-air priority?",
+    options: [
+      "Platinum",
+      "Gold",
+      "Silver",
+      "Bronze"
+    ],
+    answer: [0],
+    explanation: "Cisco WLC QoS profiles map WLANs to maximum 802.11 user-priority levels: Platinum is intended for voice and permits the highest priority marking, so it is the correct choice for a wireless IP phone WLAN. Gold targets video applications, Silver is the default best-effort profile suitable for ordinary data, and Bronze is for background traffic such as guest access. Selecting Silver or Bronze would cap voice frames at lower priority and degrade call quality under congestion."
+  },
+  {
+    id: "na-112",
+    domain: "Network Access",
+    type: "dragdrop",
+    question: "Match each WLC discovery method used by a lightweight access point to its description.",
+    items: [
+      "DHCP option 43",
+      "DNS resolution",
+      "Local subnet broadcast",
+      "Primed entries"
+    ],
+    targets: [
+      "The AP sends a CAPWAP discovery request to 255.255.255.255, reaching only controllers on its own VLAN",
+      "A vendor-specific field in the AP's address lease supplies the management IP addresses of one or more controllers",
+      "The AP uses primary, secondary, and tertiary controller addresses stored from a previous join session",
+      "The AP queries CISCO-CAPWAP-CONTROLLER.localdomain to learn controller addresses from a name server"
+    ],
+    answer: [2, 0, 3, 1],
+    explanation: "A lightweight AP tries several discovery methods to build its list of candidate controllers. Broadcasting on the local subnet only finds WLCs in the same VLAN, which is why remote sites rely on DHCP option 43, a vendor-specific option carrying controller management addresses in the lease. DNS discovery has the AP resolve CISCO-CAPWAP-CONTROLLER.localdomain using the domain and DNS server learned via DHCP. Primed entries are the primary, secondary, and tertiary controller names and addresses an AP retains in NVRAM from earlier joins, and they are tried with high preference."
+  },
+  {
+    id: "na-113",
+    domain: "Network Access",
+    type: "single",
+    question: "An engineer configures switchport voice vlan dot1p on an access port in VLAN 10 that connects to a Cisco IP phone. How does the phone send its voice traffic?",
+    options: [
+      "Tagged with VLAN ID 0 and an 802.1p class-of-service value, so voice stays in the data VLAN's subnet but keeps Layer 2 priority",
+      "Tagged with VLAN ID 1, because dot1p forces the phone to use the default VLAN for voice",
+      "Untagged, relying solely on DSCP markings in the IP header for prioritization",
+      "Tagged with a voice VLAN ID that the phone obtains from the DHCP server"
+    ],
+    answer: [0],
+    explanation: "The dot1p keyword tells the phone, via CDP or LLDP-MED, to send voice frames with an 802.1Q tag whose VLAN ID is 0 but whose priority bits carry a CoS value; the frames therefore remain in the access VLAN's subnet while still receiving Layer 2 QoS treatment. VLAN 1 is not involved, and the option does not move voice into the default VLAN. Untagged operation describes the switchport voice vlan untagged variant, which would discard the CoS marking capability. Phones learn voice VLAN assignments from the switch through CDP or LLDP, not from DHCP."
+  },
+  {
+    id: "na-114",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. SW1 runs Rapid PVST+ on all interfaces. What does the Type field shown for Gi0/4 indicate?",
+    exhibit: "SW1# show spanning-tree vlan 10 interface gigabitEthernet 0/4\nVlan                Role Sts Cost      Prio.Nbr Type\n------------------- ---- --- --------- -------- --------------\nVLAN0010            Desg FWD 4         128.4    P2p Peer(STP)",
+    options: [
+      "The neighbor on Gi0/4 is running legacy 802.1D, so SW1 has fallen back to sending traditional STP BPDUs on this port",
+      "Gi0/4 is operating at half duplex, so RSTP treats the segment as shared",
+      "Gi0/4 is an edge port connected directly to an end host",
+      "The neighbor is in a different VLAN, so the port cannot participate in rapid convergence"
+    ],
+    answer: [0],
+    explanation: "Peer(STP) means the port detected legacy 802.1D BPDUs from its neighbor, so SW1 reverts to traditional STP operation on that specific link while continuing RSTP elsewhere; convergence on this segment then depends on legacy timers rather than the proposal-agreement handshake. The P2p portion confirms the link is full duplex, so a half-duplex shared segment would instead display Shr. Edge ports are flagged with Edge in this output, not Peer(STP). VLAN membership mismatches do not produce this indicator; the flag is purely about the neighbor's spanning-tree version."
+  },
+  {
+    id: "na-115",
+    domain: "Network Access",
+    type: "multi",
+    question: "An engineer must configure a WLAN on the WLC GUI for WPA2-Personal with AES encryption. Which two settings accomplish this? (Choose two.)",
+    options: [
+      "Enable the WPA2 policy with AES (CCMP) encryption under Layer 2 security",
+      "Select PSK under Authentication Key Management and define the pre-shared key",
+      "Select 802.1X under Authentication Key Management and define a RADIUS server",
+      "Enable Web Policy authentication under the Layer 3 security tab",
+      "Enable the WPA policy with TKIP encryption for backward compatibility"
+    ],
+    answer: [0, 1],
+    explanation: "WPA2-Personal is built from two pieces on the Layer 2 security tab: the WPA2 policy with AES (CCMP) as the cipher, and PSK selected under Authentication Key Management along with the shared key itself. Choosing 802.1X with a RADIUS server would instead create WPA2-Enterprise, which authenticates individual users rather than a shared passphrase. Web Policy on the Layer 3 tab is a captive-portal mechanism unrelated to WPA2 key management. Enabling the original WPA policy with TKIP weakens the WLAN to a deprecated cipher and does not satisfy a WPA2 requirement."
+  },
+  {
+    id: "na-116",
+    domain: "Network Access",
+    type: "single",
+    question: "A network engineer connects a brand-new Catalyst switch with a default configuration into an existing campus that runs Rapid PVST+ everywhere. Which spanning-tree mode does the new switch run by default, and what is the result?",
+    options: [
+      "PVST+; the existing switches fall back to legacy 802.1D timers on the links facing the new switch",
+      "Rapid PVST+; the whole campus continues to converge rapidly with no changes needed",
+      "MST; the new switch maps all VLANs to instance 0 and ignores per-VLAN topologies",
+      "PVST+; the new switch refuses to interoperate until its mode is changed to rapid-pvst"
+    ],
+    answer: [0],
+    explanation: "Catalyst switches still default to spanning-tree mode pvst, the legacy 802.1D per-VLAN flavor, so an unconfigured switch joins the network speaking traditional STP. Rapid PVST+ is backward compatible: the existing switches detect the legacy BPDUs and operate their facing ports in 802.1D compatibility mode, which sacrifices rapid transitions on those links but keeps the topology loop free. Interoperation therefore works, just slowly, so the refusal option is wrong. MST is never enabled by default, and rapid-pvst must be set explicitly with spanning-tree mode rapid-pvst."
+  },
+  {
+    id: "na-117",
+    domain: "Network Access",
+    type: "single",
+    question: "A lightweight AP discovers both WLC-1 and WLC-2 during its CAPWAP discovery phase. The design requires this specific AP to always join WLC-2 whenever WLC-2 is available. What should the engineer configure?",
+    options: [
+      "Set WLC-2 as the primary controller in the AP's High Availability configuration",
+      "Enable master controller mode on WLC-2 so it always wins the join decision",
+      "Configure DHCP option 43 to list only the management address of WLC-2",
+      "Lower the management IP address of WLC-2 so it sorts first in the discovery response list"
+    ],
+    answer: [0],
+    explanation: "Priming the AP by naming WLC-2 as its primary controller (with optional secondary and tertiary entries) under the AP's High Availability settings guarantees the AP prefers WLC-2 whenever it responds, regardless of which controllers were discovered. Master controller mode only attracts brand-new, unprimed APs and is meant as a staging convenience, not a steering mechanism for a specific AP. Editing option 43 changes discovery for every AP in that DHCP scope and still does not force the join preference, since discovery and join selection are separate steps. Controllers are not chosen by comparing management IP values."
+  },
+  {
+    id: "na-118",
+    domain: "Network Access",
+    type: "single",
+    question: "SW3 has two Gigabit Ethernet uplinks toward the root bridge, Gi0/1 and Gi0/2, both using default short-method costs, and Gi0/1 is currently the root port. The engineer wants Gi0/2 to become the root port for VLAN 10 without changing any other switch. Which command applied on SW3 achieves this?",
+    options: [
+      "spanning-tree vlan 10 cost 2 on interface Gi0/2",
+      "spanning-tree vlan 10 port-priority 64 on interface Gi0/2",
+      "spanning-tree vlan 10 root primary in global configuration",
+      "spanning-tree vlan 10 cost 2 on interface Gi0/1"
+    ],
+    answer: [0],
+    explanation: "Lowering the port cost of Gi0/2 from the default of 4 to 2 makes the root path cost through Gi0/2 lower than through Gi0/1, so SW3 reselects Gi0/2 as its root port; cost is evaluated locally, so no other switch is affected. Port priority configured on SW3's own interface does not influence SW3's root port choice; it is carried in BPDUs the switch sends and would only sway a downstream neighbor choosing among links to SW3. The root primary macro changes the bridge priority and would attempt to make SW3 the root, a much larger topology change. Lowering the cost on Gi0/1 reinforces the existing root port rather than moving it."
+  },
+  {
+    id: "na-119",
+    domain: "Network Access",
+    type: "multi",
+    question: "Which two statements about Power over Ethernet on Cisco Catalyst switches are true? (Choose two.)",
+    options: [
+      "802.3af supplies up to 15.4 watts from the PSE, of which about 12.95 watts is guaranteed at the powered device",
+      "With power policing enabled, a port whose device draws more than the allocated power can be placed in the err-disabled state",
+      "802.3at delivers up to 60 watts per port for high-power access points",
+      "Power requirements can be negotiated only with LLDP, because CDP does not carry power information",
+      "A switch begins supplying PoE only after the port reaches the spanning-tree forwarding state"
+    ],
+    answer: [0, 1],
+    explanation: "802.3af budgets 15.4 W at the power sourcing equipment, with roughly 12.95 W assured at the powered device after cable loss, which is the classic pair of numbers tested. Power policing actively measures consumption, and an over-drawing device triggers an err-disable (or a restart/log action, depending on configuration), protecting the power budget. 802.3at provides 30 W, not 60 W; 60 W belongs to 802.3bt or Cisco UPOE. Both CDP and LLDP carry power TLVs for negotiation, so the LLDP-only claim is false, and power is applied as soon as a valid powered device is detected, long before spanning tree converges."
+  },
+  {
+    id: "na-120",
+    domain: "Network Access",
+    type: "single",
+    question: "A lightweight AP completes CAPWAP discovery and sends a join request to a WLC that is running a different software release than the AP's stored image. What happens next?",
+    options: [
+      "The AP downloads the matching image from the WLC, reboots, and rejoins before receiving its configuration",
+      "The WLC rejects the join permanently until an administrator manually upgrades the AP from a TFTP server",
+      "The AP joins and operates normally, because CAPWAP tunnels are independent of software versions",
+      "The AP falls back to autonomous mode and serves clients with its locally stored configuration"
+    ],
+    answer: [0],
+    explanation: "A lightweight AP must run code that matches its controller, so after the join response the AP compares versions, downloads the correct image directly from the WLC over CAPWAP, reboots, and then rejoins to receive its configuration. No manual TFTP intervention is required; automatic image download is a core part of the join process. Operating with mismatched versions is not permitted, because the split-MAC functions on both ends must stay in lockstep. Lightweight APs cannot silently revert to autonomous mode; that requires deliberately loading autonomous software."
+  }
+);
