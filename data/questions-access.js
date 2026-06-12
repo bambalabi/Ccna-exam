@@ -1370,3 +1370,226 @@
     explanation: "Disabling CDP and LLDP advertisements on just the lobby interface stops the switch from leaking its hostname, platform, IOS version, and addressing to untrusted devices while leaving discovery intact elsewhere. The global no cdp run and no lldp run commands would kill discovery on every port, breaking the requirement and disrupting IP phones that rely on CDP to learn the voice VLAN. The switchport nonegotiate command only suppresses DTP, which is unrelated to information disclosure, and shortening the CDP holdtime changes aging, not what is advertised."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "na-091",
+    domain: "Network Access",
+    type: "multi",
+    question: "Which two statements about autonomous access points are true? (Choose two.)",
+    options: [
+      "Each access point must be configured and managed individually through its own CLI or GUI",
+      "An autonomous AP offering multiple SSIDs mapped to different VLANs requires an 802.1Q trunk uplink",
+      "Autonomous APs must build a CAPWAP tunnel to a wireless LAN controller before serving clients",
+      "Client data from an autonomous AP is always tunneled to a central controller for switching",
+      "Autonomous APs cannot support more than one SSID at a time"
+    ],
+    answer: [0, 1],
+    explanation: "An autonomous AP contains its entire management and data plane, so every unit is configured one by one, which is exactly why large deployments become operationally painful. When it bridges several SSIDs into separate wired VLANs, the switch port must be a trunk carrying those VLANs plus the management VLAN. CAPWAP and centralized tunneling describe the lightweight architecture, not autonomous operation, where traffic is switched locally onto the wired network. Autonomous APs happily support multiple SSIDs, each mapped to its own VLAN."
+  },
+  {
+    id: "na-092",
+    domain: "Network Access",
+    type: "single",
+    question: "In a split-MAC architecture, which function remains on the lightweight access point rather than moving to the wireless LAN controller?",
+    options: [
+      "Transmitting beacons and sending acknowledgments for received frames in real time",
+      "Authenticating wireless clients against the configured security policy",
+      "Assigning channels and transmit power across the RF environment",
+      "Managing client roaming between access points"
+    ],
+    answer: [0],
+    explanation: "Split-MAC divides 802.11 duties by latency: time-critical operations such as beacon generation, probe responses, frame acknowledgments, retransmissions, and frame encryption must occur at the radio and therefore stay on the AP. Client authentication, RF management functions like channel and power assignment, and roaming coordination are management-plane tasks centralized on the WLC. Choosing the controller-side functions is the common trap; the rule of thumb is that anything with hard real-time deadlines cannot tolerate the round trip to the controller."
+  },
+  {
+    id: "na-093",
+    domain: "Network Access",
+    type: "multi",
+    question: "In a lightweight wireless deployment using split-MAC, which two functions are performed by the wireless LAN controller? (Choose two.)",
+    options: [
+      "Processing client association requests and authentication",
+      "Dynamically assigning channels and transmit power to access points",
+      "Sending 802.11 acknowledgment frames to clients",
+      "Transmitting beacon frames for each enabled WLAN",
+      "Encrypting individual data frames over the air"
+    ],
+    answer: [0, 1],
+    explanation: "The WLC owns the non-real-time management functions: it terminates association and authentication exchanges, enforces security policy, and runs radio resource management to assign channels and power levels across all joined APs. Acknowledgments, beacons, and over-the-air encryption have strict timing requirements measured in microseconds, so they must be executed by the AP hardware itself. Mixing up the two halves of split-MAC is the most common error on this topic; the controller never touches per-frame real-time radio operations."
+  },
+  {
+    id: "na-094",
+    domain: "Network Access",
+    type: "single",
+    question: "A company deploys cloud-managed access points similar to Cisco Meraki. Which statement accurately describes how this architecture handles traffic?",
+    options: [
+      "Management and monitoring occur through the cloud dashboard, but client data is switched locally onto the wired network",
+      "All client data frames are tunneled across the Internet to the cloud platform before reaching their destination",
+      "The APs build CAPWAP tunnels to a hardware controller located in the cloud provider's data center",
+      "The cloud platform handles real-time functions such as acknowledgments while the AP handles management"
+    ],
+    answer: [0],
+    explanation: "Cloud-based architectures move only the management plane to the cloud: configuration, monitoring, and reporting flow between the AP and the dashboard, while user data is bridged directly onto the local switch port exactly as with an autonomous AP. Hauling every client frame across the Internet would add unacceptable latency and bandwidth cost, so the data plane stays local. The APs do not form CAPWAP tunnels to a remote hardware WLC, and real-time radio functions could never survive a round trip to the cloud."
+  },
+  {
+    id: "na-095",
+    domain: "Network Access",
+    type: "dragdrop",
+    question: "Match each wireless access point architecture to its description.",
+    items: ["Cloud-based AP", "Autonomous AP", "Embedded wireless controller", "Lightweight AP"],
+    targets: [
+      "Self-contained device configured individually, with all MAC functions performed onboard",
+      "Tunnels traffic to a WLC with CAPWAP and operates using the split-MAC model",
+      "Managed through an Internet dashboard while switching client data locally",
+      "Controller function runs on an access point itself to manage a small site"
+    ],
+    answer: [1, 3, 0, 2],
+    explanation: "An autonomous AP is a standalone device holding its full configuration and performing every 802.11 function locally. A lightweight AP divides duties with a WLC under the split-MAC model and reaches the controller through CAPWAP tunnels. Cloud-based APs such as Meraki are administered from a hosted dashboard but never tunnel user data to the cloud, keeping the data plane local. An embedded wireless controller (such as Cisco EWC or Mobility Express) runs controller software directly on an AP, letting a small branch enjoy controller features without dedicated hardware."
+  },
+  {
+    id: "na-096",
+    domain: "Network Access",
+    type: "single",
+    question: "A branch office has lightweight APs joined to a WLC at headquarters across a WAN link. Management wants wireless clients to keep working even if the WAN link fails. Which AP mode supports this requirement?",
+    options: [
+      "FlexConnect mode, which can authenticate and locally switch client traffic when the controller is unreachable",
+      "Local mode, because it is the default and most resilient mode",
+      "Monitor mode, which operates independently of the controller",
+      "Bridge mode, which converts the AP into a standalone autonomous device"
+    ],
+    answer: [0],
+    explanation: "FlexConnect (formerly H-REAP) allows an AP to switch client traffic onto the local wired network and continue serving existing and new clients in standalone fashion when its CAPWAP tunnel to the WLC goes down. Local mode tunnels all client traffic to the controller, so a WAN outage severs the data path entirely. Monitor mode never serves clients at all; it is dedicated to scanning. Bridge mode is for mesh backhaul links between APs, not for surviving controller loss at a branch."
+  },
+  {
+    id: "na-097",
+    domain: "Network Access",
+    type: "single",
+    question: "An engineer troubleshooting an 802.11 problem needs an AP to capture all wireless frames on a channel and stream them to a PC running Wireshark. Which AP mode accomplishes this?",
+    options: [
+      "Sniffer mode",
+      "Monitor mode",
+      "Rogue detector mode",
+      "SE-Connect mode"
+    ],
+    answer: [0],
+    explanation: "Sniffer mode dedicates the AP radio to capturing 802.11 frames on a specified channel and forwarding them to a remote host running analysis software such as Wireshark, making it the packet-capture tool of the AP modes. Monitor mode also stops serving clients but uses its scanning for IDS, rogue detection, and location services rather than exporting raw captures. Rogue detector mode works on the wired side, correlating MAC addresses to spot rogues, and SE-Connect streams spectrum-analysis data about RF energy, not decoded 802.11 frames."
+  },
+  {
+    id: "na-098",
+    domain: "Network Access",
+    type: "dragdrop",
+    question: "Match each lightweight AP mode to its function.",
+    items: ["Rogue detector", "Local", "Sniffer", "Monitor", "FlexConnect"],
+    targets: [
+      "Default mode; serves clients while tunneling their traffic to the WLC",
+      "Dedicates the radios to scanning channels for IDS and rogue APs without serving clients",
+      "Captures 802.11 frames and forwards them to a remote protocol analyzer",
+      "Listens on the wired network to correlate MAC addresses of suspected rogue devices",
+      "Serves clients and can switch their traffic locally when the WLC is unreachable"
+    ],
+    answer: [1, 3, 2, 0, 4],
+    explanation: "Local is the default mode in which the AP serves clients and sends their traffic through the CAPWAP data tunnel to the controller. Monitor mode gives up client service entirely to scan every channel for intrusion detection and rogue APs, while sniffer mode similarly stops serving clients but streams raw captures to an analyzer. Rogue detector mode is unique in working on the wired side, matching MAC addresses seen on the LAN against over-the-air reports. FlexConnect adds branch resiliency by locally switching designated WLANs even during a controller outage."
+  },
+  {
+    id: "na-099",
+    domain: "Network Access",
+    type: "single",
+    question: "A firewall sits between a remote site's lightweight APs and the centralized WLC. Which ports must be permitted for the APs to join the controller and pass client traffic?",
+    options: [
+      "UDP 5246 for CAPWAP control and UDP 5247 for CAPWAP data",
+      "TCP 5246 for CAPWAP control and TCP 5247 for CAPWAP data",
+      "UDP 5246 only, because control and data share one tunnel",
+      "UDP 16666 for control and UDP 16667 for data"
+    ],
+    answer: [0],
+    explanation: "CAPWAP runs over UDP with the controller listening on 5246 for the control channel and 5247 for the data channel, so both must be opened toward the WLC. CAPWAP never uses TCP, eliminating the second option. Control and data are distinct tunnels on distinct ports, so permitting only 5246 would let APs join but blackhole all client traffic. The 16666 range belongs to legacy inter-controller mobility messaging, not AP-to-controller CAPWAP."
+  },
+  {
+    id: "na-100",
+    domain: "Network Access",
+    type: "multi",
+    question: "Which two statements about the CAPWAP tunnels between a lightweight AP and a WLC are true? (Choose two.)",
+    options: [
+      "The control channel is authenticated and encrypted using DTLS",
+      "Encryption of the data channel is optional and is disabled by default",
+      "Both channels are carried inside a single IPsec tunnel",
+      "The data channel is always encrypted while the control channel is sent in cleartext",
+      "CAPWAP uses TCP to guarantee delivery of control messages"
+    ],
+    answer: [0, 1],
+    explanation: "CAPWAP secures its control channel with DTLS, using certificates installed on the AP and controller to authenticate the relationship and encrypt management exchanges. The data channel, which carries encapsulated client frames over UDP 5247, can optionally be protected with DTLS but ships disabled by default for performance. CAPWAP does not ride inside IPsec, and the fourth option reverses the actual behavior of the two channels. All CAPWAP transport is UDP, with reliability handled at the application layer rather than by TCP."
+  },
+  {
+    id: "na-101",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. What is the purpose of the option 43 command in this DHCP pool configuration?",
+    exhibit: "Router(config)# ip dhcp pool BRANCH-APS\nRouter(dhcp-config)# network 10.10.10.0 255.255.255.0\nRouter(dhcp-config)# default-router 10.10.10.1\nRouter(dhcp-config)# option 43 hex f104.0a0a.6305",
+    options: [
+      "It supplies lightweight APs with the management IP address of a WLC they can use for CAPWAP discovery",
+      "It provides IP phones with the address of the TFTP server that stores their firmware",
+      "It assigns the DNS server that APs use to resolve their hostnames",
+      "It defines the lease duration for access points in this subnet"
+    ],
+    answer: [0],
+    explanation: "DHCP option 43 (vendor-specific information) is one of the standard WLC discovery methods: the encoded hex string carries one or more controller management addresses, here 10.10.99.5, which the AP adds to its candidate list and probes with CAPWAP discovery requests. Telephony firmware servers are advertised with option 150, a frequent distractor. DNS servers come from the dns-server pool command, and lease timers from the lease command, so neither relates to option 43."
+  },
+  {
+    id: "na-102",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. A lightweight AP operating in local mode connects to this switch port. Which configuration change aligns the port with Cisco best practice?",
+    exhibit: "SW1# show running-config interface gigabitEthernet 1/0/7\ninterface GigabitEthernet1/0/7\n description AP-LOCAL-MODE\n switchport mode trunk\n switchport trunk allowed vlan 10,20,30,99\n switchport trunk native vlan 99",
+    options: [
+      "Convert the port to an access port assigned to the AP management VLAN",
+      "Add all client VLANs to the allowed list so wireless users can reach their subnets",
+      "Change the native VLAN to VLAN 1 so untagged CAPWAP packets are accepted",
+      "Enable PAgP so the AP can bundle its uplink with the trunk"
+    ],
+    answer: [0],
+    explanation: "A local-mode AP encapsulates every client frame inside its CAPWAP data tunnel to the WLC, so the only traffic on the switch port is the AP's own tunnel traffic in one VLAN; an access port in the AP management VLAN is the recommended design. A trunk adds no value because the client VLANs exist at the controller's trunk, not at the AP's port, which is why adding more allowed VLANs misses the point. Native VLAN tweaks and EtherChannel protocols are irrelevant here; trunks are only appropriate for FlexConnect APs that locally switch multiple VLANs."
+  },
+  {
+    id: "na-103",
+    domain: "Network Access",
+    type: "single",
+    question: "Refer to the exhibit. A FlexConnect AP locally switches WLAN CORP to VLAN 10 and WLAN GUEST to VLAN 20. Clients on CORP work normally, but GUEST clients cannot obtain DHCP addresses. Based on the switch port configuration, what is the solution?",
+    exhibit: "SW1# show running-config interface gigabitEthernet 1/0/8\ninterface GigabitEthernet1/0/8\n description FLEXCONNECT-AP\n switchport mode access\n switchport access vlan 10",
+    options: [
+      "Configure the port as an 802.1Q trunk allowing VLANs 10 and 20, with the AP management VLAN as native",
+      "Change the access VLAN from 10 to 20 so the GUEST WLAN can reach its subnet",
+      "Configure switchport voice vlan 20 so the second WLAN is carried alongside VLAN 10",
+      "Enable DTP negotiation so the AP can form a trunk dynamically"
+    ],
+    answer: [0],
+    explanation: "When a FlexConnect AP locally switches more than one WLAN-to-VLAN mapping, its uplink must be a trunk so each WLAN's traffic is tagged onto the correct VLAN; an access port can only deliver one VLAN, which is why CORP works and GUEST fails. Swapping the access VLAN to 20 would simply reverse the symptom. The voice VLAN feature is built around CDP and Cisco IP phones, not access points. APs do not run DTP, so dynamic negotiation cannot create the trunk; it must be configured statically."
+  },
+  {
+    id: "na-104",
+    domain: "Network Access",
+    type: "multi",
+    question: "An engineer connects a wireless LAN controller's distribution system ports to a switch using link aggregation (LAG). Which two statements about this connection are true? (Choose two.)",
+    options: [
+      "The switch-side EtherChannel must be configured with channel-group mode on",
+      "The WLC does not participate in LACP or PAgP negotiation for the LAG",
+      "The switch ports should run channel-group mode active so LACP can verify the bundle",
+      "Each physical port in the LAG must carry a different set of VLANs",
+      "LAG requires the switch ports to be configured as access ports in the management VLAN"
+    ],
+    answer: [0, 1],
+    explanation: "An AireOS WLC's LAG implementation does not speak LACP or PAgP, so the connected switch must form an unconditional EtherChannel using mode on; any negotiating mode such as active or desirable would wait for protocol frames the controller never sends, leaving the ports suspended. The bundle behaves as one logical 802.1Q trunk, so every member link carries the same tagged VLAN set rather than splitting VLANs across ports. Access-port configuration is wrong because the trunk must carry the management VLAN and all dynamic-interface VLANs."
+  },
+  {
+    id: "na-105",
+    domain: "Network Access",
+    type: "multi",
+    question: "Which two statements about wireless LAN controller interfaces are true? (Choose two.)",
+    options: [
+      "The management interface is used for in-band administration and terminates CAPWAP tunnels from access points",
+      "A dynamic interface maps a WLAN to a specific VLAN on the wired network",
+      "The virtual interface must be assigned a routable address reachable from the wired LAN",
+      "The service port carries client data when the distribution ports are congested",
+      "The redundancy management interface is required before any WLAN can be created"
+    ],
+    answer: [0, 1],
+    explanation: "The management interface is the controller's primary in-band address; APs discover and join the WLC there, and CAPWAP tunnels terminate on it. Dynamic interfaces act like VLAN interfaces for client traffic, linking each WLAN to its wired VLAN. The virtual interface intentionally uses a nonroutable placeholder address (such as 192.0.2.1) for DHCP relay and web-auth redirects, so requiring routability is backwards. The service port is strictly for out-of-band management and recovery and never carries client data, and redundancy interfaces relate to HA pairing, not WLAN creation."
+  }
+);

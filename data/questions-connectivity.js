@@ -1365,3 +1365,235 @@
     explanation: "HSRP routers default to priority 100, the highest priority wins the active role, and the highest configured interface IP address breaks a tie. Preemption is disabled by default, so a router returning to service waits as standby even with a better priority, which is why the preempt option exists. Only the active router answers ARP for the virtual IP using the virtual MAC; the standby stays silent until it takes over."
   }
 );
+
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "conn-091",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Which two differences distinguish HSRP version 2 from HSRP version 1? (Choose two.)",
+    options: [
+      "Version 2 expands the group number range to 0 through 4095",
+      "Version 2 uses the multicast address 224.0.0.102 instead of 224.0.0.2",
+      "Version 2 removes support for interface tracking",
+      "Version 2 elects two active routers for load sharing"
+    ],
+    answer: [0, 1],
+    explanation: "HSRPv2 raises the group range from 0-255 to 0-4095, sends its hellos to 224.0.0.102 rather than the all-routers address 224.0.0.2, supports millisecond timers, and uses the 0000.0c9f.fxxx virtual MAC range. Interface tracking works in both versions. Per-group there is still exactly one active forwarder; load sharing across gateways is the role of GLBP, not any HSRP version."
+  },
+  {
+    id: "conn-092",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "R1 is the HSRP active router with priority 120 and preempt enabled, and it is configured with standby 1 track GigabitEthernet0/1 30. What happens when R1's Gi0/1 uplink fails, assuming the standby router has priority 100 and preempt enabled?",
+    options: [
+      "R1's priority drops to 90 and the standby router preempts to become active",
+      "R1 immediately changes to the INIT state and stops sending hellos",
+      "R1's priority drops to 90 but it remains active because tracking does not trigger failover",
+      "The standby router takes over only after R1 is rebooted"
+    ],
+    answer: [0],
+    explanation: "Tracking decrements the configured priority by the stated amount when the tracked interface goes down, so R1 falls from 120 to 90, below the standby router's 100. Because the standby router has preempt enabled, it seizes the active role; without preempt on the standby, the priority drop alone would change nothing, which is the trap in the third option. Tracking never disables HSRP on the local router, and no reboot is involved."
+  },
+  {
+    id: "conn-093",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. Both routers in HSRP group 1 report themselves as active at the same time, and users experience intermittent connectivity. What is the most likely cause?",
+    exhibit: "R1# show standby brief\nInterface   Grp  Pri P State   Active          Standby         Virtual IP\nGi0/0       1    110 P Active  local           unknown         192.168.1.254\n\nR2# show standby brief\nInterface   Grp  Pri P State   Active          Standby         Virtual IP\nGi0/0       1    100 P Active  local           unknown         192.168.1.254",
+    options: [
+      "A Layer 2 problem is preventing the HSRP hello packets from passing between the routers",
+      "Both routers are configured with the same priority value",
+      "The virtual IP address is configured identically on both routers",
+      "Preemption is enabled on both routers, which is unsupported"
+    ],
+    answer: [0],
+    explanation: "Each router shows the standby peer as unknown, meaning neither hears the other's hellos, so both assume the active role; this dual-active condition almost always indicates a Layer 2 fault such as a VLAN, trunk, or filtering issue between them. The priorities are actually different, 110 versus 100. The virtual IP must be identical in a group, and enabling preempt on both routers is a normal and recommended practice."
+  },
+  {
+    id: "conn-094",
+    domain: "IP Connectivity",
+    type: "dragdrop",
+    question: "Drag each first hop redundancy protocol on the left to its description on the right.",
+    items: [
+      "HSRP",
+      "VRRP",
+      "GLBP"
+    ],
+    targets: [
+      "An open standard protocol in which the master router forwards traffic and preemption is enabled by default",
+      "A Cisco proprietary protocol that load balances by assigning different virtual MAC addresses to multiple forwarders",
+      "A Cisco proprietary protocol with one active and one standby router per group and preemption disabled by default"
+    ],
+    answer: [1, 2, 0],
+    explanation: "HSRP is Cisco proprietary with a single active and a single standby gateway per group and requires preempt to be explicitly enabled. VRRP is the IETF standard equivalent in which the master forwards and preemption is on by default. GLBP, also Cisco proprietary, goes further by handing out different virtual MAC addresses to up to four forwarders so that hosts are load balanced across gateways automatically."
+  },
+  {
+    id: "conn-095",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "In which HSRP state does a router actively forward packets that are sent to the virtual MAC address?",
+    options: [
+      "Active",
+      "Standby",
+      "Listen",
+      "Speak"
+    ],
+    answer: [0],
+    explanation: "Only the active router forwards traffic addressed to the virtual MAC and answers ARP requests for the virtual IP. The standby router is the elected backup that monitors hellos and takes over if the active fails, but it forwards nothing for the group while in that state. Listen means the router knows the virtual IP but holds neither role, and speak means it is participating in an election by sending hellos."
+  },
+  {
+    id: "conn-096",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Hosts on a subnet use gateway 10.5.5.1, which is an HSRP virtual IP shared by R1 (10.5.5.2) and R2 (10.5.5.3). When the active router fails, what do the hosts experience?",
+    options: [
+      "Forwarding continues after a brief interruption, with no change to the hosts' gateway or ARP entry",
+      "The hosts must learn a new gateway IP address via DHCP",
+      "The hosts' ARP caches must time out before traffic resumes",
+      "The hosts switch to sending traffic directly to 10.5.5.3"
+    ],
+    answer: [0],
+    explanation: "The whole point of HSRP is that the virtual IP and virtual MAC stay constant: when the standby router takes over, it begins sourcing the same virtual MAC, so the hosts' existing ARP entries remain valid and only a short hello-timeout gap is noticeable. No DHCP renewal or ARP timeout is required, and hosts never address the routers' physical 10.5.5.2 or 10.5.5.3 addresses for transit traffic."
+  },
+  {
+    id: "conn-097",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. What is the effect of this configuration when interface GigabitEthernet0/2 goes down and later comes back up?",
+    exhibit: "interface GigabitEthernet0/0\n ip address 172.16.10.2 255.255.255.0\n standby version 2\n standby 10 ip 172.16.10.1\n standby 10 priority 150\n standby 10 preempt\n standby 10 track GigabitEthernet0/2 60",
+    options: [
+      "Priority falls to 90 during the outage, and the router preempts to regain the active role after recovery",
+      "Priority falls to 60 during the outage and stays there until manually reset",
+      "The router leaves the HSRP group while Gi0/2 is down",
+      "The virtual IP moves to 172.16.10.2 during the outage"
+    ],
+    answer: [0],
+    explanation: "Tracking subtracts the decrement of 60 from the priority of 150, leaving 90 while Gi0/2 is down, which lets a peer with priority above 90 and preempt take over. When Gi0/2 recovers, the priority automatically returns to 150, and because this router has preempt configured it reclaims the active role. The decrement is restored without manual action, the router never leaves the group, and the virtual IP 172.16.10.1 never changes."
+  },
+  {
+    id: "conn-098",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "An engineer must configure R1 so that it always becomes the HSRP active router for group 20 whenever it is operational. Which two commands are required on R1's interface? (Choose two.)",
+    options: [
+      "standby 20 priority 200",
+      "standby 20 preempt",
+      "standby 20 track 200",
+      "standby 20 ip-active force"
+    ],
+    answer: [0, 1],
+    explanation: "Winning the role requires a priority higher than every peer, such as 200 against the default 100, and reclaiming the role after an outage requires preemption, since HSRP never preempts by default. Without preempt, R1 would return to service and remain standby indefinitely. The track keyword expects an interface or object and lowers priority on failure rather than guaranteeing the active role, and standby ip-active force is not a valid IOS command."
+  },
+  {
+    id: "conn-099",
+    domain: "IP Connectivity",
+    type: "dragdrop",
+    question: "Drag each HSRP state on the left to its description on the right.",
+    items: [
+      "Active",
+      "Standby",
+      "Listen",
+      "Speak"
+    ],
+    targets: [
+      "Sends periodic hellos and is participating in the active or standby election",
+      "Forwards traffic sent to the group's virtual MAC address",
+      "Is the designated backup and will take over if hellos from the forwarder stop",
+      "Knows the virtual IP address but only listens to hellos, holding no role"
+    ],
+    answer: [3, 0, 1, 2],
+    explanation: "The active router owns the virtual MAC and forwards the group's traffic, while the standby router is the first in line to replace it when its hellos stop arriving. A router in listen state knows the virtual IP but holds neither role and simply monitors hellos. Speak is the transitional state in which a router transmits hellos to compete in the election for the active or standby role."
+  },
+  {
+    id: "conn-100",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. A packet arrives at the router destined for 10.16.44.9. Which next hop is used to forward it?",
+    exhibit: "Router# show ip route | begin Gateway\nGateway of last resort is 203.0.113.1 to network 0.0.0.0\n\n      10.0.0.0/8 is variably subnetted, 4 subnets, 4 masks\nD        10.0.0.0/8 [90/2816] via 192.168.61.1, 02:00:11, GigabitEthernet0/0\nO        10.16.0.0/16 [110/30] via 192.168.61.5, 01:10:43, GigabitEthernet0/1\nO        10.16.44.0/24 [110/40] via 192.168.61.9, 01:10:43, GigabitEthernet0/2\nO        10.16.44.128/25 [110/50] via 192.168.61.13, 01:10:43, GigabitEthernet0/3\nS*    0.0.0.0/0 [1/0] via 203.0.113.1",
+    options: [
+      "192.168.61.9",
+      "192.168.61.13",
+      "192.168.61.5",
+      "192.168.61.1"
+    ],
+    answer: [0],
+    explanation: "The destination 10.16.44.9 falls inside 10.16.44.0/24, 10.16.0.0/16, and 10.0.0.0/8, but it is below .128 so it does not match the /25 subnet. Longest prefix match selects the /24 route via 192.168.61.9 regardless of the EIGRP route's better administrative distance, because AD only breaks ties between identical prefixes. The /25 next hop 192.168.61.13 would be chosen only for addresses 10.16.44.128 through 10.16.44.255."
+  },
+  {
+    id: "conn-101",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. The router receives a packet destined for 172.25.129.77. How is the packet forwarded?",
+    exhibit: "Router# show ip route | begin Gateway\nGateway of last resort is not set\n\n      172.25.0.0/16 is variably subnetted, 4 subnets, 4 masks\nO        172.25.128.0/18 [110/20] via 10.1.1.2, 00:31:08, GigabitEthernet0/0\nO        172.25.129.0/24 [110/30] via 10.1.1.6, 00:31:08, GigabitEthernet0/1\nO        172.25.129.64/27 [110/40] via 10.1.1.10, 00:31:08, GigabitEthernet0/2\nO        172.25.129.96/28 [110/40] via 10.1.1.14, 00:31:08, GigabitEthernet0/3",
+    options: [
+      "Via 10.1.1.10 out GigabitEthernet0/2",
+      "Via 10.1.1.14 out GigabitEthernet0/3",
+      "Via 10.1.1.6 out GigabitEthernet0/1",
+      "Via 10.1.1.2 out GigabitEthernet0/0"
+    ],
+    answer: [0],
+    explanation: "Address 172.25.129.77 matches 172.25.129.64/27, which spans .64 through .95, and that /27 is the longest matching prefix in the table, so the packet goes to 10.1.1.10 out Gi0/2. The /28 subnet 172.25.129.96 begins at .96 and does not contain .77, despite being a longer prefix. The /24 and /18 routes also match but lose to the more specific /27."
+  },
+  {
+    id: "conn-102",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. Which interface does the router use to forward a packet destined for 192.168.7.193?",
+    exhibit: "Router# show ip route | begin Gateway\nGateway of last resort is 10.0.0.1 to network 0.0.0.0\n\n      192.168.7.0/24 is variably subnetted, 3 subnets, 3 masks\nO        192.168.7.0/25 [110/20] via 10.0.0.5, 00:05:13, GigabitEthernet0/1\nO        192.168.7.128/26 [110/20] via 10.0.0.9, 00:05:13, GigabitEthernet0/2\nO        192.168.7.224/28 [110/20] via 10.0.0.13, 00:05:13, GigabitEthernet0/3\nS*    0.0.0.0/0 [1/0] via 10.0.0.1, GigabitEthernet0/0",
+    options: [
+      "GigabitEthernet0/0",
+      "GigabitEthernet0/1",
+      "GigabitEthernet0/2",
+      "GigabitEthernet0/3"
+    ],
+    answer: [0],
+    explanation: "The address 192.168.7.193 is outside all three specific subnets: the /25 covers .0-.127, the /26 covers .128-.191, and the /28 covers .224-.239, so .193 falls into the gap between .192 and .223. With no specific match, the router falls back to the default route and forwards out GigabitEthernet0/0 toward 10.0.0.1. The /26 is the tempting answer, but its broadcast range ends at .191, just below the destination."
+  },
+  {
+    id: "conn-103",
+    domain: "IP Connectivity",
+    type: "multi",
+    question: "Refer to the exhibit. For which two destination addresses does the router forward traffic to next hop 172.16.99.6? (Choose two.)",
+    exhibit: "Router# show ip route | begin Gateway\nGateway of last resort is 172.16.99.14 to network 0.0.0.0\n\n      10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks\nO        10.128.0.0/9 [110/20] via 172.16.99.2, 00:09:60, GigabitEthernet0/0\nO        10.128.64.0/18 [110/30] via 172.16.99.6, 00:09:50, GigabitEthernet0/1\nO        10.128.64.0/24 [110/40] via 172.16.99.10, 00:09:50, GigabitEthernet0/2\nS*    0.0.0.0/0 [1/0] via 172.16.99.14",
+    options: [
+      "10.128.65.1",
+      "10.128.100.200",
+      "10.128.64.50",
+      "10.129.0.1",
+      "10.64.0.1"
+    ],
+    answer: [0, 1],
+    explanation: "Next hop 172.16.99.6 serves 10.128.64.0/18, which covers 10.128.64.0 through 10.128.127.255; both 10.128.65.1 and 10.128.100.200 fall in that range without matching the more specific /24. The address 10.128.64.50 is inside 10.128.64.0/24, so longest prefix match sends it to 172.16.99.10 instead. 10.129.0.1 matches only the /9 via 172.16.99.2, and 10.64.0.1 misses the /9 entirely (which starts at 10.128.0.0) and uses the default route."
+  },
+  {
+    id: "conn-104",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. The router receives a packet destined for 198.18.32.41. What does the router do with it?",
+    exhibit: "Router# show ip route | begin Gateway\nGateway of last resort is not set\n\nO     198.18.33.0/24 [110/20] via 10.2.2.2, 00:41:18, GigabitEthernet0/0\nO     198.18.34.0/24 [110/20] via 10.2.2.6, 00:41:18, GigabitEthernet0/1\nC     10.2.2.0/30 is directly connected, GigabitEthernet0/0\nC     10.2.2.4/30 is directly connected, GigabitEthernet0/1",
+    options: [
+      "It drops the packet and sends an ICMP destination unreachable message to the source",
+      "It forwards the packet via 10.2.2.2 because that is the closest matching route",
+      "It floods the packet out both Gigabit interfaces",
+      "It queues the packet until a route to 198.18.32.0 is learned"
+    ],
+    answer: [0],
+    explanation: "No entry covers 198.18.32.41: the table holds only 198.18.33.0/24 and 198.18.34.0/24, and the first line confirms there is no gateway of last resort. A router that finds no match discards the packet and normally returns an ICMP destination unreachable to the sender. Routers never flood unicast packets like switches do, never pick a numerically close but non-matching route, and never queue traffic waiting for routes to appear."
+  },
+  {
+    id: "conn-105",
+    domain: "IP Connectivity",
+    type: "single",
+    question: "Refer to the exhibit. A packet arrives destined for 172.19.4.77, and the only matching entries are shown. What happens to the packet?",
+    exhibit: "Router# show ip route | begin Gateway\nGateway of last resort is not set\n\nD     172.19.0.0/16 is a summary, 00:55:12, Null0\nD     172.19.8.0/24 [90/156160] via 10.4.4.2, 00:55:10, GigabitEthernet0/0\nD     172.19.9.0/24 [90/156160] via 10.4.4.2, 00:55:10, GigabitEthernet0/0",
+    options: [
+      "It is dropped because the longest match is the summary route pointing to Null0",
+      "It is forwarded to 10.4.4.2, which advertised the summary",
+      "It is forwarded out GigabitEthernet0/0 using proxy ARP",
+      "It is returned to the previous hop for rerouting"
+    ],
+    answer: [0],
+    explanation: "The destination 172.19.4.77 does not fall within 172.19.8.0/24 or 172.19.9.0/24, so its longest match is the locally generated summary 172.19.0.0/16 whose next hop is the Null0 interface, and traffic routed to Null0 is silently discarded. This is intentional behavior that prevents routing loops for unallocated space inside a summary. The router does not forward to 10.4.4.2 because the summary is local, and packets are never handed back to the previous hop."
+  }
+);

@@ -1131,3 +1131,458 @@
     explanation: "Fiber transmits light rather than electrical signals, so it is immune to EMI and crosstalk, and it spans distances from hundreds of meters on multimode to tens of kilometers on single-mode, far beyond copper's 100 m limit. Fiber termination is actually more expensive and skill-intensive than copper, and PoE requires electrical conductors, so power delivery is an advantage of copper, not fiber."
   }
 );
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "nf-076",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. A host with IP address 10.40.17.130 sends traffic toward the router. Which interface's directly connected subnet contains this host?",
+    exhibit: "R1# show ip interface brief | exclude unassigned\nInterface              IP-Address      OK? Method Status   Protocol\nGigabitEthernet0/0     10.40.12.1      YES manual up       up    (/22)\nGigabitEthernet0/1     10.40.16.1      YES manual up       up    (/23)\nGigabitEthernet0/2     10.40.18.1      YES manual up       up    (/24)",
+    options: [
+      "GigabitEthernet0/1",
+      "GigabitEthernet0/0",
+      "GigabitEthernet0/2",
+      "None of the connected subnets contains the host"
+    ],
+    answer: [0],
+    explanation: "Gi0/1 is 10.40.16.0/23, which spans 10.40.16.0 through 10.40.17.255, so 10.40.17.130 falls inside it. Gi0/0 is 10.40.12.0/22, covering only 10.40.12.0 through 10.40.15.255, and Gi0/2 is 10.40.18.0/24, covering 10.40.18.0 through 10.40.18.255. The trap is assuming the /23 covers only the 10.40.16.x third octet; a /23 includes two consecutive third-octet values."
+  },
+  {
+    id: "nf-077",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An engineer must allocate the lowest-numbered available subnet from 192.168.40.0/24 for a new VLAN that requires 10 hosts. Which subnet should be assigned?",
+    exhibit: "Current allocations from 192.168.40.0/24:\n  192.168.40.0/26    - Data VLAN (in use)\n  192.168.40.64/27   - Voice VLAN (in use)\n  192.168.40.96/28   - Printers   (in use)\n  remaining space    - unallocated",
+    options: [
+      "192.168.40.112/28",
+      "192.168.40.96/28",
+      "192.168.40.112/29",
+      "192.168.40.128/28"
+    ],
+    answer: [0],
+    explanation: "Ten hosts require 14 usable addresses, which means a /28 (a /29 provides only 6 usable addresses and is too small). The existing allocations consume addresses up through 192.168.40.111, so the lowest available block on a valid /28 boundary is 192.168.40.112/28. 192.168.40.96/28 is already assigned to printers, and 192.168.40.128/28 is free but is not the lowest-numbered available subnet."
+  },
+  {
+    id: "nf-078",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "A network is being designed with VLSM. Drag each prefix length to the requirement it satisfies most efficiently.",
+    items: [
+      "/27",
+      "/30",
+      "/25",
+      "/28",
+      "/26"
+    ],
+    targets: [
+      "Department subnet with 100 hosts",
+      "Department subnet with 50 hosts",
+      "Voice VLAN with 20 phones",
+      "Management network with 10 devices",
+      "Point-to-point WAN link between two routers"
+    ],
+    answer: [2, 4, 0, 3, 1],
+    explanation: "A /25 provides 126 usable addresses for 100 hosts, a /26 provides 62 for 50 hosts, a /27 provides 30 for 20 phones, a /28 provides 14 for 10 devices, and a /30 provides exactly the 2 addresses needed for a point-to-point link. Each smaller requirement must use the next longer prefix that still fits; choosing one size larger than necessary wastes address space, which defeats the purpose of VLSM."
+  },
+  {
+    id: "nf-079",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Which range of source addresses does this access list entry match?",
+    exhibit: "R2# show running-config | include access-list 25\naccess-list 25 permit 172.16.50.32 0.0.0.31",
+    options: [
+      "172.16.50.32 through 172.16.50.63",
+      "172.16.50.32 through 172.16.50.47",
+      "172.16.50.0 through 172.16.50.31",
+      "172.16.50.32 through 172.16.50.95"
+    ],
+    answer: [0],
+    explanation: "The wildcard 0.0.0.31 ignores the low-order 5 bits, matching a block of 32 addresses beginning at the listed address, so the range is 172.16.50.32 through 172.16.50.63. The range ending at .47 would correspond to wildcard 0.0.0.15, the range starting at .0 ignores the base address given in the entry, and a 64-address span ending at .95 would require wildcard 0.0.0.63."
+  },
+  {
+    id: "nf-080",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "How many usable host addresses are available in a subnet that uses the mask 255.255.254.0?",
+    options: [
+      "510",
+      "254",
+      "512",
+      "1022"
+    ],
+    answer: [0],
+    explanation: "255.255.254.0 is a /23, leaving 9 host bits: 2^9 = 512 total addresses, minus the network and broadcast addresses leaves 510 usable. The value 512 forgets to subtract those two reserved addresses, 254 corresponds to a /24, and 1022 corresponds to a /22. Counting host bits carefully and always subtracting two is the key step."
+  },
+  {
+    id: "nf-081",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Refer to the exhibit. Which two addresses can be assigned to hosts in the subnet configured on interface Vlan30? (Choose two.)",
+    exhibit: "Switch# show running-config interface Vlan30\ninterface Vlan30\n ip address 172.25.12.1 255.255.254.0\nend",
+    options: [
+      "172.25.12.255",
+      "172.25.13.254",
+      "172.25.13.255",
+      "172.25.14.1",
+      "172.25.12.0"
+    ],
+    answer: [0, 1],
+    explanation: "The subnet 172.25.12.0/23 spans 172.25.12.0 through 172.25.13.255, with usable hosts from 172.25.12.1 to 172.25.13.254. That makes 172.25.12.255 a perfectly valid host address in a /23 (it only looks like a broadcast if you assume /24) and 172.25.13.254 the last usable host. 172.25.13.255 is the actual broadcast address, 172.25.12.0 is the network address, and 172.25.14.1 lies in the next subnet."
+  },
+  {
+    id: "nf-082",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. Based on the workstation's IP configuration, what is the broadcast address of the subnet to which it belongs?",
+    exhibit: "C:\\> ipconfig\n\nEthernet adapter Ethernet0:\n   IPv4 Address. . . . . . . . . . . : 192.168.10.77\n   Subnet Mask . . . . . . . . . . . : 255.255.255.192\n   Default Gateway . . . . . . . . . : 192.168.10.65",
+    options: [
+      "192.168.10.127",
+      "192.168.10.255",
+      "192.168.10.95",
+      "192.168.10.126"
+    ],
+    answer: [0],
+    explanation: "The /26 mask creates blocks of 64: .0, .64, .128, .192. The address 192.168.10.77 falls in the 192.168.10.64/26 subnet, whose broadcast is 192.168.10.127. The address 192.168.10.255 would be the broadcast only if the mask were /24, .95 is the broadcast of a /27 block starting at .64, and .126 is the last usable host of the /26 rather than its broadcast."
+  },
+  {
+    id: "nf-083",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A subnet must support 120 hosts plus a default gateway. Which prefix length creates the smallest subnet that meets the requirement?",
+    options: [
+      "/25",
+      "/26",
+      "/24",
+      "/23"
+    ],
+    answer: [0],
+    explanation: "The requirement is 121 addresses in total, and a /25 provides 126 usable hosts, which fits with minimal waste. A /26 provides only 62 usable addresses and is too small. A /24 (254 usable) and a /23 (510 usable) both work but waste large amounts of space, so they are not the smallest valid subnet."
+  },
+  {
+    id: "nf-084",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. What is the last usable host address in the subnet configured on interface GigabitEthernet0/3?",
+    exhibit: "R4# show running-config interface GigabitEthernet0/3\ninterface GigabitEthernet0/3\n ip address 172.22.64.1 255.255.224.0\nend",
+    options: [
+      "172.22.95.254",
+      "172.22.95.255",
+      "172.22.71.254",
+      "172.22.64.254"
+    ],
+    answer: [0],
+    explanation: "255.255.224.0 is a /19, creating blocks of 32 in the third octet, so the subnet is 172.22.64.0 through 172.22.95.255. The broadcast is 172.22.95.255, making 172.22.95.254 the last usable host. 172.22.71.254 results from misreading the mask as /21, and 172.22.64.254 results from treating it as /24."
+  },
+  {
+    id: "nf-085",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Refer to the exhibit. Which three statements about the subnet configured on GigabitEthernet0/1 are true? (Choose three.)",
+    exhibit: "R1# show running-config interface GigabitEthernet0/1\ninterface GigabitEthernet0/1\n ip address 192.168.1.99 255.255.255.248\nend",
+    options: [
+      "The network address is 192.168.1.96",
+      "The broadcast address is 192.168.1.103",
+      "The subnet provides 6 usable host addresses",
+      "The broadcast address is 192.168.1.111",
+      "The subnet provides 14 usable host addresses"
+    ],
+    answer: [0, 1, 2],
+    explanation: "The /29 mask creates blocks of 8, so 192.168.1.99 falls in 192.168.1.96/29, which runs from .96 (network) to .103 (broadcast) with usable hosts .97 through .102, that is, 6 usable addresses. The broadcast .111 and the count of 14 usable hosts would both be correct only for a /28 mask (255.255.255.240), which is the classic misreading of 255.255.255.248."
+  },
+  {
+    id: "nf-086",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An administrator subdivides the block 10.128.32.0/22 entirely into /28 subnets for small point-of-sale segments. How many /28 subnets are created?",
+    options: [
+      "64",
+      "32",
+      "16",
+      "128"
+    ],
+    answer: [0],
+    explanation: "Going from a /22 to a /28 borrows 6 additional subnet bits, and 2^6 = 64 subnets. Answers of 16 and 32 correspond to borrowing only 4 or 5 bits, and 128 corresponds to borrowing 7 bits (a /29). The calculation is simply 2 raised to the difference between the new and original prefix lengths."
+  },
+  {
+    id: "nf-087",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A router must advertise a single summary that covers the networks 172.16.20.0/24, 172.16.21.0/24, 172.16.22.0/24, and 172.16.23.0/24 and nothing more. Which summary address is correct?",
+    options: [
+      "172.16.20.0/22",
+      "172.16.16.0/21",
+      "172.16.20.0/23",
+      "172.16.20.0/21"
+    ],
+    answer: [0],
+    explanation: "The four /24 networks share their first 22 bits, and 20 is divisible by 4, so 172.16.20.0/22 is a valid block boundary that covers exactly 172.16.20.0 through 172.16.23.255. 172.16.16.0/21 also covers them but additionally includes 172.16.16.0 through 172.16.19.255, violating the requirement to cover nothing more. 172.16.20.0/23 covers only the 20.x and 21.x networks, and 172.16.20.0/21 is not a valid /21 boundary because 20 is not a multiple of 8."
+  },
+  {
+    id: "nf-088",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. A Linux administrator checks a server's addressing. What is the network address of the subnet to which the server belongs?",
+    exhibit: "admin@srv01:~$ ip addr show eth0\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq state UP\n    link/ether 00:50:56:9a:12:bc brd ff:ff:ff:ff:ff:ff\n    inet 172.19.4.77/22 brd 172.19.7.255 scope global eth0",
+    options: [
+      "172.19.4.0",
+      "172.19.0.0",
+      "172.19.6.0",
+      "172.19.4.64"
+    ],
+    answer: [0],
+    explanation: "A /22 creates blocks of 4 in the third octet (0, 4, 8, ...), and 172.19.4.77 falls in the block beginning at 172.19.4.0, which is confirmed by the displayed broadcast of 172.19.7.255. 172.19.0.0 would be the answer only for a /22 block starting at 0 or a shorter prefix like /16, 172.19.6.0 is an address inside the subnet rather than its network ID, and 172.19.4.64 mixes in fourth-octet math that does not apply to a /22."
+  },
+  {
+    id: "nf-089",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An engineer allocates VLSM subnets sequentially from 192.168.8.0/24, starting at the lowest address, for requirements of 60 hosts, 28 hosts, and 12 hosts in that order. Which subnet is assigned to the 12-host requirement?",
+    options: [
+      "192.168.8.96/28",
+      "192.168.8.64/28",
+      "192.168.8.112/28",
+      "192.168.8.96/27"
+    ],
+    answer: [0],
+    explanation: "The 60-host subnet needs a /26 and takes 192.168.8.0-63; the 28-host subnet needs a /27 (30 usable) and takes 192.168.8.64-95; the 12-host subnet needs a /28 (14 usable) and therefore begins at the next boundary, 192.168.8.96/28. 192.168.8.64/28 would overlap the voice allocation, 192.168.8.112/28 skips an available block, and a /27 at .96 wastes space since 14 usable addresses are sufficient."
+  },
+  {
+    id: "nf-090",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two subnet masks provide at least 300 usable host addresses per subnet? (Choose two.)",
+    options: [
+      "255.255.254.0",
+      "255.255.252.0",
+      "255.255.255.0",
+      "255.255.255.128"
+    ],
+    answer: [0, 1],
+    explanation: "255.255.254.0 (/23) yields 510 usable hosts and 255.255.252.0 (/22) yields 1022, both satisfying the 300-host requirement. 255.255.255.0 (/24) provides only 254 usable addresses, which falls just short and is the tempting near miss, and 255.255.255.128 (/25) provides only 126."
+  }
+);
+(window.QUESTION_BANK = window.QUESTION_BANK || []).push(
+  {
+    id: "nf-091",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An organization receives the IPv6 allocation 2001:db8:4a00::/48 and assigns a standard /64 to every LAN segment. How many /64 subnets does the allocation provide?",
+    options: [
+      "65536",
+      "256",
+      "4096",
+      "16777216"
+    ],
+    answer: [0],
+    explanation: "Between a /48 and a /64 there are 16 subnet bits, providing 2^16 = 65536 subnets. The value 256 corresponds to only 8 subnet bits (a /56 allocation), 4096 corresponds to 12 bits (a /52), and 16777216 corresponds to 24 bits. With IPv6 the host portion of a standard LAN is always the final 64 bits, so the subnetting happens entirely between the global routing prefix and the interface ID."
+  },
+  {
+    id: "nf-092",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An IPv6 host must learn the MAC address of another host on the same LAN before sending it traffic. Which mechanism does the host use?",
+    options: [
+      "It sends an ICMPv6 Neighbor Solicitation to the target's solicited-node multicast address",
+      "It broadcasts an ARP request containing the target's IPv6 address",
+      "It sends an ICMPv6 Router Solicitation to the all-routers multicast address",
+      "It floods an ICMPv6 Echo Request to FF02::1 and waits for the reply"
+    ],
+    answer: [0],
+    explanation: "IPv6 replaces ARP with Neighbor Discovery: the host sends a Neighbor Solicitation (ICMPv6 type 135) to the target's solicited-node multicast group, and the target answers with a Neighbor Advertisement containing its MAC address. ARP is an IPv4-only protocol, and IPv6 has no broadcast at all. Router Solicitations discover routers rather than host MAC addresses, and pinging the all-nodes group is not an address resolution mechanism."
+  },
+  {
+    id: "nf-093",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which two statements about IPv6 anycast addresses are true? (Choose two.)",
+    options: [
+      "The same anycast address is assigned to multiple devices",
+      "A packet sent to an anycast address is delivered to the topologically nearest device that holds it",
+      "A packet sent to an anycast address is delivered to all devices that hold it",
+      "Anycast addresses are allocated from the dedicated FF00::/8 range"
+    ],
+    answer: [0, 1],
+    explanation: "Anycast intentionally configures one address on multiple devices, and the routing infrastructure delivers each packet to the nearest instance, which is useful for services like DNS. Delivery to all members describes multicast, not anycast, which is why that distractor is wrong. Anycast addresses come from the regular unicast address space and are syntactically indistinguishable from unicast; FF00::/8 is reserved exclusively for multicast."
+  },
+  {
+    id: "nf-094",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An engineer reviews the multicast groups joined by GigabitEthernet0/0. Why has the interface joined the group FF02::2?",
+    exhibit: "R1# show ipv6 interface GigabitEthernet0/0\nGigabitEthernet0/0 is up, line protocol is up\n  IPv6 is enabled, link-local address is FE80::1\n  Global unicast address(es):\n    2001:DB8:12::1, subnet is 2001:DB8:12::/64\n  Joined group address(es):\n    FF02::1\n    FF02::2\n    FF02::1:FF00:1",
+    options: [
+      "The device is operating as an IPv6 router, and all IPv6 routers join the all-routers group",
+      "Every IPv6-enabled interface automatically joins FF02::2",
+      "The interface joined FF02::2 to support duplicate address detection",
+      "FF02::2 is the solicited-node group derived from the global address"
+    ],
+    answer: [0],
+    explanation: "FF02::2 is the all-routers link-local multicast group, joined only by interfaces on devices functioning as IPv6 routers so they can receive Router Solicitations. All IPv6 interfaces join the all-nodes group FF02::1, but FF02::2 is specific to routers, so the second option is wrong. Duplicate address detection and address resolution use the solicited-node group, which here is FF02::1:FF00:1, not FF02::2."
+  },
+  {
+    id: "nf-095",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A host uses SLAAC to obtain its IPv6 global unicast address. How is the address formed?",
+    options: [
+      "The host combines the prefix advertised in a Router Advertisement with an interface ID it generates itself",
+      "The host requests a complete 128-bit address from a DHCPv6 server",
+      "The host copies the full address of the default router and changes the last four digits",
+      "The host derives the entire address from its MAC address alone"
+    ],
+    answer: [0],
+    explanation: "With stateless address autoconfiguration, the router advertises a /64 prefix in its Router Advertisement, and the host appends a self-generated 64-bit interface ID (EUI-64 based or random) to form its address. Obtaining a full leased address from a server describes stateful DHCPv6, not SLAAC. The MAC address can contribute only the interface ID half, never the prefix, and hosts do not derive addresses by modifying the router's address."
+  },
+  {
+    id: "nf-096",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "In the IPv6 multicast address FF02::1, what does the value 2 in the fourth hex digit indicate?",
+    options: [
+      "The scope of the group is limited to the local link",
+      "The group contains exactly two members",
+      "The address is the second multicast group ever allocated",
+      "The scope of the group is organization-wide"
+    ],
+    answer: [0],
+    explanation: "In an IPv6 multicast address the fourth hex digit encodes the scope, and the value 2 means link-local, so FF02::1 packets never leave the local segment. A value of 8 would indicate organization-local scope and 5 indicates site-local scope. The digit has nothing to do with the number of group members or with any allocation order."
+  },
+  {
+    id: "nf-097",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "In a typical IPv6 global unicast address such as 2001:db8:aaaa:0001::10/64, which portion identifies the individual host on its subnet?",
+    options: [
+      "The low-order 64 bits (the interface ID)",
+      "The first 48 bits (the global routing prefix)",
+      "Bits 49 through 64 (the subnet ID)",
+      "The first 3 bits (the 2000::/3 allocation)"
+    ],
+    answer: [0],
+    explanation: "A standard global unicast address splits into a 48-bit global routing prefix assigned by the provider, a 16-bit subnet ID chosen by the organization, and a 64-bit interface ID that uniquely identifies the host on its subnet. The global routing prefix and subnet ID together locate the subnet, not the host. The leading 2000::/3 bits merely mark the address as global unicast space."
+  },
+  {
+    id: "nf-098",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Refer to the exhibit. Which two statements about this interface configuration are true? (Choose two.)",
+    exhibit: "R3# show running-config interface GigabitEthernet0/1\ninterface GigabitEthernet0/1\n ip address 192.168.30.1 255.255.255.0\n ipv6 address 2001:DB8:30::1/64\nend",
+    options: [
+      "The interface is running dual-stack, processing IPv4 and IPv6 simultaneously",
+      "IPv4 hosts and IPv6 hosts on this LAN can each use the router as their gateway for their respective protocol",
+      "The IPv6 address is tunneled inside IPv4 packets on this interface",
+      "NAT64 is required for the two protocols to coexist on the interface"
+    ],
+    answer: [0, 1],
+    explanation: "Configuring both an IPv4 and an IPv6 address on the same interface is dual-stack operation: the two protocol stacks run independently and in parallel, and clients of each protocol use the corresponding gateway address. No tunneling occurs because each protocol is forwarded natively. NAT64 is a translation mechanism for IPv6-only hosts reaching IPv4-only services and is not needed simply to run both protocols side by side."
+  },
+  {
+    id: "nf-099",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "An IPv6 host performs duplicate address detection before assigning a new address to its interface. Which source address does the host use in the Neighbor Solicitation it sends?",
+    options: [
+      "The unspecified address ::",
+      "The loopback address ::1",
+      "Its existing link-local address FE80::/10",
+      "The solicited-node multicast address of the tentative address"
+    ],
+    answer: [0],
+    explanation: "During DAD the tentative address cannot yet be used, so the Neighbor Solicitation is sourced from the unspecified address :: while being sent to the solicited-node multicast group of the tentative address. The loopback ::1 never appears on the wire. The link-local address itself must also pass DAD before use, so it cannot serve as the source when it is the address being tested, and the solicited-node multicast address is the destination of the probe, not its source."
+  },
+  {
+    id: "nf-100",
+    domain: "Network Fundamentals",
+    type: "dragdrop",
+    question: "Drag each transport protocol and port to the application service that uses it by default.",
+    items: [
+      "UDP 69",
+      "TCP 25",
+      "TCP 22",
+      "UDP 53",
+      "TCP 443"
+    ],
+    targets: [
+      "SSH remote login",
+      "DNS name query from a client",
+      "HTTPS web browsing",
+      "TFTP file transfer",
+      "SMTP mail delivery between servers"
+    ],
+    answer: [2, 3, 4, 0, 1],
+    explanation: "SSH uses TCP 22, standard DNS client queries use UDP 53, HTTPS uses TCP 443, TFTP uses UDP 69, and SMTP server-to-server delivery uses TCP 25. The classic confusions are TFTP (UDP 69) versus FTP (TCP 20/21) and remembering that simple DNS lookups ride UDP even though DNS can also use TCP for zone transfers and large responses."
+  },
+  {
+    id: "nf-101",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "A real-time voice application is being designed. Why is UDP preferred over TCP as the transport protocol for the voice media stream?",
+    options: [
+      "UDP avoids retransmission and connection overhead, so late packets are not retransmitted at the cost of added delay",
+      "UDP guarantees in-order delivery with lower overhead than TCP",
+      "UDP provides built-in encryption that protects the voice payload",
+      "UDP performs faster three-way handshakes than TCP"
+    ],
+    answer: [0],
+    explanation: "Voice tolerates occasional packet loss but not delay; UDP's connectionless, no-retransmission behavior means a lost voice sample is simply skipped instead of retransmitted late, when it would be useless. UDP provides no ordering or delivery guarantees, so the second option is false. UDP includes no encryption (that is added by protocols such as SRTP), and UDP has no handshake at all, which is precisely why it starts faster."
+  },
+  {
+    id: "nf-102",
+    domain: "Network Fundamentals",
+    type: "multi",
+    question: "Which three characteristics describe TCP? (Choose three.)",
+    options: [
+      "It establishes sessions with a three-way handshake before data transfer",
+      "It uses sequence numbers to reorder segments that arrive out of order",
+      "It provides flow control through an advertised receive window",
+      "It delivers data with best-effort, connectionless service",
+      "It adds less header overhead than UDP"
+    ],
+    answer: [0, 1, 2],
+    explanation: "TCP is connection-oriented: it opens sessions with a SYN, SYN-ACK, ACK handshake, sequences every byte so the receiver can reorder and detect loss, and throttles the sender through the advertised window for flow control. Best-effort connectionless delivery describes UDP and IP, not TCP. TCP's header is at least 20 bytes versus UDP's 8, so TCP has more overhead, not less."
+  },
+  {
+    id: "nf-103",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "During a large file transfer, a receiving host becomes overwhelmed and needs the sender to slow down. Which TCP mechanism accomplishes this?",
+    options: [
+      "The receiver advertises a smaller window size in its acknowledgments",
+      "The receiver sends an ICMP source quench message to the sender",
+      "The receiver resets the session with a FIN segment until its buffers drain",
+      "The receiver renegotiates the maximum segment size mid-session"
+    ],
+    answer: [0],
+    explanation: "TCP flow control works through the sliding window: each ACK carries the receiver's current buffer availability, and shrinking the advertised window forces the sender to pause or slow transmission. ICMP source quench is obsolete and was never a TCP mechanism. A FIN closes the session gracefully rather than pausing it, and the MSS is exchanged only during connection establishment, not renegotiated to manage congestion."
+  },
+  {
+    id: "nf-104",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. A user can ping 8.8.8.8 successfully but cannot browse to any website by name. Based on the output, what is the cause?",
+    exhibit: "C:\\> ipconfig /all\n\nEthernet adapter Ethernet0:\n   IPv4 Address. . . . . . . . . . . : 10.1.50.25\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Default Gateway . . . . . . . . . : 10.1.50.1\n   DHCP Server . . . . . . . . . . . : 10.1.50.1\n   DNS Servers . . . . . . . . . . . : 169.254.10.5",
+    options: [
+      "The configured DNS server address is invalid, so name resolution fails",
+      "The default gateway is in a different subnet than the host",
+      "The host has an APIPA address and cannot reach the Internet",
+      "The subnet mask is too small for the network"
+    ],
+    answer: [0],
+    explanation: "Successful pings to 8.8.8.8 prove that IP addressing, the gateway, and Internet routing all work, so the failure is name resolution: the DNS server is set to 169.254.10.5, a link-local APIPA address that is not a reachable DNS server. The gateway 10.1.50.1 is inside the host's 10.1.50.0/24 subnet, the host's own address is a valid DHCP-assigned address rather than APIPA, and the /24 mask is consistent with the rest of the configuration."
+  },
+  {
+    id: "nf-105",
+    domain: "Network Fundamentals",
+    type: "single",
+    question: "Refer to the exhibit. An engineer checks the routing configuration of a Linux server. Which address is the server's default gateway?",
+    exhibit: "admin@srv02:~$ ip route\ndefault via 192.168.20.254 dev eth0 proto static\n192.168.20.0/24 dev eth0 proto kernel scope link src 192.168.20.31",
+    options: [
+      "192.168.20.254",
+      "192.168.20.31",
+      "192.168.20.0",
+      "192.168.20.1"
+    ],
+    answer: [0],
+    explanation: "The line beginning with \"default via\" identifies the gateway used for all destinations not matched by a more specific route, which is 192.168.20.254. The address 192.168.20.31 is the server's own source address shown on the connected route, 192.168.20.0 is the network address of the local subnet, and 192.168.20.1 appears nowhere in the output even though it is a common gateway convention."
+  }
+);
