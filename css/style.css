@@ -159,6 +159,10 @@ html, body {
 /* ---------- Exam ---------- */
 .exam-layout { display: grid; grid-template-columns: 1fr; gap: 18px; }
 .exam-layout.with-palette { grid-template-columns: 1fr 230px; align-items: start; }
+/* Grid items default to min-width:auto, so a long exhibit line would stretch
+   the card (and the whole page) wider than the screen. Allow them to shrink
+   so the exhibit's own overflow-x:auto scrolls instead of overflowing. */
+.exam-layout > .card { min-width: 0; }
 
 .question-meta { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
 .q-number { font-weight: 800; color: var(--navy); }
