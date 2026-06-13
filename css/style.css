@@ -330,6 +330,12 @@ html, body {
 .tab-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
 
 .review-list { display: grid; gap: 16px; }
+/* Same fix as the exam layout: a grid item's default min-width:auto lets a
+   long, unbreakable exhibit line stretch the card (and the whole page) wider
+   than the viewport, which makes mobile browsers zoom out and throws off the
+   text scale relative to the exam. Let the card shrink so the exhibit's own
+   overflow-x:auto scrolls instead. */
+.review-list > .card { min-width: 0; }
 .review-card { border-left: 6px solid var(--border); }
 .review-card.correct { border-left-color: var(--green); }
 .review-card.incorrect { border-left-color: var(--red); }
@@ -355,7 +361,9 @@ html, body {
   border: 1px solid var(--border);
   border-radius: 7px;
   padding: 8px 12px;
-  font-size: 0.95rem;
+  /* Match the exam options (which inherit the base 1rem) so the answer text
+     reads at the same scale during review as it did in the test. */
+  font-size: 1rem;
 }
 .review-option.is-correct { background: var(--green-bg); border-color: var(--green); }
 .review-option.is-wrong-pick { background: var(--red-bg); border-color: var(--red); }
