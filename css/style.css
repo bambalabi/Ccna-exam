@@ -142,6 +142,39 @@ html, body {
 .mode-option input { margin-top: 5px; }
 .mode-option small { display: block; color: var(--muted); }
 
+.topic-hint { margin: -4px 0 10px; font-size: 0.92rem; }
+.topic-toolbar { display: flex; gap: 16px; margin-bottom: 10px; }
+.btn-link {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.topic-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+.topic-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.topic-option:has(input:checked) { border-color: var(--accent); background: #e8f2fb; }
+.topic-option input { margin-top: 4px; }
+.topic-name { font-weight: 600; display: block; }
+.topic-meta { display: block; color: var(--muted); }
+.topic-warning { color: var(--red); font-weight: 600; margin-top: 10px; }
+
 .setup-summary {
   display: flex;
   gap: 14px;

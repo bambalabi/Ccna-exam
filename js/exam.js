@@ -79,10 +79,18 @@ const Exam = (() => {
     return copy;
   }
 
+  // Restrict the bank to the chosen domains; no/empty selection means all.
+  function filterByDomains(bank, domains) {
+    if (!domains || !domains.length) return bank;
+    const wanted = new Set(domains);
+    return bank.filter((q) => wanted.has(q.domain));
+  }
+
   function start(config, onFinish) {
-    const bank = window.QUESTION_BANK || [];
-    const questions = sampleQuestions(bank, config.count).map(prepareQuestion);
-    const durationSec = config.count * SECONDS_PER_QUESTION;
+    const bank = filterByDomains(window.QUESTION_BANK || [], config.domains);
+    const count = Math.min(config.count, bank.length);
+    const questions = sampleQuestions(bank, count).map(prepareQuestion);
+    const durationSec = count * SECONDS_PER_QUESTION;
 
     state = {
       mode: config.mode, // "exam" | "practice"
@@ -429,6 +437,6 @@ const Exam = (() => {
   return {
     start, bindControls, inProgress, SECONDS_PER_QUESTION, DOMAIN_WEIGHTS,
     // exposed for the Node test harness only
-    _internals: { sampleQuestions, prepareQuestion, shuffle },
+    _internals: { sampleQuestions, prepareQuestion, shuffle, filterByDomains },
   };
 })();
