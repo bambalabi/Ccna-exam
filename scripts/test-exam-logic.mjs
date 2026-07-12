@@ -81,7 +81,28 @@ function assert(cond, msg) { if (!cond) throw new Error("FAIL: " + msg); }
 const bank = window.QUESTION_BANK;
 assert(bank.length === 600, "bank should have 600 questions, has " + bank.length);
 
-const { sampleQuestions, prepareQuestion } = Exam._internals;
+const { sampleQuestions, prepareQuestion, filterByDomains } = Exam._internals;
+
+// --- topic filtering: only questions from the chosen domains, all-or-empty passthrough ---
+assert(filterByDomains(bank, null) === bank, "null domains should return the full bank");
+assert(filterByDomains(bank, []) === bank, "empty domains should return the full bank");
+for (const domain of Object.keys(Exam.DOMAIN_WEIGHTS)) {
+  const pool = filterByDomains(bank, [domain]);
+  assert(pool.length > 0, "no questions for domain " + domain);
+  assert(pool.every((q) => q.domain === domain), "foreign questions leaked into " + domain);
+  const sample = sampleQuestions(pool, 20);
+  assert(sample.length === 20, domain + " sample has " + sample.length);
+  assert(sample.every((q) => q.domain === domain), "sample leaked outside " + domain);
+}
+const pair = ["IP Connectivity", "Security Fundamentals"];
+const pairPool = filterByDomains(bank, pair);
+assert(pairPool.every((q) => pair.includes(q.domain)), "two-domain filter leaked");
+const pairSample = sampleQuestions(pairPool, 40);
+const pairCounts = {};
+pairSample.forEach((q) => (pairCounts[q.domain] = (pairCounts[q.domain] || 0) + 1));
+assert(pairSample.length === 40, "two-domain sample has " + pairSample.length);
+// weights 25 vs 15 -> expected 25 and 15 of 40, allow the usual rounding slack
+assert(Math.abs(pairCounts["IP Connectivity"] - 25) <= 1, "pair weighting off: " + JSON.stringify(pairCounts));
 
 // --- sampling: exact count, unique ids, sane domain proportions ---
 for (const n of [10, 20, 33, 50, 100, 120]) {
@@ -126,6 +147,10 @@ for (const mode of ["exam", "practice"]) {
   Exam.start({ count: 20, mode }, (bundle) => { finished = bundle; });
   assert(Exam.inProgress(), mode + ": exam should be in progress");
 }
+
+// topic-restricted exam start renders without throwing
+Exam.start({ count: 20, mode: "exam", domains: ["Network Fundamentals"] }, () => {});
+assert(Exam.inProgress(), "topic-restricted exam should be in progress");
 
 console.log("exam-logic tests passed: sampling, shuffling remap (600/600), render smoke (both modes)");
 `;

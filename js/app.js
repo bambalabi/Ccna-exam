@@ -21,14 +21,66 @@
     return document.querySelector('input[name="exam-mode"]:checked').value;
   }
 
+  function selectedDomains() {
+    return Array.from(
+      document.querySelectorAll('#topic-list input[type="checkbox"]:checked')
+    ).map((cb) => cb.value);
+  }
+
+  function availableQuestions() {
+    const bank = window.QUESTION_BANK || [];
+    const wanted = new Set(selectedDomains());
+    return bank.filter((q) => wanted.has(q.domain)).length;
+  }
+
+  // Actual exam size: the requested count, capped by what the selected topics can supply.
+  function effectiveCount() {
+    return Math.min(selectedCount(), availableQuestions());
+  }
+
   function updateSummary() {
     const count = selectedCount();
-    const minutes = Math.round((count * Exam.SECONDS_PER_QUESTION) / 60);
-    $("summary-count").textContent = count;
+    const effective = effectiveCount();
+    const minutes = Math.round((effective * Exam.SECONDS_PER_QUESTION) / 60);
+    $("summary-count").textContent = effective;
     $("summary-duration").textContent = `${minutes} min`;
     document.querySelectorAll(".preset-btn").forEach((btn) => {
       btn.classList.toggle("active", parseInt(btn.dataset.count, 10) === count);
     });
+
+    const noTopics = selectedDomains().length === 0;
+    $("topic-warning").classList.toggle("hidden", !noTopics);
+    $("start-exam-btn").disabled = noTopics;
+  }
+
+  function buildTopicList() {
+    const bank = window.QUESTION_BANK || [];
+    const counts = {};
+    bank.forEach((q) => { counts[q.domain] = (counts[q.domain] || 0) + 1; });
+
+    const list = $("topic-list");
+    Object.entries(Exam.DOMAIN_WEIGHTS).forEach(([domain, weight]) => {
+      const label = document.createElement("label");
+      label.className = "topic-option";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = domain;
+      cb.checked = true;
+      cb.addEventListener("change", updateSummary);
+      const info = document.createElement("span");
+      info.innerHTML =
+        `<span class="topic-name">${domain}</span>` +
+        `<small class="topic-meta">${weight}% of real exam &middot; ${counts[domain] || 0} questions</small>`;
+      label.append(cb, info);
+      list.appendChild(label);
+    });
+
+    const setAll = (checked) => {
+      list.querySelectorAll('input[type="checkbox"]').forEach((cb) => { cb.checked = checked; });
+      updateSummary();
+    };
+    $("topics-all-btn").addEventListener("click", () => setAll(true));
+    $("topics-none-btn").addEventListener("click", () => setAll(false));
   }
 
   function bindSetup() {
@@ -50,8 +102,16 @@
         alert("Question bank failed to load. Please reload the page.");
         return;
       }
+      const domains = selectedDomains();
+      if (!domains.length) {
+        updateSummary();
+        return;
+      }
       showScreen("exam");
-      Exam.start({ count: selectedCount(), mode: selectedMode() }, onExamFinished);
+      Exam.start(
+        { count: effectiveCount(), mode: selectedMode(), domains },
+        onExamFinished
+      );
     });
 
     $("view-history-btn").addEventListener("click", () => {
@@ -196,6 +256,7 @@
   });
 
   document.addEventListener("DOMContentLoaded", () => {
+    buildTopicList();
     bindSetup();
     bindResults();
     bindHistory();

@@ -42,6 +42,20 @@
         </div>
 
         <div class="setup-row">
+          <label class="setup-label">Topics</label>
+          <p class="muted topic-hint">
+            Choose which exam domains to include. Keep all selected for a full
+            domain-weighted exam, or pick specific topics to focus your practice.
+          </p>
+          <div class="topic-toolbar">
+            <button id="topics-all-btn" type="button" class="btn-link">Select all</button>
+            <button id="topics-none-btn" type="button" class="btn-link">Clear all</button>
+          </div>
+          <div id="topic-list" class="topic-list"></div>
+          <p id="topic-warning" class="topic-warning hidden">Select at least one topic to start the exam.</p>
+        </div>
+
+        <div class="setup-row">
           <label class="setup-label">Mode</label>
           <div class="mode-group">
             <label class="mode-option">
