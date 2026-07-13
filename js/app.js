@@ -1,7 +1,7 @@
 // App bootstrap: screen routing, setup form, history screen.
 (() => {
   const $ = (id) => document.getElementById(id);
-  const SCREENS = ["setup", "exam", "results", "review", "history"];
+  const SCREENS = ["setup", "exam", "results", "review", "history", "guide", "labs"];
   const MIN_COUNT = 10;
   const MAX_COUNT = 120;
 
@@ -119,12 +119,29 @@
       showScreen("history");
     });
 
+    $("open-guide-btn").addEventListener("click", () => {
+      Guide.renderList();
+      showScreen("guide");
+    });
+
+    if (typeof Labs !== "undefined") {
+      $("open-labs-btn").addEventListener("click", () => {
+        Labs.renderList();
+        showScreen("labs");
+      });
+    } else {
+      $("open-labs-btn").classList.add("hidden");
+    }
+
     const bank = window.QUESTION_BANK || [];
     const counts = {};
     bank.forEach((q) => { counts[q.domain] = (counts[q.domain] || 0) + 1; });
+    const guideCount = (window.GUIDE_BANK || []).length;
+    const labCount = (window.LAB_BANK || []).length;
     $("bank-info").textContent =
       `Question bank: ${bank.length} unique questions across ${Object.keys(counts).length} exam domains. ` +
-      `Each exam draws a fresh random, domain-weighted selection.`;
+      `Each exam draws a fresh random, domain-weighted selection. ` +
+      `Plus ${guideCount} config & troubleshooting guide topics and ${labCount} hands-on CLI labs.`;
   }
 
   // ----- exam finished -----
@@ -255,6 +272,8 @@
     }
   });
 
+  window.App = { showScreen };
+
   document.addEventListener("DOMContentLoaded", () => {
     buildTopicList();
     bindSetup();
@@ -262,6 +281,8 @@
     bindHistory();
     Exam.bindControls();
     Review.bindControls();
+    Guide.bindControls();
+    if (typeof Labs !== "undefined") Labs.bindControls();
     updateSummary();
     showScreen("setup");
   });

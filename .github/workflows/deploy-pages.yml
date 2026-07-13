@@ -24,6 +24,12 @@ jobs:
           node-version: 20
       - name: Validate question bank
         run: node scripts/validate-questions.mjs
+      - name: Validate study guide
+        run: node scripts/validate-guide.mjs
+      - name: CLI matcher self-test
+        run: node scripts/test-cli-matcher.mjs
+      - name: Validate CLI labs
+        run: node scripts/validate-labs.mjs
 
   deploy:
     needs: validate
