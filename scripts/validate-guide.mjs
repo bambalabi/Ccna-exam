@@ -10,6 +10,8 @@ const EXPECTED = [
   { file: "guide-fundamentals.js", domain: "Network Fundamentals", prefix: "gf-", count: 4 },
   { file: "guide-access.js", domain: "Network Access", prefix: "ga-", count: 5 },
   { file: "guide-connectivity.js", domain: "IP Connectivity", prefix: "gc-", count: 4 },
+  { file: "guide-services.js", domain: "IP Services", prefix: "gi-", count: 4 },
+  { file: "guide-security.js", domain: "Security Fundamentals", prefix: "gs-", count: 3 },
 ];
 
 const errors = [];
@@ -87,7 +89,7 @@ for (const spec of EXPECTED) {
     } else {
       t.verify.forEach((v, j) => {
         const vw = `${where} verify[${j}]`;
-        if (!v.cmd || !/^(show|debug|ping|traceroute)/.test(v.cmd)) err(`${vw}: cmd should start with show/debug/ping/traceroute`);
+        if (!v.cmd || !/^(show|debug|ping|traceroute|clear)/.test(v.cmd)) err(`${vw}: cmd should start with show/debug/ping/traceroute/clear`);
         if (!v.what || v.what.trim().length < 30) err(`${vw}: 'what' too short (<30 chars)`);
       });
     }
