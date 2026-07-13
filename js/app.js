@@ -76,9 +76,12 @@
     const bank = window.QUESTION_BANK || [];
     const counts = {};
     bank.forEach((q) => { counts[q.domain] = (counts[q.domain] || 0) + 1; });
+    const guideCount = (window.GUIDE_BANK || []).length;
+    const labCount = (window.LAB_BANK || []).length;
     $("bank-info").textContent =
       `Question bank: ${bank.length} unique questions across ${Object.keys(counts).length} exam domains. ` +
-      `Each exam draws a fresh random, domain-weighted selection.`;
+      `Each exam draws a fresh random, domain-weighted selection. ` +
+      `Plus ${guideCount} config & troubleshooting guide topics and ${labCount} hands-on CLI labs.`;
   }
 
   // ----- exam finished -----

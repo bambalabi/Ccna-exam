@@ -23,6 +23,30 @@ A realistic, browser-based simulator for the Cisco CCNA 200-301 certification ex
 - **Mistake review**: every question shows your answer vs. the correct answer plus a detailed explanation of why each option is right or wrong.
 - **Progress tracking**: exam history, score trend, and weakest-domain stats stored locally in your browser.
 
+## Config & Troubleshooting study tools
+
+Beyond the exam simulator, the site covers the hands-on side of the blueprint — every
+"configure and verify / troubleshoot" objective:
+
+- **Study Guide** — 20 reference topics (VLANs & trunks, EtherChannel, Rapid PVST+,
+  static routing, OSPFv2, NAT, NTP, DHCP, SSH, ACLs, port security, DHCP snooping,
+  DAI, and more). Each topic has an overview, IOS configuration examples, verification
+  (`show`) commands, a symptom → cause → fix troubleshooting table, and exam tips.
+  Content lives in `data/guide-*.js`; validate with `node scripts/validate-guide.mjs`.
+- **CLI Labs** — 19 hands-on labs in a simulated IOS terminal with mode tracking
+  (`>`, `#`, `(config)#`, …), Cisco-style command abbreviations (`conf t`, `int fa0/1`),
+  per-step hints, and free `show`-command exploration:
+  - *Configuration labs* walk you through building a feature step by step.
+  - *Troubleshooting labs* present a broken device: diagnose it from `show` output,
+    then fix the fault to complete the lab.
+
+  Labs live in `data/labs-*.js` and declare expected commands in a small spec DSL
+  (`conf(igure) t(erminal)`, `{if=FastEthernet0/1}`) compiled by `js/cli-matcher.js`.
+  Validate with `node scripts/validate-labs.mjs`, and run the matcher's own tests with
+  `node scripts/test-cli-matcher.mjs`.
+
+Guide read-progress and lab completions are stored locally in your browser, like exam history.
+
 ## Running locally
 
 Open `index.html` in a browser, or serve the folder:
