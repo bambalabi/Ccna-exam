@@ -26,6 +26,8 @@ jobs:
         run: node scripts/validate-questions.mjs
       - name: Validate study guide
         run: node scripts/validate-guide.mjs
+      - name: CLI matcher self-test
+        run: node scripts/test-cli-matcher.mjs
 
   deploy:
     needs: validate
