@@ -64,7 +64,7 @@
       showScreen("guide");
     });
 
-    if (window.Labs) {
+    if (typeof Labs !== "undefined") {
       $("open-labs-btn").addEventListener("click", () => {
         Labs.renderList();
         showScreen("labs");
@@ -218,7 +218,7 @@
     Exam.bindControls();
     Review.bindControls();
     Guide.bindControls();
-    if (window.Labs) Labs.bindControls();
+    if (typeof Labs !== "undefined") Labs.bindControls();
     updateSummary();
     showScreen("setup");
   });
