@@ -8,6 +8,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const EXPECTED = [
   { file: "guide-fundamentals.js", domain: "Network Fundamentals", prefix: "gf-", count: 4 },
+  { file: "guide-access.js", domain: "Network Access", prefix: "ga-", count: 5 },
+  { file: "guide-connectivity.js", domain: "IP Connectivity", prefix: "gc-", count: 4 },
 ];
 
 const errors = [];
