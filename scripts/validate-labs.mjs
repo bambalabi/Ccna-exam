@@ -12,7 +12,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CliMatcher = require(path.join(root, "js", "cli-matcher.js"));
 
 const EXPECTED = [
-  { file: "labs-access.js", domain: "Network Access", prefix: "la-", count: 2 },
+  { file: "labs-fundamentals.js", domain: "Network Fundamentals", prefix: "lf-", count: 1 },
+  { file: "labs-access.js", domain: "Network Access", prefix: "la-", count: 6 },
+  { file: "labs-connectivity.js", domain: "IP Connectivity", prefix: "lc-", count: 5 },
+  { file: "labs-services.js", domain: "IP Services", prefix: "li-", count: 4 },
+  { file: "labs-security.js", domain: "Security Fundamentals", prefix: "ls-", count: 3 },
 ];
 
 const MODES = [

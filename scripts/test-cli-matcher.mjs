@@ -62,7 +62,7 @@ check("if fa0/1", CliMatcher.matches("int fa0/1", INT_FA), true);
 check("if fas0/1", CliMatcher.matches("int fas0/1", INT_FA), true);
 check("if two-token", CliMatcher.matches("int fa 0/1", INT_FA), true);
 check("if two-token full", CliMatcher.matches("interface fastethernet 0/1", INT_FA), true);
-check("if 1-char type", CliMatcher.matches("int f0/1", INT_FA), false);
+check("if 1-char type", CliMatcher.matches("int f0/1", INT_FA), true);
 check("if wrong number", CliMatcher.matches("int fa0/2", INT_FA), false);
 check("if wrong type", CliMatcher.matches("int gi0/1", INT_FA), false);
 check("if missing number", CliMatcher.matches("int fa", INT_FA), false);

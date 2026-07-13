@@ -69,7 +69,8 @@ const Labs = (() => {
 
   function canonicalizeInterface(text) {
     const m = String(text).replace(/\s+/g, "").match(/^([a-z-]+)([0-9][0-9/.]*)$/);
-    if (!m || m[1].length < 2) return null;
+    if (!m) return null;
+    // First letters in IF_TYPES are unique, so 1-char prefixes resolve unambiguously.
     const type = IF_TYPES.find(([lc]) => lc.startsWith(m[1]));
     return type ? type[1] + m[2] : null;
   }
@@ -299,6 +300,25 @@ const Labs = (() => {
         return true;
       }
     }
+    // other generic mode-entering commands (from global config)
+    if (CONFIG_MODES.has(state.mode)) {
+      if (tokens.length === 3 && tokens[0] === "router" && "ospf".startsWith(tokens[1]) &&
+          /^\d+$/.test(tokens[2])) {
+        state.mode = "config-router";
+        state.currentInterface = null;
+        return true;
+      }
+      if (tokens.length >= 2 && tokens[0] === "line") {
+        state.mode = "config-line";
+        state.currentInterface = null;
+        return true;
+      }
+      if (tokens.length === 2 && tokens[0] === "vlan" && /^\d+$/.test(tokens[1])) {
+        state.mode = "config-vlan";
+        state.currentInterface = null;
+        return true;
+      }
+    }
     return false;
   }
 
@@ -349,6 +369,12 @@ const Labs = (() => {
         if (acceptsInput(step, input)) {
           if (modeAllowed(step.mode)) {
             state.totalAttempts++;
+            if (step.requiresInterface && state.currentInterface !== step.requiresInterface) {
+              // Accepted by IOS, but issued on the wrong interface: no tick.
+              registerFailure();
+              updatePrompt();
+              return;
+            }
             state.stepsDone[i] = true;
             applyStepEffects(step, input);
             if (step.response) print(step.response);
@@ -382,6 +408,8 @@ const Labs = (() => {
             return;
           }
           state.goalsDone[i] = true;
+          if (goal.setsMode) state.mode = goal.setsMode;
+          if (goal.response) print(goal.response);
           onProgress();
           updatePrompt();
           return;

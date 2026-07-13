@@ -5,8 +5,9 @@
 //                              prefix of "configure" at least as long as "conf".
 //   - "vlan", "10", "192.168.1.1"  bare tokens: exact match, case-insensitive.
 //   - "{if=FastEthernet0/1}"   interface slot: matches "fastethernet0/1", "fa0/1",
-//                              and the two-token form "fa 0/1" (type by >=2-char
-//                              prefix of the canonical type, number part exact).
+//                              "g0/0"-style single-letter prefixes, and the two-token
+//                              form "fa 0/1" (type by prefix of the slot's canonical
+//                              type, number part exact).
 //
 // The same file runs in the browser (window.CliMatcher) and under Node for the
 // CI validator/tests (module.exports).
@@ -15,7 +16,8 @@ const CliMatcher = (() => {
   const IF_RE = /^\{if=([A-Za-z-]+)([0-9][0-9/.]*)\}$/;
   const IF_ONE_TOKEN_RE = /^([a-z-]+)([0-9][0-9/.]*)$/;
   const IF_TYPE_RE = /^[a-z-]+$/;
-  const MIN_IF_PREFIX = 2;
+  // The slot's canonical type is known, so even a 1-char prefix is unambiguous.
+  const MIN_IF_PREFIX = 1;
 
   const cache = new Map();
 
