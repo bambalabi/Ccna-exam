@@ -24,6 +24,8 @@ jobs:
           node-version: 20
       - name: Validate question bank
         run: node scripts/validate-questions.mjs
+      - name: Validate study guide
+        run: node scripts/validate-guide.mjs
 
   deploy:
     needs: validate

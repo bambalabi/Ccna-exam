@@ -78,6 +78,8 @@
 
         <div class="setup-actions">
           <button id="start-exam-btn" class="btn btn-primary btn-lg">Start Exam</button>
+          <button id="open-guide-btn" class="btn btn-ghost">Study Guide</button>
+          <button id="open-labs-btn" class="btn btn-ghost">CLI Labs</button>
           <button id="view-history-btn" class="btn btn-ghost">Exam History</button>
         </div>
 
@@ -184,6 +186,65 @@
       </div>
     </section>
 
+    <!-- ===================== STUDY GUIDE ===================== -->
+    <section id="screen-guide" class="screen hidden">
+      <div id="guide-list-view">
+        <div class="card guide-header">
+          <div class="guide-header-row">
+            <h2>Config &amp; Troubleshooting Guide</h2>
+            <button id="guide-back-btn" class="btn btn-ghost">&larr; Back</button>
+          </div>
+          <p class="muted" id="guide-progress-info"></p>
+        </div>
+        <div id="guide-topic-list" class="guide-topic-list"></div>
+      </div>
+      <div id="guide-topic-view" class="hidden">
+        <div class="card guide-topic-card">
+          <button id="guide-topic-back-btn" class="btn btn-ghost">&larr; All topics</button>
+          <div id="guide-topic-content"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CLI LABS ===================== -->
+    <section id="screen-labs" class="screen hidden">
+      <div id="labs-list-view">
+        <div class="card labs-header">
+          <div class="guide-header-row">
+            <h2>CLI Labs</h2>
+            <button id="labs-back-btn" class="btn btn-ghost">&larr; Back</button>
+          </div>
+          <p class="muted" id="labs-progress-info"></p>
+        </div>
+        <div id="labs-list" class="labs-list"></div>
+      </div>
+      <div id="labs-run-view" class="hidden">
+        <div class="lab-layout">
+          <div class="card lab-side">
+            <button id="lab-exit-btn" class="btn btn-ghost">&larr; All labs</button>
+            <h3 id="lab-title"></h3>
+            <p id="lab-scenario" class="lab-scenario"></p>
+            <h4>Tasks</h4>
+            <ul id="lab-checklist" class="lab-checklist"></ul>
+            <div id="lab-hint-box" class="hint-box hidden"></div>
+            <div class="lab-side-actions">
+              <button id="lab-hint-btn" class="btn btn-ghost">Hint</button>
+              <button id="lab-reset-btn" class="btn btn-danger-ghost">Reset lab</button>
+            </div>
+          </div>
+          <div class="card terminal-card">
+            <div class="terminal" id="terminal">
+              <pre id="term-scroll" class="term-scroll"></pre>
+              <div class="term-input-row">
+                <span id="term-prompt" class="term-prompt"></span>
+                <input id="term-input" class="term-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <script src="data/questions-fundamentals.js"></script>
@@ -192,11 +253,13 @@
   <script src="data/questions-services.js"></script>
   <script src="data/questions-security.js"></script>
   <script src="data/questions-automation.js"></script>
+  <script src="data/guide-fundamentals.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/timer.js"></script>
   <script src="js/scoring.js"></script>
   <script src="js/exam.js"></script>
   <script src="js/review.js"></script>
+  <script src="js/guide.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // App bootstrap: screen routing, setup form, history screen.
 (() => {
   const $ = (id) => document.getElementById(id);
-  const SCREENS = ["setup", "exam", "results", "review", "history"];
+  const SCREENS = ["setup", "exam", "results", "review", "history", "guide", "labs"];
   const MIN_COUNT = 10;
   const MAX_COUNT = 120;
 
@@ -58,6 +58,20 @@
       renderHistory();
       showScreen("history");
     });
+
+    $("open-guide-btn").addEventListener("click", () => {
+      Guide.renderList();
+      showScreen("guide");
+    });
+
+    if (window.Labs) {
+      $("open-labs-btn").addEventListener("click", () => {
+        Labs.renderList();
+        showScreen("labs");
+      });
+    } else {
+      $("open-labs-btn").classList.add("hidden");
+    }
 
     const bank = window.QUESTION_BANK || [];
     const counts = {};
@@ -195,12 +209,16 @@
     }
   });
 
+  window.App = { showScreen };
+
   document.addEventListener("DOMContentLoaded", () => {
     bindSetup();
     bindResults();
     bindHistory();
     Exam.bindControls();
     Review.bindControls();
+    Guide.bindControls();
+    if (window.Labs) Labs.bindControls();
     updateSummary();
     showScreen("setup");
   });
